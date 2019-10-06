@@ -6,16 +6,16 @@ using std::string;
 
 namespace constants{
   
-  const double x_max = 2.0;
+  const double x_max = 1000.0;
   const double x_min = 0.0;
-  const double d_x = 0.01;
-  const int x_cell_capa=1500;
-  const std::string data_directory="data";  
+  const double d_x = 10.0;
+  const int x_cell_capa=1000;
+  const std::string data_directory="data";
 
   const string default_inputfname = "input";
   const string default_out_directory_name="output";
-  const string default_ext=".txt";
-  const string default_out_fname="data";
+  const string default_ext=".dat";
+  const string default_out_fname="hist";
   const int default_nfiles=0;
 
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <iomanip>
+#include "constants.h"
 
 class util_func{
 
@@ -47,9 +48,9 @@ class util_func{
 
     this->make_data_direcrory();
 
-    std::ostringstream name;
+    std::ostringstream name; 
     name  << this->get_date()+"_"+directory_name;
-    name_directory=name.str();
+    name_directory=constants::data_directory+"/"+name.str();
     if(stat(name_directory.c_str(),&st)!=0) mkdir(name_directory.c_str(),0775);
     else {};
 

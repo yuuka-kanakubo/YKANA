@@ -31,13 +31,16 @@ bool read(string fname, vector <double> &vec){
       } else if(templine.find('%')!=std::string::npos){
 	istringstream iss(templine);
 	string pct;
+	int event_num;
 	int num_jet;
-	iss >> pct >> num_jet; 
+	iss >> pct >> event_num >> num_jet;
+	ct.number_of_jet+=num_jet;
       }else{
 	istringstream is(templine);
-	double pz, pr;
-	is >> pz >> pr ;
-        vec.push_back(pr);
+	int jet_id;
+	double e, px, py, pz;
+	is >> jet_id >> e >> px >> py >> pz;
+        vec.push_back(e);
       }
     }
     in.close();
@@ -46,7 +49,7 @@ bool read(string fname, vector <double> &vec){
 }
 
 
-void analysis(vector <double> &vec, const int& numjet){
+void analysis(vector <double> &vec){
   for(int i=0; i<(int)vec.size(); ++i){
     double x_val=vec[i];
 
@@ -57,11 +60,12 @@ void analysis(vector <double> &vec, const int& numjet){
     ct.Hist[nx]++;
     if(ct.max_nx<nx) ct.max_nx=nx;
   
-  }  
+  }
+
     //take average and devide by cell width
     //-------------------------------------
     for(int i=0; i<ct.max_nx; ++i){
-      ct.Hist[i]/=numjet;
+      ct.Hist[i]/=ct.number_of_jet;
       ct.Hist[i]/=constants::d_x;
     }
  
@@ -71,10 +75,10 @@ bool write(string fname){
   ofstream ofs;
   ofs.open(fname.c_str());
   if(!ofs){ms->open(fname); return false;}
-  
   for(int i=0; i<ct.max_nx; ++i){
     double x_axis = ((constants::x_min+(constants::d_x*i))+(constants::x_min+(constants::d_x*(i+1))))/2.0;
-    ofs << x_axis << "     " << ct.Hist[i] << endl;
+    ofs << setw(16) << x_axis
+	<< setw(16) << fixed << setprecision(8) << ct.Hist[i] << endl;
   }
   ofs << endl;
   return true;
@@ -83,7 +87,7 @@ bool write(string fname){
  
 int main(int argc, char* argv[]){
 
-  if(!ms->enough_argument(argc));
+  if(!ms->enough_argument(argc)) return 1;
 
   string inputfname = constants::default_inputfname;
   string out_directory_name=constants::default_out_directory_name;
@@ -93,21 +97,20 @@ int main(int argc, char* argv[]){
   for(int i=1; i<argc; i++) {
     if(!strcmp(argv[i],"-n")) {nfiles = atoi(argv[i+1]);}
     if(!strcmp(argv[i],"-output_dir")){out_directory_name= argv[i+1];}
-    if(!strcmp(argv[i],"--input")) {inputfname= argv[i+1];}
+    if(!strcmp(argv[i],"--input_path")) {inputfname= argv[i+1];}
     if(!strcmp(argv[i],"--ext")) {ext= argv[i+1];}
   }
       
-  int numjet=0;
   vector <double> vec;
   for(int i=0; i<nfiles; ++i){
     if(!read(inputfname+uf.generateS(i)+ext, vec)) return 1;
   }
   
-  analysis(vec, numjet);
+  analysis(vec);
     
   uf.make_output_direcrory(out_directory_name);
   string generated_directory_name=uf.get_name_directory();
-  if(!write(constants::data_directory+"/"+generated_directory_name+"/"+out_fname+ext)) return 1;
+  if(!write(generated_directory_name+"/"+out_fname+ext)) return 1;
 
   ms->finish();
   return 0;
