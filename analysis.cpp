@@ -18,7 +18,7 @@ container ct;
 message* ms;  
 
 
-bool read(string fname, vector <double> &vec){
+bool read(const string& fname, vector <double> &vec){
 
   ifstream in;
   in.open(fname.c_str(),ios::in);
@@ -49,7 +49,7 @@ bool read(string fname, vector <double> &vec){
 }
 
 
-void analysis(vector <double> &vec){
+void analysis(const vector <double> &vec){
   for(int i=0; i<(int)vec.size(); ++i){
     double x_val=vec[i];
 
@@ -71,14 +71,14 @@ void analysis(vector <double> &vec){
  
 }
   
-bool write(string fname){
+bool write(const string& fname){
   ofstream ofs;
   ofs.open(fname.c_str());
   if(!ofs){ms->open(fname); return false;}
   for(int i=0; i<ct.max_nx; ++i){
     double x_axis = ((constants::x_min+(constants::d_x*i))+(constants::x_min+(constants::d_x*(i+1))))/2.0;
-    ofs << setw(16) << x_axis
-	<< setw(16) << fixed << setprecision(8) << ct.Hist[i] << endl;
+    ofs << setw(16) << fixed << setprecision(8) << x_axis
+	<< setw(16) << ct.Hist[i] << endl;
   }
   ofs << endl;
   return true;

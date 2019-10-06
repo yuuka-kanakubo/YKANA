@@ -16,7 +16,7 @@ class message{
   ~message(){};
   
 
-  bool enough_argument(const int& argc){
+  const bool enough_argument(const int& argc){
     if(argc< 5){
       cout << "Need option. " << endl;
       cout << "./analysis -n *  -output  *  " << endl;
@@ -25,11 +25,11 @@ class message{
   };
 
   
-  void open(const std::string fname){
+  const void open(const std::string& fname){
       cout << "Error unable to open file. " << fname << endl;
   }
 
-  void finish(){
+  const void finish(){
     cout << "Done." << endl;
   };
 
