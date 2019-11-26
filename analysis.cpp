@@ -56,7 +56,7 @@ void analysis(const vector <double> &vec){
     //count.
     //-----------------------------------
     if(x_val<constants::x_min || x_val>constants::x_max) continue;
-    int nx=(int) (x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x);
+    int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
     ct.Hist[nx]++;
     if(ct.max_nx<nx) ct.max_nx=nx;
   
@@ -103,6 +103,7 @@ int main(int argc, char* argv[]){
       
   vector <double> vec;
   for(int i=0; i<nfiles; ++i){
+    if(!(i%1000)) ms->read(i);
     if(!read(inputfname+uf.generateS(i)+ext, vec)) return 1;
   }
   
