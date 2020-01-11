@@ -24,6 +24,9 @@ class message{
     }else return true;
   };
 
+  const void read(const int& ifile){
+    cout << "reading " << ifile << " files.." << endl;
+  };
   
   const void open(const std::string& fname){
       cout << "Error unable to open file. " << fname << endl;
