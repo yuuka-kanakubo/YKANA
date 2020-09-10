@@ -7,8 +7,10 @@ This code is intended for beginner, so calculation of error bar is not included 
 
 In order to compile, do
 
-  $make analysis
-
+  $mkdir build
+  $cd build/
+  $cmake ..
+  $make
 
 
 When you exeute this program, you have to specify at least 2 options, "-n and -output_dir".
