@@ -61,6 +61,7 @@ void analysis(const vector <double> &vec1, vector<double> &vec2){
     if(x_val<constants::x_min || x_val>constants::x_max) continue;
     int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
     ct.Hist[nx]+=vec2[i];
+    ct.HistHist[nx]+=pow(vec2[i],2.0);
     if(ct.max_nx<nx) ct.max_nx=nx;
 
     ct.sum_weight+=vec2[i];
@@ -68,13 +69,30 @@ void analysis(const vector <double> &vec1, vector<double> &vec2){
   }
 
 
-    //take average and devide by cell width
+    //take average    
     //-------------------------------------
     for(int i=0; i<ct.max_nx+1; ++i){
       //ct.Hist[i]/=ct.Nev_tot;
       ct.Hist[i]/=ct.sum_weight;
-      ct.Hist[i]/=constants::d_x;
+      //ct.HistHist[i]/=ct.Nev_tot;
+      ct.HistHist[i]/=ct.sum_weight;
+
+      // devide by cell width 
+      //-------------------------------------
+      //ct.Hist[i]/=constants::d_x;
     }
+
+
+    //Get standard error
+    //-------------------------------------
+    for(int i=0; i<ct.max_nx+1; ++i){
+      double var=ct.HistHist[i]-pow(ct.Hist[i],2.0);
+      ct.HistErr[i]=sqrt(var/ct.sum_weight);
+    }
+
+
+
+
  
 }
   
@@ -86,8 +104,9 @@ bool write(const string& fname){
   ct.max_nx+=constants::margin;
   for(int i=0; i<ct.max_nx; ++i){
     double x_axis = ((constants::x_min+(constants::d_x*i))+(constants::x_min+(constants::d_x*(i+1))))/2.0;
-    ofs << setw(16) << fixed << setprecision(8) << x_axis
-	<< setw(16) << ct.Hist[i] << endl;
+    ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
+	<< setw(16) << ct.Hist[i] << "  "
+	<< setw(16) << ct.HistErr[i] << endl;
   }
   ofs << endl;
   return true;
