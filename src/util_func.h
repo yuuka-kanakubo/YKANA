@@ -44,9 +44,9 @@ class util_func{
 
   
  public:
-  const void make_output_direcrory(const std::string& directory_name){
+  const void make_output_directory(const std::string& directory_name){
     
-    this->make_data_direcrory();
+    this->make_data_directory();
     
     std::ostringstream name; 
     name  << this->get_date()+"_"+directory_name;
@@ -57,7 +57,7 @@ class util_func{
   };
 
  private:
-  const void make_data_direcrory(){
+  const void make_data_directory(){
     if(stat(constants::data_directory.c_str(),&st) !=0) mkdir(constants::data_directory.c_str(),0775);
     else {};
   };

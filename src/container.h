@@ -5,6 +5,7 @@ class container{
  public:
   double Hist[constants::x_cell_capa]={};
   int max_nx=-1;
-  int number_of_jet=0;
+  int Nev_tot=0;
+  double sum_weight=0.0;
 
 };

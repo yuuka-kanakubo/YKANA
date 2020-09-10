@@ -20,6 +20,8 @@ ex.  $./analysis -n  10  -output_dir jet_energy
  directory would be generated under data/.
 
 
+See script_analysis.sh for details.
+
 
 Here I summarize available options.
 -----------------------------------------------------------------------
@@ -27,11 +29,12 @@ Here I summarize available options.
 
 2) "-output_dir" is used to name directory for output.
 
-3) "--input_path" specifies path to input files.
+3) "-input_path" specifies path to input files.
 
 4) "--ext" specifies extension of the input files. ex. "--ext .txt"
 
 --------------------------------------------------------------------
+
 
 
 

@@ -6,10 +6,11 @@ using std::string;
 
 namespace constants{
   
-  const double x_max = 1000.0;
+  const double x_max = 5000.0;
   const double x_min = 0.0;
-  const double d_x = 10.0;
+  const double d_x = 500.0;
   const int x_cell_capa=1000;
+  const int margin = 10;
   const std::string data_directory="data";
 
   const string default_inputfname = "input";
