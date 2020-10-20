@@ -10,6 +10,7 @@
 #include "util_func.h"
 #include "container.h"
 #include "message.h"
+#include "setting.h"
 
 using namespace std;
 
@@ -122,11 +123,13 @@ int main(int argc, char* argv[]){
   string ext=constants::default_ext;
   string out_fname=constants::default_out_fname;
   int nfiles=constants::default_nfiles;
+  setting set;
   for(int i=1; i<argc; i++) {
     if(!strcmp(argv[i],"-n")) {nfiles = atoi(argv[i+1]);}
     if(!strcmp(argv[i],"-output_dir")){out_directory_name= argv[i+1];}
     if(!strcmp(argv[i],"-input_path")) {inputfname= argv[i+1];}
     if(!strcmp(argv[i],"--ext")) {ext= argv[i+1];}
+    set.options.push_back(argv[i]);
   }
       
   vector <double> vec1, vec2;
@@ -141,6 +144,8 @@ int main(int argc, char* argv[]){
   uf.make_output_directory(out_directory_name);
   string generated_directory_name=uf.get_name_directory();
   if(!write(generated_directory_name+"/"+out_fname+ext)) return 1;
+
+  set.archive_settings(generated_directory_name);
 
   ms->finish();
   return 0;
