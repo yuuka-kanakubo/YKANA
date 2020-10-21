@@ -20,7 +20,7 @@ namespace constants{
   const string default_ext=".dat";
   const string default_out_fname="hist";
   const int default_nfiles=0;
-  const string settings_outputfname="settings.h";
+  const string settings_outputfname="settings.txt";
   const vector<string> save_settings_fname={"src/constants.h"};
 
 }
