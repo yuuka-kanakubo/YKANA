@@ -39,8 +39,8 @@ bool read(const string& fname, vector <double> &vec1, vector<double> &vec2){
       }else{
 	istringstream is(templine);
 	int event_num;
-	double Nch, weight;
-	is >> event_num >> Nch >> weight;
+	double Nch, weight, V0M;
+	is >> event_num >> Nch >> V0M >> weight;
         vec1.push_back(Nch);
         vec2.push_back(weight);
       }
@@ -80,7 +80,7 @@ void analysis(const vector <double> &vec1, vector<double> &vec2){
 
       // devide by cell width 
       //-------------------------------------
-      //ct.Hist[i]/=constants::d_x;
+      ct.Hist[i]/=constants::d_x;
     }
 
 
