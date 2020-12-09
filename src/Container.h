@@ -1,6 +1,6 @@
-#include "constants.h"
+#include "Constants.h"
 
-class container{
+class Container{
 
  public:
   double Hist[constants::x_cell_capa]={};

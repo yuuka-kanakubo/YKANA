@@ -3,13 +3,13 @@
 #include <string>
 #include <sys/stat.h>
 #include <iomanip>
-#include "constants.h"
+#include "Constants.h"
 
-class util_func{
+class Util_func{
 
  public:
-  util_func(){};
-  ~util_func(){};
+  Util_func(){};
+  ~Util_func(){};
   
   std::string generateS(double n){
     std::ostringstream oss;

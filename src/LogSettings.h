@@ -1,10 +1,12 @@
+#ifndef LOGSETTINGS
+#define LOGSETTINGS
 #include <iostream>
 #include <fstream>
-#include "constants.h"
+#include "Constants.h"
 
 using namespace std;
 
-class setting{
+class LogSettings{
 
  public:
 
@@ -61,3 +63,4 @@ int archive_settings(const string output_directory_name){
   }
 
 };
+#endif
