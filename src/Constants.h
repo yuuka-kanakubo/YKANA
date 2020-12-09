@@ -16,26 +16,31 @@ namespace constants{
   const std::string data_directory="data";
 
   const string default_inputfname = "input";
-  const string default_out_directory_name="output";
-  const string default_ext=".dat";
+  const string default_ext="/hadronised.txt";
   const string default_out_fname="hist.txt";
-  const int default_nfiles=0;
+  const int default_nfiles=10000;
   const string settings_outputfname="settings.txt";
   const vector<string> save_settings_fname={"src/Constants.h"};
 
 
-#ifdef WORK1
-  const std::string MODE = "WORK1";
-#elif defined WORK2
-  const std::string MODE = "WORK2";
+#ifdef WORK5
+  const std::string MODE = "WORK5";
+  const string default_out_directory_name="WORK5";
+#elif defined WORK7
+  const std::string MODE = "WORK7";
+  const string default_out_directory_name="WORK7";
 #elif defined WORK3
   const std::string MODE = "WORK3";
+  const string default_out_directory_name="output";
 #elif defined WORK4
   const std::string MODE = "WORK4";
+  const string default_out_directory_name="output";
 #elif defined WORK5
   const std::string MODE = "WORK5";
+  const string default_out_directory_name="output";
 #else
-  const std::string MODE = "dammy";
+  const std::string MODE = "default";
+  const string default_out_directory_name="WORK4";
 #endif
 
 

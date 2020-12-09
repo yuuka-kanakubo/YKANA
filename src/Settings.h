@@ -58,13 +58,13 @@ public:
 
 void init(int argc, char* argv[]){
 
-  if(!ms->enough_argument(argc)) exit (1);
+  //if(!ms->enough_argument(argc)) exit (1);
 
   for(int i=1; i<argc; i++) {
     set.options.push_back(argv[i]);
     if(!strcmp(argv[i],"-n")) {options.nfiles = atoi(argv[i+1]);}
-    else if(!strcmp(argv[i],"-output_dir")){options.out_directory_name= argv[i+1];}
-    else if(!strcmp(argv[i],"-input_path")) {options.inputfname= argv[i+1];}
+    else if(!strcmp(argv[i],"-outdir")){options.out_directory_name= argv[i+1];}
+    else if(!strcmp(argv[i],"-PATH")) {options.inputfname= argv[i+1];}
     else if(!strcmp(argv[i],"-ext")) {options.ext= argv[i+1];}
     else { 
 	    std::string opt_in(argv[i]);

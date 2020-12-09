@@ -1,13 +1,5 @@
 #!/bin/sh
 
-
-inputpath=""
-input_ext=""
-outputdir=""
-n=0
-
-#Do not modify this.
-#---------------------
 log_dname="log/"
 data_dir="data/"
 today=$(date "+%Y%m%d")
@@ -23,8 +15,3 @@ then
     echo "Directory "$data_dir" DOES NOT exists." 
     mkdir $data_dir
 fi
-#-------------------------
-
-
-./analysis -n $n -outdir ${outputdir} -PATH ${inputpath} -ext ${input_ext}
-

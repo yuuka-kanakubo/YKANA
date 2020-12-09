@@ -4,6 +4,7 @@ class Container{
 
  public:
   double Hist[constants::x_cell_capa]={};
+  double Hist_1ev[constants::x_cell_capa]={};
   double HistHist[constants::x_cell_capa]={};
   double HistErr[constants::x_cell_capa]={};
   int max_nx=-1;

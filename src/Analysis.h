@@ -81,10 +81,17 @@ bool Multiplicity_INEL_lg_0=false;
 
 
 
-	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) ) { 
+		if(constants::MODE.find("WORK5")!=string::npos){
+			if(ID==constants::id_proton) { 
 
-		vec1.push_back(eta);
-	}
+				vec1.push_back(eta);
+			}
+		}else{
+			if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) ) { 
+
+				vec1.push_back(eta);
+			}
+		}
 
 
 	//INEL > 0?
@@ -115,12 +122,9 @@ void stat(){
     for(int i=0; i<ct.max_nx+1; ++i){
       ct.Hist[i]/=ct.Nev_tot;
       //ct.Hist[i]/=ct.sum_weight;
-      //ct.HistHist[i]/=ct.Nev_tot;
-      ct.HistHist[i]/=ct.sum_weight;
+      ct.HistHist[i]/=ct.Nev_tot;
+      //ct.HistHist[i]/=ct.sum_weight;
 
-      // devide by cell width 
-      //-------------------------------------
-      ct.Hist[i]/=constants::d_x;
     }
 
     cout << "Event: " << ct.Nev_tot << endl;
@@ -129,7 +133,7 @@ void stat(){
     //-------------------------------------
     for(int i=0; i<ct.max_nx+1; ++i){
       double var=ct.HistHist[i]-pow(ct.Hist[i],2.0);
-      ct.HistErr[i]=sqrt(var/ct.sum_weight);
+      ct.HistErr[i]=sqrt(var/ct.Nev_tot);
     }
 
 
@@ -145,6 +149,7 @@ void fill(const vector <double> &vec1, const bool INEL_lg_0){
 
 if(!INEL_lg_0) return;
 
+
   for(int i=0; i<(int)vec1.size(); ++i){
     double x_val=vec1[i];
 
@@ -152,10 +157,24 @@ if(!INEL_lg_0) return;
     //-----------------------------------
     if(x_val<constants::x_min || x_val>constants::x_max) continue;
     int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
-    ct.Hist[nx]++;
+    ct.Hist[nx]+=(1.0/constants::d_x);
+    ct.Hist_1ev[nx]+=(1.0/constants::d_x);
     if(ct.max_nx<nx) ct.max_nx=nx;
 
   }
+
+
+    for(int i=0; i<ct.max_nx+1; ++i){
+      ct.HistHist[i]+=pow(ct.Hist_1ev[i],2.0);
+      
+     //Clear.
+     //---------
+     ct.Hist_1ev[i]=0.0;
+
+
+    }
+
+
 
 
 }
@@ -191,7 +210,7 @@ int ana(){
     vector <double> vec1;
     bool INEL_lg_0=false;
     if(!read(ss.str(), vec1, INEL_lg_0)) return 1;
-    fill(vec1, INEL_lg_0);
+    this->fill(vec1, INEL_lg_0);
   }
   
   this->stat();
