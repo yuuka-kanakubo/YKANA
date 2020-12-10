@@ -8,15 +8,10 @@ using std::vector;
 
 namespace constants{
   
-  const double x_max = 20.0;
-  const double x_min = -20.0;
-  const double d_x = 0.5;
-  const int x_cell_capa=1000;
   const int margin = 10;
   const std::string data_directory="data";
 
   const string default_inputfname = "input";
-  const string default_ext="/hadronised.txt";
   const string default_out_fname="hist.txt";
   const int default_nfiles=10000;
   const string settings_outputfname="settings.txt";
@@ -26,21 +21,43 @@ namespace constants{
 #ifdef WORK5
   const std::string MODE = "WORK5";
   const string default_out_directory_name="WORK5";
-#elif defined WORK7
-  const std::string MODE = "WORK7";
-  const string default_out_directory_name="WORK7";
-#elif defined WORK3
-  const std::string MODE = "WORK3";
+  const double x_max = 20.0;
+  const double x_min = -20.0;
+  const double d_x = 0.5;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
+#elif defined WORK8
+  const std::string MODE = "WORK8";
+  const string default_out_directory_name="WORK8";
+  const double x_max = 2000.0;
+  const double x_min = 0.0;
+  const double d_x = 1.0;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
+#elif defined WORK9
+  const std::string MODE = "WORK9";
+  const string default_out_directory_name="WORK9";
+  const double x_max = 10.0;
+  const double x_min = -10.0;
+  const double d_x = 0.5;
+  const int x_cell_capa=1000;
+  const string default_ext="/jetinfo.txt";
+#elif defined DEF
+  const std::string MODE = "default";
   const string default_out_directory_name="output";
-#elif defined WORK4
-  const std::string MODE = "WORK4";
-  const string default_out_directory_name="output";
-#elif defined WORK5
-  const std::string MODE = "WORK5";
-  const string default_out_directory_name="output";
+  const double x_max = 20.0;
+  const double x_min = -20.0;
+  const double d_x = 0.5;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
 #else
   const std::string MODE = "default";
-  const string default_out_directory_name="WORK4";
+  const string default_out_directory_name="output";
+  const double x_max = 20.0;
+  const double x_min = -20.0;
+  const double d_x = 0.5;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
 #endif
 
 
@@ -61,6 +78,8 @@ namespace constants{
  const double V0M_bkw2=-1.7;
  const double outer_SPD=1.4;
  
+ const double delta_phi_SMALL = 0.5;
+ const double delta_eta = 0.5;
 
 
 }

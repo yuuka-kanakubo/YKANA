@@ -35,6 +35,18 @@ public:
 
 
 
+ class ParticleInfo{
+	 public:
+
+   double e;
+   double px;
+   double py;
+   double pz;
+   double phi;
+
+ };
+
+
 bool read(const std::string& fname, vector <double> &vec1, bool& INEL_lg_0){
 
   ifstream in;
@@ -58,7 +70,7 @@ bool Multiplicity_INEL_lg_0=false;
       }else{
 	istringstream is(templine);
 	int data1, data2, ID, col, acol;
-	double m,e,px,py,pz,x,y,z,t,ft, rap, data3, data4, data5, data6, data7, data8;
+	double m,e,px,py,pz,x,y,z,t,ft, rap;
 	std::string TAG;
 	is >> data1 >> data2 >> col >> acol >> ID >> m >> e >> px >> py >> pz >> rap >> x >> y >> z >> t >> ft >> TAG;
 
@@ -86,6 +98,13 @@ bool Multiplicity_INEL_lg_0=false;
 
 				vec1.push_back(eta);
 			}
+		}else if(constants::MODE.find("WORK8")!=string::npos){
+			if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::delta_eta ) { 
+
+				vec1.push_back(pt);
+
+                        }
+
 		}else{
 			if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) ) { 
 
@@ -110,6 +129,74 @@ bool Multiplicity_INEL_lg_0=false;
 	  INEL_lg_0=true;
 	  ct.Nev_tot+=1;
   }
+
+  return true;
+}
+
+
+
+
+bool read_jetinfo(const std::string& fname, vector <double> &vec1, bool& INEL_lg_0){
+
+
+
+//Not consider INEL in jet analysis.
+	INEL_lg_0=true;
+
+
+  ifstream in;
+  in.open(fname.c_str(),ios::in);
+  if(!in){ ms->open(fname); return false;}
+
+  vector <ParticleInfo> Parents, Jets;
+  
+  {
+    std::string templine;
+    while(getline(in,templine)) {
+      if(templine.find('G')!=std::string::npos) {
+      } else if(templine.find('P')!=std::string::npos){
+	istringstream iss(templine);
+	double e,px,py,pz;
+	std::string TAG;
+	iss >> TAG >> e >> px >> py >> pz;
+	ParticleInfo info;
+	info.e=e;
+	info.px=px;
+	info.py=py;
+	info.pz=pz;
+	info.phi=atan2(py, px);
+        Parents.push_back(info);
+      }else{
+	istringstream is(templine);
+	double e,px,py,pz;
+	int num;
+	is >> num >> e >> px >> py >> pz;
+	ParticleInfo info;
+	info.e=e;
+	info.px=px;
+	info.py=py;
+	info.pz=pz;
+	info.phi=atan2(py, px);
+        Jets.push_back(info);
+      }
+    }
+    in.close();
+  }
+
+
+ for(int i =0; i<(int)Jets.size(); i++){
+	 double phi_J = Jets[i].phi;
+	 for(int j =0; j<(int)Parents.size(); j++){
+             if(fabs(phi_J-Parents[j].phi)<constants::delta_phi_SMALL){
+
+               double frac = (Jets[i].e - Parents[j].e)/Parents[j].e;
+               vec1.push_back(frac);
+	       ct.Nev_tot+=1;
+
+             }
+  
+	 }
+ }
 
   return true;
 }
@@ -209,7 +296,11 @@ int ana(){
     ss << options.inputfname << "/ev" << setw(9) << setfill('0') << i << options.ext;
     vector <double> vec1;
     bool INEL_lg_0=false;
-    if(!read(ss.str(), vec1, INEL_lg_0)) return 1;
+    if(constants::MODE.find("WORK9")!=std::string::npos){
+	    read_jetinfo(ss.str(), vec1, INEL_lg_0);
+    }else{
+	    read(ss.str(), vec1, INEL_lg_0);
+    }
     this->fill(vec1, INEL_lg_0);
   }
   
