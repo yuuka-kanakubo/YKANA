@@ -47,7 +47,7 @@ public:
  };
 
 
-bool read(const std::string& fname, vector <double> &vec1, bool& INEL_lg_0){
+bool read(const std::string& fname, Container::Event& event, bool& INEL_lg_0){
 
   ifstream in;
   in.open(fname.c_str(),ios::in);
@@ -93,22 +93,25 @@ bool Multiplicity_INEL_lg_0=false;
 
 
 
-		if(constants::MODE.find("WORK5")!=string::npos){
+		if(constants::MODE.find("dndeta_proton")!=string::npos){
 			if(ID==constants::id_proton) { 
 
-				vec1.push_back(eta);
+				event.value.push_back(eta);
 			}
-		}else if(constants::MODE.find("WORK8")!=string::npos){
+		}else if(constants::MODE.find("dndpt")!=string::npos || constants::MODE.find("vertices")!=string::npos){
 			if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::delta_eta ) { 
 
-				vec1.push_back(pt);
+				if(constants::MODE.find("dndpt")!=string::npos) event.value.push_back(pt);
+                                double r_squared = x*x + y*y;
+                                double r=(r_squared>0.0)? sqrt(r_squared):0.0;
+				if(constants::MODE.find("vertices")!=string::npos) event.value.push_back(r);
 
                         }
 
 		}else{
 			if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) ) { 
 
-				vec1.push_back(eta);
+				event.value.push_back(eta);
 			}
 		}
 
@@ -136,7 +139,7 @@ bool Multiplicity_INEL_lg_0=false;
 
 
 
-bool read_jetinfo(const std::string& fname, vector <double> &vec1, bool& INEL_lg_0){
+bool read_jetinfo(const std::string& fname, Container::Event& event, bool& INEL_lg_0){
 
 
 
@@ -190,7 +193,7 @@ bool read_jetinfo(const std::string& fname, vector <double> &vec1, bool& INEL_lg
              if(fabs(phi_J-Parents[j].phi)<constants::delta_phi_SMALL){
 
                double frac = (Jets[i].e - Parents[j].e)/Parents[j].e;
-               vec1.push_back(frac);
+               event.value.push_back(frac);
 	       ct.Nev_tot+=1;
 
              }
@@ -231,14 +234,15 @@ void stat(){
 
 
 
-void fill(const vector <double> &vec1, const bool INEL_lg_0){
+void fill(const Container::Event& event, const bool INEL_lg_0){
 
 
 if(!INEL_lg_0) return;
 
 
-  for(int i=0; i<(int)vec1.size(); ++i){
-    double x_val=vec1[i];
+vector<double> values=event.value;
+  for(int i=0; i<(int)values.size(); ++i){
+    double x_val=values[i];
 
     //count.
     //-----------------------------------
@@ -251,15 +255,15 @@ if(!INEL_lg_0) return;
   }
 
 
-    for(int i=0; i<ct.max_nx+1; ++i){
-      ct.HistHist[i]+=pow(ct.Hist_1ev[i],2.0);
+  for(int i=0; i<ct.max_nx+1; ++i){
+	  ct.HistHist[i]+=pow(ct.Hist_1ev[i],2.0);
       
-     //Clear.
-     //---------
-     ct.Hist_1ev[i]=0.0;
+	  //Clear.
+	  //---------
+	  ct.Hist_1ev[i]=0.0;
 
 
-    }
+  }
 
 
 
@@ -293,15 +297,15 @@ int ana(){
     if(!(i%1000)) ms->read(i);
 
     std::stringstream ss;
-    ss << options.inputfname << "/ev" << setw(9) << setfill('0') << i << options.ext;
-    vector <double> vec1;
+    ss << options.inputfname << "/ev" << setw(9) << setfill('0') << i << "/" << options.ext;
+    Container::Event event;
     bool INEL_lg_0=false;
-    if(constants::MODE.find("WORK9")!=std::string::npos){
-	    read_jetinfo(ss.str(), vec1, INEL_lg_0);
+    if(constants::MODE.find("JET_PRAC")!=std::string::npos){
+	    read_jetinfo(ss.str(), event, INEL_lg_0);
     }else{
-	    read(ss.str(), vec1, INEL_lg_0);
+	    read(ss.str(), event, INEL_lg_0);
     }
-    this->fill(vec1, INEL_lg_0);
+    this->fill(event, INEL_lg_0);
   }
   
   this->stat();

@@ -18,25 +18,33 @@ namespace constants{
   const vector<string> save_settings_fname={"src/Constants.h"};
 
 
-#ifdef WORK5
-  const std::string MODE = "WORK5";
-  const string default_out_directory_name="WORK5";
+#ifdef DNDETA_PROTON
+  const std::string MODE = "dndeta_proton";
+  const string default_out_directory_name="dndeta_proton";
   const double x_max = 20.0;
   const double x_min = -20.0;
   const double d_x = 0.5;
   const int x_cell_capa=1000;
   const string default_ext="/hadronised.txt";
-#elif defined WORK8
-  const std::string MODE = "WORK8";
-  const string default_out_directory_name="WORK8";
+#elif defined VERTICES
+  const std::string MODE = "vertices";
+  const string default_out_directory_name="vertices";
+  const double x_max = 20.0;
+  const double x_min = -20.0;
+  const double d_x = 0.5;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
+#elif defined DNDPT
+  const std::string MODE = "dndpt";
+  const string default_out_directory_name="dndpt";
   const double x_max = 2000.0;
   const double x_min = 0.0;
   const double d_x = 1.0;
   const int x_cell_capa=1000;
   const string default_ext="/hadronised.txt";
-#elif defined WORK9
-  const std::string MODE = "WORK9";
-  const string default_out_directory_name="WORK9";
+#elif defined JET_PRAC
+  const std::string MODE = "JET_PRAC";
+  const string default_out_directory_name="JET_PRAC";
   const double x_max = 10.0;
   const double x_min = -10.0;
   const double d_x = 0.5;

@@ -1,10 +1,10 @@
 #!/bin/sh
 
 
-inputpath=""
-input_ext=""
-outputdir=""
-n=0
+inputpath="../DCCI/data/20201221_PBPB_PT0REF0.9_SIGMA0.5_PTCUT_minusINF"
+input_ext="hadronFinal_corecorona_weakStop.txt"
+outputdir="VERTICES_PBPB_PT0REF0.9_SIGMA0.5_PTCUT_minusINF"
+n=10
 
 #Do not modify this.
 #---------------------
@@ -26,5 +26,5 @@ fi
 #-------------------------
 
 
-./analysis -n $n -outdir ${outputdir} -PATH ${inputpath} -ext ${input_ext}
+./analysis -n $n -outdir ${outputdir} -path ${inputpath} -ext ${input_ext}
 
