@@ -18,6 +18,22 @@ namespace constants{
   const double d_x = 0.5;
   const int x_cell_capa=1000;
   const string default_ext="/hadronised.txt";
+#elif defined MEANMT
+  const std::string MODE = "meanmt";
+  const string default_out_directory_name="meanmt";
+  const double x_max = 1.5;
+  const double x_min = 0.0;
+  const double d_x = 0.05;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
+#elif defined MEANPT
+  const std::string MODE = "meanpt";
+  const string default_out_directory_name="meanpt";
+  const double x_max = 100.0;
+  const double x_min = 0.0;
+  const double d_x = 5.0;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
 #elif defined VERTICES
   const std::string MODE = "vertices";
   const string default_out_directory_name="vertices";
@@ -69,6 +85,8 @@ namespace constants{
   const int id_ch_pion=211;
   const int id_ch_kaon=321;
   const int id_proton=2212;
+  const int id_lambda=3122;
+  const int id_cascade=3312;
 
  const double w_eta_multiplicity=0.5;
  const double w_eta_multiplicity_INEL_lg_0=1.0;

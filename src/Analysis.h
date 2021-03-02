@@ -24,7 +24,7 @@ class Analysis{
 	shared_ptr<Util_func> uf;
 	shared_ptr<Message> ms;  
 
-	const Settings::Options options;
+	Settings::Options options;
 	LogSettings log;
 
 	public:
@@ -78,6 +78,8 @@ class Analysis{
 					double P=(P_squared)>0.0 ? sqrt(P_squared):0.0;
 					double pt_squared=px*px+py*py;
 					double pt=(pt_squared)>0.0 ? sqrt(pt_squared):0.0;
+					double mt_squared=pt*pt+m*m;
+					double mt=(mt_squared)>0.0 ? sqrt(mt_squared):0.0;
 
 					////
 					double eta;
@@ -118,6 +120,18 @@ class Analysis{
 
 						}
 
+					}else if(constants::MODE.find("meanmt")!=string::npos){
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade ) && std::fabs(eta)<0.5 ) { 
+
+							Container::ParticleInfo part_in;
+							part_in.mt=mt;
+							part_in.m=m;
+							part_1ev.push_back(part_in);
+
+						}
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
+
+
 					}else if(constants::MODE.find("meanpt")!=string::npos){
 						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 
@@ -126,6 +140,8 @@ class Analysis{
 							part_1ev.push_back(part_in);
 
 						}
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
+
 
 					}else{
 						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) ) { 
@@ -148,7 +164,7 @@ class Analysis{
 		info_1ev.weight(weight);
 		info_1ev.Nch(Nch);
 		info_1ev.part=part_1ev;
-		ct->EVENTINFO.push_back(info_1ev);
+		ct->EVENTINFO=info_1ev;
 
 		return true;
 	}
@@ -247,30 +263,38 @@ class Analysis{
 	void fill(shared_ptr<Container>& ct){
 
 
-		vector <Container::EventInfo>& EVENTS= ct->EVENTINFO;
-		for(int i=0; i<(int)EVENTS.size(); ++i){
+		Container::EventInfo& EVENT= ct->EVENTINFO;
+
 			//Determine xbin
 			//---------------
-			double x_val=EVENTS[i].Nch();
-			if(x_val<constants::x_min || x_val>constants::x_max) continue;
+			double x_val=0.0;
+			if(constants::MODE.find("meanpt")!=string::npos){
+				x_val=EVENT.Nch();
+			}
+			if(x_val<constants::x_min || x_val>constants::x_max) return;
 			int nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+
 
 			//Count particle by particle.
 			//----------------------------
-			for(int j=0; j<(int)EVENTS[i].part.size(); ++j){
-				ct->Hist[nx]+=EVENTS[i].part[j].pt*EVENTS[i].weight();
-				ct->HistHist[nx]+=pow(EVENTS[i].part[j].pt,2)*EVENTS[i].weight();
-				ct->Hist_weight[nx]+=EVENTS[i].weight();
+			for(int j=0; j<(int)EVENT.part.size(); ++j){
+				double y_val=0.0;
+				if(constants::MODE.find("meanpt")!=string::npos){
+					y_val = EVENT.part[j].pt;
+				}else if(constants::MODE.find("meanmt")!=string::npos){
+					x_val=EVENT.part[j].m;
+					if(x_val<constants::x_min || x_val>constants::x_max) continue;
+					nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+					y_val = EVENT.part[j].mt - EVENT.part[j].m;
+				}
+				ct->Hist[nx]+=y_val*EVENT.weight();
+				ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
+				ct->Hist_weight[nx]+=EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;
 
-				ct->SumWeight+=EVENTS[i].weight();
+				ct->SumWeight+=EVENT.weight();
 
 			}
-
-		}
-
-
-
 
 
 	}
@@ -281,7 +305,7 @@ class Analysis{
 
 	bool write(const std::string& fname, const shared_ptr<Container>& ct){
 		ofstream ofs;
-		ofs.open(fname.c_str());
+		ofs.open((fname+"/"+constants::default_out_fname).c_str());
 		if(!ofs){ms->open(fname); return false;}
 
 		ct->max_nx+=constants::margin;
@@ -307,6 +331,7 @@ class Analysis{
 			nCent=(int)options.name_cent.size();
 		}
 
+
 		//Centrality Loop
 		for(int iCent=0; iCent<nCent; iCent++){
 
@@ -320,7 +345,7 @@ class Analysis{
 			for(int i=0; i<options.get_nfile(); ++i){
 				if(!(i%1000)) ms->read(i);
 				std::stringstream ss;
-				ss << options.get_dir_name() << "/" << options.get_f_name() << "/ev" << setw(9) << setfill('0') << i << "/" << options.get_ext_name();
+				ss << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/" << options.get_ext_name();
 				std::string inputpath = ss.str();
 
 
@@ -383,11 +408,11 @@ class Analysis{
 
 			//Making output directory namE
 			//-----------------------------
-			uf->make_output_directory(options.get_out_directory_name());
-			std::string generated_directory_name=uf->get_name_directory();
+			std::string generated_directory_name;
 			if(options.get_flag_CentralityCut()){
-				generated_directory_name+="_"+options.name_cent[iCent];
-			}
+				generated_directory_name=uf->get_output_directory(options.get_out_directory_name()+="_"+options.name_cent[iCent]);
+			}else generated_directory_name=uf->get_output_directory(options.get_out_directory_name());
+			uf->make_output_directory(generated_directory_name);
 
 
 			//Output

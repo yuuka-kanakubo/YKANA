@@ -161,7 +161,6 @@ class Util_func{
 
 
  struct stat st;
- std::string name_directory;
 
  const std::string generateS2(int n){
    std::ostringstream name;
@@ -182,12 +181,6 @@ class Util_func{
 
 
 
-  const void make_data_directory(){
-    if(stat(constants::data_directory.c_str(),&st) !=0) mkdir(constants::data_directory.c_str(),0775);
-    else {};
-  };
-
-
 
 
  public:
@@ -200,9 +193,6 @@ class Util_func{
     return oss.str();
   };
  
-  std::string get_name_directory(){
-    return name_directory;
-  };
 
 
 
@@ -216,15 +206,20 @@ class Util_func{
 
  
   
-  const void make_output_directory(const std::string& directory_name){
+  void make_output_directory(const std::string name_){
     
-    this->make_data_directory();
+    if(stat(name_.c_str(),&st)!=0) mkdir(name_.c_str(),0775);
+    else {
+
+    };
+  };
+
+  std::string get_output_directory(const std::string directory_name){
     
     std::ostringstream name; 
     name  << this->get_date()+"_"+directory_name;
-    name_directory=constants::data_directory+"/"+name.str();
-    if(stat(name_directory.c_str(),&st)!=0) mkdir(name_directory.c_str(),0775);
-    else {};
+    std::string name_=constants::data_directory+"/"+name.str();
+    return name_.c_str();
 
   };
 

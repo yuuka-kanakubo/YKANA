@@ -10,6 +10,8 @@ class Container{
 		public:
 
 			double e;
+			double m;
+			double mt;
 			double px;
 			double py;
 			double pz;
@@ -48,9 +50,9 @@ class Container{
 
 
 
-       //Store information in this vector while reading files. Vector size --> # of Event
+       //Store information of 1event.
        //----------------------------------
-       std::vector <EventInfo> EVENTINFO;
+       EventInfo EVENTINFO;
 
 
 	public:

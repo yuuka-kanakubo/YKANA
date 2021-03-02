@@ -5,7 +5,7 @@ class CentralityCut{
 
 public:
 
-	CentralityCut(vector<EbyeInfo>& eBye_in, const Settings::Options options_in):eBye(eBye_in), options(options_in){
+	CentralityCut(vector<EbyeInfo>& eBye_in, Settings::Options& options_in):eBye(eBye_in), options(options_in){
 		cout << ":)Start analysis for centrality cut." << endl;
                 this->read_events();
 
@@ -49,7 +49,7 @@ public:
          vector<EbyeInfo>& eBye;
 
 private:
-	Settings::Options options;
+	Settings::Options& options;
 
 
 
