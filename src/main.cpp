@@ -8,11 +8,11 @@ using std::endl;
 
 int main(int argc, char* argv[]){
 
-	Message* ms = new Message();
+	auto ms = make_shared<Message>();
 	ms->TestMode();
 
-	Settings setting(argc, argv);
-        Analysis analysis(setting.options, setting.set);
+	auto setting = make_shared<Settings>(argc, argv);
+        Analysis analysis(setting->options, setting->set);
 
 	ms->finish();
 

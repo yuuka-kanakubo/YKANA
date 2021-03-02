@@ -6,6 +6,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <memory>
 #include "Constants.h"
 #include "Message.h"
 #include "LogSettings.h"
@@ -49,8 +50,8 @@ public:
 
  Settings(int argc, char* argv[]){
  
- ms = new Message();
- init(argc, argv);
+	 auto ms = std::make_shared<Message>();
+	 init(argc, argv);
 
  };
  ~Settings(){};

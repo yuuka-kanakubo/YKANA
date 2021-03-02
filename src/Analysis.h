@@ -19,9 +19,10 @@ using namespace std;
 class Analysis{
 
 
-Util_func uf;
-Container ct;
-Message* ms;  
+shared_ptr<Util_func> uf;
+shared_ptr<Container> ct;
+shared_ptr<Message> ms;  
+
 const Settings::Options options;
 LogSettings set;
 
@@ -29,7 +30,9 @@ public:
 
  Analysis(const Settings::Options options_in, LogSettings set_in): options(options_in), set(set_in){
 	 this->ana();
-         ms = new Message();
+	 ms = make_shared<Message>();
+	 ct = make_shared<Container>();
+	 uf = make_shared<Util_func>();
  };
  ~Analysis(){};
 
@@ -130,7 +133,7 @@ bool Multiplicity_INEL_lg_0=false;
   }
   if(Multiplicity_INEL_lg_0) {
 	  INEL_lg_0=true;
-	  ct.Nev_tot+=1;
+	  ct->Nev_tot+=1;
   }
 
   return true;
@@ -194,7 +197,7 @@ bool read_jetinfo(const std::string& fname, Container::Event& event, bool& INEL_
 
                double frac = (Jets[i].e - Parents[j].e)/Parents[j].e;
                event.value.push_back(frac);
-	       ct.Nev_tot+=1;
+	       ct->Nev_tot+=1;
 
              }
   
@@ -209,21 +212,21 @@ void stat(){
 
     //take average    
     //-------------------------------------
-    for(int i=0; i<ct.max_nx+1; ++i){
-      ct.Hist[i]/=ct.Nev_tot;
-      //ct.Hist[i]/=ct.sum_weight;
-      ct.HistHist[i]/=ct.Nev_tot;
-      //ct.HistHist[i]/=ct.sum_weight;
+    for(int i=0; i<ct->max_nx+1; ++i){
+      ct->Hist[i]/=ct->Nev_tot;
+      //ct->Hist[i]/=ct->sum_weight;
+      ct->HistHist[i]/=ct->Nev_tot;
+      //ct->HistHist[i]/=ct->sum_weight;
 
     }
 
-    cout << "Event: " << ct.Nev_tot << endl;
+    cout << "Event: " << ct->Nev_tot << endl;
 
     //Get standard error
     //-------------------------------------
-    for(int i=0; i<ct.max_nx+1; ++i){
-      double var=ct.HistHist[i]-pow(ct.Hist[i],2.0);
-      ct.HistErr[i]=sqrt(var/ct.Nev_tot);
+    for(int i=0; i<ct->max_nx+1; ++i){
+      double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+      ct->HistErr[i]=sqrt(var/ct->Nev_tot);
     }
 
 
@@ -248,19 +251,19 @@ vector<double> values=event.value;
     //-----------------------------------
     if(x_val<constants::x_min || x_val>constants::x_max) continue;
     int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
-    ct.Hist[nx]+=(1.0/constants::d_x);
-    ct.Hist_1ev[nx]+=(1.0/constants::d_x);
-    if(ct.max_nx<nx) ct.max_nx=nx;
+    ct->Hist[nx]+=(1.0/constants::d_x);
+    ct->Hist_1ev[nx]+=(1.0/constants::d_x);
+    if(ct->max_nx<nx) ct->max_nx=nx;
 
   }
 
 
-  for(int i=0; i<ct.max_nx+1; ++i){
-	  ct.HistHist[i]+=pow(ct.Hist_1ev[i],2.0);
+  for(int i=0; i<ct->max_nx+1; ++i){
+	  ct->HistHist[i]+=pow(ct->Hist_1ev[i],2.0);
       
 	  //Clear.
 	  //---------
-	  ct.Hist_1ev[i]=0.0;
+	  ct->Hist_1ev[i]=0.0;
 
 
   }
@@ -279,12 +282,12 @@ bool write(const std::string& fname){
   ofs.open(fname.c_str());
   if(!ofs){ms->open(fname); return false;}
 
-  ct.max_nx+=constants::margin;
-  for(int i=0; i<ct.max_nx; ++i){
+  ct->max_nx+=constants::margin;
+  for(int i=0; i<ct->max_nx; ++i){
     double x_axis = ((constants::x_min+(constants::d_x*i))+(constants::x_min+(constants::d_x*(i+1))))/2.0;
     ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
-	<< setw(16) << ct.Hist[i] << "  "
-	<< setw(16) << ct.HistErr[i] << endl;
+	<< setw(16) << ct->Hist[i] << "  "
+	<< setw(16) << ct->HistErr[i] << endl;
   }
   ofs << endl;
   return true;
@@ -293,6 +296,14 @@ bool write(const std::string& fname){
  
 int ana(){
       
+	////Start Centrality Cut.
+	////-----------------------
+	//vector<EbyeInfo> eBye_CentCut;
+	//if(set.get_flag_CentralityCut()){
+	//	CentralityCut CentCut(eBye_CentCut,set);
+	//}
+
+
   for(int i=0; i<options.nfiles; ++i){
     if(!(i%1000)) ms->read(i);
 
@@ -310,8 +321,8 @@ int ana(){
   
   this->stat();
     
-  uf.make_output_directory(options.out_directory_name);
-  std::string generated_directory_name=uf.get_name_directory();
+  uf->make_output_directory(options.out_directory_name);
+  std::string generated_directory_name=uf->get_name_directory();
   if(!write(generated_directory_name+"/"+options.out_fname)) return 1;
 
   set.archive_settings(generated_directory_name);
