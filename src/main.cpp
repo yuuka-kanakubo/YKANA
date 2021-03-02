@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
 	ms->TestMode();
 
 	auto setting = make_shared<Settings>(argc, argv);
-        Analysis analysis(setting->options, setting->set);
+        Analysis analysis(setting->options, setting->log);
 
 	ms->finish();
 

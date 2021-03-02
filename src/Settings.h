@@ -232,7 +232,7 @@ class Settings{
 
 
 		Options options;
-		LogSettings set;
+		LogSettings log;
 
 		Settings(int argc, char* argv[]){
 
@@ -248,7 +248,7 @@ class Settings{
 			//if(!ms->enough_argument(argc)) exit (1);
 
 			for(int i=1; i<argc; i++) {
-				set.options.push_back(argv[i]);
+				log.options.push_back(argv[i]);
 				if(!strcmp(argv[i],"-dir")){options.set_dir_name ( argv[i+1]);}///FOR OUTPUT DIR.NAME.
 				else if(!strcmp(argv[i],"-f")){options.set_f_name ( argv[i+1]);}
 				else if(!strcmp(argv[i],"-ext")){options.set_ext_name ( argv[i+1]);}
@@ -291,10 +291,13 @@ class Settings{
 
 
 class eByeInSettings{
+
+
 	private:
 
 				ofstream ofs_eBye;
 
+	public:
 
 				//Functions for eBye info
 				//----------------------------
@@ -321,9 +324,13 @@ class eByeInSettings{
 					std::string output_eBye=output+"/"+constants::fname_eByeInfo;
 					ofs_eBye.open(output_eBye.c_str());  
 				}
-				void print_EbyeInfo(const int i, const eByeMulti Multi){
+				void print_eByeInfo(const int i, const eByeMulti Multi){
 					ofs_eBye << i << "  " << Multi.ebye.multiplicity << "  " << Multi.ebye.multiplicity_V0M << "  " << Multi.ebye.weight << endl;
 				}
+
+
+				eByeInSettings(){};
+				~eByeInSettings(){};
 
 
 };
