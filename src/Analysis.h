@@ -12,6 +12,7 @@
 #include "Message.h"
 #include "LogSettings.h"
 #include "Settings.h"
+#include "CentralityCut.h"
 
 using namespace std;
 
@@ -296,19 +297,19 @@ bool write(const std::string& fname){
  
 int ana(){
       
-	////Start Centrality Cut.
-	////-----------------------
-	//vector<EbyeInfo> eBye_CentCut;
-	//if(set.get_flag_CentralityCut()){
-	//	CentralityCut CentCut(eBye_CentCut,set);
-	//}
+	//Start Centrality Cut.
+	//-----------------------
+	vector<EbyeInfo> eBye_CentCut;
+	if(options.get_flag_CentralityCut()){
+		CentralityCut CentCut(eBye_CentCut, options);
+	}
 
 
-  for(int i=0; i<options.nfiles; ++i){
+  for(int i=0; i<options.get_nfile(); ++i){
     if(!(i%1000)) ms->read(i);
 
     std::stringstream ss;
-    ss << options.inputfname << "/ev" << setw(9) << setfill('0') << i << "/" << options.ext;
+    ss << options.get_dir_name() << "/" << options.get_f_name() << "/ev" << setw(9) << setfill('0') << i << "/" << options.get_ext_name();
     Container::Event event;
     bool INEL_lg_0=false;
     if(constants::MODE.find("JET_PRAC")!=std::string::npos){
@@ -321,9 +322,9 @@ int ana(){
   
   this->stat();
     
-  uf->make_output_directory(options.out_directory_name);
+  uf->make_output_directory(options.get_out_directory_name());
   std::string generated_directory_name=uf->get_name_directory();
-  if(!write(generated_directory_name+"/"+options.out_fname)) return 1;
+  if(!write(generated_directory_name)) return 1;
 
   set.archive_settings(generated_directory_name);
 

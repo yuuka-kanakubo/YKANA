@@ -18,8 +18,8 @@ class EbyeInfo{
 
 	int orig_eventNum;
 
-	bool set_V0M_class(const int CLASS){this->V0M_class=CLASS;};
-	int get_V0M_class(){return this->V0M_class;};
+	void set_V0M_class(const int CLASS){this->V0M_class=CLASS;}
+	int get_V0M_class(){return this->V0M_class;}
 
 
 	bool operator > (const EbyeInfo& event_info) const {
