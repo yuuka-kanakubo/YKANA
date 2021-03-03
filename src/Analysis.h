@@ -6,6 +6,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <complex>
 #include <math.h>
 #include "Constants.h"
 #include "Util_func.h"
@@ -16,6 +17,10 @@
 #include "CentralityCut.h"
 
 using namespace std;
+
+//DEFINITION OF i
+//----------------
+const   std::complex<double> i_img(0.0,1.0);  
 
 
 class Analysis{
@@ -80,6 +85,7 @@ class Analysis{
 					double pt=(pt_squared)>0.0 ? sqrt(pt_squared):0.0;
 					double mt_squared=pt*pt+m*m;
 					double mt=(mt_squared)>0.0 ? sqrt(mt_squared):0.0;
+					double phi = atan2(py, px);
 
 					////
 					double eta;
@@ -121,7 +127,7 @@ class Analysis{
 						}
 
 					}else if(constants::MODE.find("meanmt")!=string::npos){
-						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade ) && std::fabs(eta)<0.5 ) { 
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon||abs(ID)==constants::id_phi||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade ) && std::fabs(eta)<0.5 ) { 
 
 							Container::ParticleInfo part_in;
 							part_in.mt=mt;
@@ -141,6 +147,17 @@ class Analysis{
 
 						}
 						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
+
+
+					}else if(constants::MODE.find("vnmulti")!=string::npos || constants::MODE.find("vnpt")!=string::npos){
+
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)>0.7 ){
+							Container::ParticleInfo part_in;
+							part_in.pt=pt;
+							part_in.phi=phi;
+							part_1ev.push_back(part_in);
+						}
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<0.8 && 0.2 < pt && pt<3.0 ) Nch++;
 
 
 					}else{
@@ -243,6 +260,15 @@ class Analysis{
 			// devide by cell width 
 			//-------------------------------------
 			//ct->Hist[i]/=constants::d_x;
+
+			if(constants::MODE.find("vnmulti")!=string::npos){
+
+				//Obtain vn{2} = sqrt(cn{2})
+				//--------------------------- 
+				ct->Hist[i]=sqrt(ct->Hist[i]);
+				ct->HistHist[i]=sqrt(ct->HistHist[i]);
+
+			}
 		}
 
 
@@ -265,36 +291,124 @@ class Analysis{
 
 		Container::EventInfo& EVENT= ct->EVENTINFO;
 
+		//Determine xbin
+		//---------------
+		double x_val=0.0;
+		if(constants::MODE.find("meanpt")!=string::npos){
+			x_val=EVENT.Nch();
+		}
+		if(x_val<constants::x_min || x_val>constants::x_max) return;
+		int nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+
+
+		//Count particle by particle.
+		//----------------------------
+		for(int j=0; j<(int)EVENT.part.size(); ++j){
+			double y_val=0.0;
+			if(constants::MODE.find("meanpt")!=string::npos){
+				y_val = EVENT.part[j].pt;
+			}else if(constants::MODE.find("meanmt")!=string::npos){
+				x_val=EVENT.part[j].m;
+				if(x_val<constants::x_min || x_val>constants::x_max) continue;
+				nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+				y_val = EVENT.part[j].mt - EVENT.part[j].m;
+			}
+			ct->Hist[nx]+=y_val*EVENT.weight();
+			ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
+			ct->Hist_weight[nx]+=EVENT.weight();
+			if(ct->max_nx<nx) ct->max_nx=nx;
+
+			ct->SumWeight+=EVENT.weight();
+
+		}
+
+
+	}
+
+
+
+
+	void fill_vnmulti(shared_ptr<Container>& ct){
+
+
+		Container::EventInfo& EVENT= ct->EVENTINFO;
+
+		if((int)EVENT.part.size()<2) return;
+
+		//Determine xbin
+		//---------------
+		double x_val=EVENT.Nch();
+		if(x_val<constants::x_min || x_val>constants::x_max) return;
+		int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
+
+		//Count particle by particle.
+		//----------------------------
+		std::complex<double> Qvec_tot=0.0;
+		std::complex<double> n_coeff (2.0, 0.0);
+		for(int j=0; j<(int)EVENT.part.size(); ++j){
+			std::complex<double> phi_ (EVENT.part[j].phi,0.0);
+			std::complex<double> Qvec=exp(i_img*n_coeff*phi_);
+			Qvec_tot += Qvec;
+		}
+		double squared_Qvec = real(Qvec_tot * conj(Qvec_tot));
+		double totN = (double)EVENT.part.size();
+		double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
+
+		ct->Hist[nx]+=corr*EVENT.weight();
+		ct->HistHist[nx]+=corr*corr*EVENT.weight();
+		ct->Hist_weight[nx]+=EVENT.weight();
+		if(ct->max_nx<nx) ct->max_nx=nx;
+
+		ct->SumWeight+=EVENT.weight();
+
+	}
+
+
+
+
+
+	void fill_vnpt(shared_ptr<Container>& ct){
+
+
+		Container::EventInfo& EVENT= ct->EVENTINFO;
+
+		if((int)EVENT.part.size()<2) return;
+
+
+		//Count particle by particle.
+		//----------------------------
+		std::complex<double> Qvec_tot[constants::x_cell_capa]={};
+		double hit[constants::x_cell_capa]={};
+		std::complex<double> n_coeff (2.0, 0.0);
+		for(int j=0; j<(int)EVENT.part.size(); ++j){
+
 			//Determine xbin
 			//---------------
-			double x_val=0.0;
-			if(constants::MODE.find("meanpt")!=string::npos){
-				x_val=EVENT.Nch();
-			}
-			if(x_val<constants::x_min || x_val>constants::x_max) return;
-			int nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+			double x_val=EVENT.part[j].pt;
+			if(x_val<constants::x_min || x_val>constants::x_max) continue;
+			int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
 
+			std::complex<double> phi_ (EVENT.part[j].phi,0.0);
+			std::complex<double> Qvec=exp(i_img*n_coeff*phi_);
+			Qvec_tot[nx] += Qvec;
+			//      cout << "Qvec " << Qvec << endl;
+			hit[nx]++;
 
-			//Count particle by particle.
-			//----------------------------
-			for(int j=0; j<(int)EVENT.part.size(); ++j){
-				double y_val=0.0;
-				if(constants::MODE.find("meanpt")!=string::npos){
-					y_val = EVENT.part[j].pt;
-				}else if(constants::MODE.find("meanmt")!=string::npos){
-					x_val=EVENT.part[j].m;
-					if(x_val<constants::x_min || x_val>constants::x_max) continue;
-					nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
-					y_val = EVENT.part[j].mt - EVENT.part[j].m;
-				}
-				ct->Hist[nx]+=y_val*EVENT.weight();
-				ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
-				ct->Hist_weight[nx]+=EVENT.weight();
-				if(ct->max_nx<nx) ct->max_nx=nx;
+			if(ct->max_nx<nx) ct->max_nx=nx;
 
-				ct->SumWeight+=EVENT.weight();
+		}
 
-			}
+		for(int nx=0; nx<ct->max_nx+constants::margin; nx++){
+			double squared_Qvec = real(Qvec_tot[nx] * conj(Qvec_tot[nx]));
+			double totN = hit[nx];
+			double corr = (totN==1.0 || totN==0.0 )? 0.0:(squared_Qvec-totN)/(totN*(totN-1.0));
+
+			ct->Hist[nx]+=corr*EVENT.weight();
+			ct->HistHist[nx]+=corr*corr*EVENT.weight();
+			ct->Hist_weight[nx]+=EVENT.weight();
+
+			ct->SumWeight+=EVENT.weight();
+		}
 
 
 	}
@@ -398,8 +512,13 @@ class Analysis{
 				}else{
 					read(inputpath, ct);
 				}
-				this->fill(ct);
-
+				if(constants::MODE.find("vnmulti")!=std::string::npos){
+					this->fill_vnmulti(ct);
+				}else if(constants::MODE.find("vnpt")!=std::string::npos){
+					this->fill_vnpt(ct);
+				}else{
+					this->fill(ct);
+				}
 
 			}//Event loop
 

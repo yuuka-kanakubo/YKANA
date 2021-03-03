@@ -3,8 +3,8 @@
 
 DIR="../DCCI/data/20210129_PP_PT0REF1.8_SIGMA0.5_tau0Unlimited_for_DCCI_CF_T165_0Kto50K_NOparticlization"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop_wcol.txt"
-outputdir="PP7TEV_DCCI_MEANMT"
+EXT="hadronFinal_corecorona_weakStop.txt"
+outputdir="PP7TEV_DCCI_MEANMT_WOCOL"
 n=50000
 
 

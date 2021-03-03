@@ -87,6 +87,7 @@ namespace constants{
   const int id_proton=2212;
   const int id_lambda=3122;
   const int id_cascade=3312;
+  const int id_phi=333;
 
  const double w_eta_multiplicity=0.5;
  const double w_eta_multiplicity_INEL_lg_0=1.0;
