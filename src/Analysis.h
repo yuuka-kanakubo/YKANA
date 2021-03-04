@@ -130,6 +130,7 @@ class Analysis{
 						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon||abs(ID)==constants::id_phi||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade ) && std::fabs(eta)<0.5 ) { 
 
 							Container::ParticleInfo part_in;
+							part_in.id=ID;
 							part_in.mt=mt;
 							part_in.m=m;
 							part_1ev.push_back(part_in);
@@ -311,9 +312,11 @@ class Analysis{
 				x_val=EVENT.part[j].m;
 				if(x_val<constants::x_min || x_val>constants::x_max) continue;
 				nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+				this->fix_ax(EVENT.part[j].id, nx, x_val);
 				y_val = EVENT.part[j].mt - EVENT.part[j].m;
 			}
 			ct->Hist[nx]+=y_val*EVENT.weight();
+			ct->HistHit[nx]++;
 			ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
 			ct->Hist_weight[nx]+=EVENT.weight();
 			if(ct->max_nx<nx) ct->max_nx=nx;
@@ -326,6 +329,21 @@ class Analysis{
 	}
 
 
+	void fix_ax(const int id, int &nx, double m){
+
+		if(nx!=2 && nx!=9 && nx!=18){
+
+			if(id==constants::id_ch_pion) nx=2;
+			else if(id==constants::id_ch_kaon) nx=9;
+			else if(id==constants::id_proton) nx=18;
+			else if(id==constants::id_phi) nx=20;
+			else if(id==constants::id_lambda) nx=22;
+			else if(id==constants::id_cascade) nx=26;
+
+
+		}else return;
+
+	}
 
 
 	void fill_vnmulti(shared_ptr<Container>& ct){
@@ -427,7 +445,8 @@ class Analysis{
 			double x_axis = ((constants::x_min+(constants::d_x*i))+(constants::x_min+(constants::d_x*(i+1))))/2.0;
 			ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
 				<< setw(16) << ct->Hist[i] << "  "
-				<< setw(16) << ct->HistErr[i] << endl;
+				<< setw(16) << ct->HistErr[i] << "  "
+				<< setw(16) << ct->HistHit[i] << endl;
 		}
 		ofs << endl;
 		return true;

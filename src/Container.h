@@ -9,6 +9,7 @@ class Container{
 
 		public:
 
+			int id;
 			double e;
 			double m;
 			double mt;
@@ -61,6 +62,7 @@ class Container{
 	double Hist_weight[constants::x_cell_capa]={};
 	double HistHist[constants::x_cell_capa]={};
 	double HistErr[constants::x_cell_capa]={};
+	int HistHit[constants::x_cell_capa]={};
 	double SumWeight;
 	int max_nx=-1;
 
