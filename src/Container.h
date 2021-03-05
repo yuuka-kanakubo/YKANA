@@ -1,3 +1,5 @@
+#ifndef CONTAINER
+#define CONTAINER
 #include "Constants.h"
 
 class Container{
@@ -71,3 +73,4 @@ class Container{
         Container():SumWeight(0.0){};
 
 };
+#endif

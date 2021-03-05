@@ -1,3 +1,5 @@
+#ifndef CENTRALITYCUT
+#define CENTRALITYCUT
 #include "EbyeInfo.h"
 #include "Classification.h"
 
@@ -88,3 +90,4 @@ void read_events(){
 
 
 };
+#endif
