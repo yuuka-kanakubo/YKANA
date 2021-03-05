@@ -18,12 +18,36 @@ namespace constants{
   const double d_x = 0.5;
   const int x_cell_capa=1000;
   const string default_ext="/hadronised.txt";
+#elif defined VNMULTI
+  const std::string MODE = "vnmulti";
+  const string default_out_directory_name="vnmulti";
+  const double x_max = 150.0;
+  const double x_min = 0.0;
+  const double d_x = 2.5;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
+#elif defined VNPT
+  const std::string MODE = "vnpt";
+  const string default_out_directory_name="vnpt";
+  const double x_max = 1.5;
+  const double x_min = 0.0;
+  const double d_x = 0.05;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
 #elif defined MEANMT
   const std::string MODE = "meanmt";
   const string default_out_directory_name="meanmt";
   const double x_max = 1.5;
   const double x_min = 0.0;
   const double d_x = 0.05;
+  const int x_cell_capa=1000;
+  const string default_ext="/hadronised.txt";
+#elif defined MTNCH
+  const std::string MODE = "MtNch";
+  const string default_out_directory_name="MtNch";
+  const double x_max = 150;
+  const double x_min = 0.0;
+  const double d_x = 2.5;
   const int x_cell_capa=1000;
   const string default_ext="/hadronised.txt";
 #elif defined MEANPT
@@ -150,6 +174,7 @@ namespace constants{
 
  const double dummy = -100.0;
 
+ std::complex<double> initialval_comp (0.0, 0.0);
 
 
 

@@ -25,6 +25,8 @@ const   std::complex<double> i_img(0.0,1.0);
 
 class Analysis{
 
+private:
+
 
 	shared_ptr<Util_func> uf;
 	shared_ptr<Message> ms;  
@@ -133,6 +135,19 @@ class Analysis{
 							part_in.id=ID;
 							part_in.mt=mt;
 							part_in.m=m;
+							part_1ev.push_back(part_in);
+
+						}
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
+
+
+					}else if(constants::MODE.find("MtNch")!=string::npos){
+						//if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
+						if(abs(ID)==constants::id_cascade && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
+
+							Container::ParticleInfo part_in;
+							part_in.mt=mt;
+							part_in.id=ID;
 							part_1ev.push_back(part_in);
 
 						}
@@ -294,8 +309,8 @@ class Analysis{
 
 		//Determine xbin
 		//---------------
-		double x_val=0.0;
-		if(constants::MODE.find("meanpt")!=string::npos){
+		double x_val=constants::dummy;
+		if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("MtNch")!=string::npos){
 			x_val=EVENT.Nch();
 		}
 		if(x_val<constants::x_min || x_val>constants::x_max) return;
@@ -305,9 +320,11 @@ class Analysis{
 		//Count particle by particle.
 		//----------------------------
 		for(int j=0; j<(int)EVENT.part.size(); ++j){
-			double y_val=0.0;
+			double y_val=constants::dummy;
 			if(constants::MODE.find("meanpt")!=string::npos){
 				y_val = EVENT.part[j].pt;
+			}else if(constants::MODE.find("MtNch")!=string::npos){
+				y_val = EVENT.part[j].mt - EVENT.part[j].m;
 			}else if(constants::MODE.find("meanmt")!=string::npos){
 				x_val=EVENT.part[j].m;
 				if(x_val<constants::x_min || x_val>constants::x_max) continue;
@@ -361,7 +378,7 @@ class Analysis{
 
 		//Count particle by particle.
 		//----------------------------
-		std::complex<double> Qvec_tot=0.0;
+		std::complex<double> Qvec_tot=constants::initialval_comp;
 		std::complex<double> n_coeff (2.0, 0.0);
 		for(int j=0; j<(int)EVENT.part.size(); ++j){
 			std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -397,6 +414,10 @@ class Analysis{
 		//----------------------------
 		std::complex<double> Qvec_tot[constants::x_cell_capa]={};
 		double hit[constants::x_cell_capa]={};
+		for(int i=0; i<constants::x_cell_capa; i++){
+			Qvec_tot[i]=constants::initialval_comp;
+                        hit[i]=0.0;
+		}
 		std::complex<double> n_coeff (2.0, 0.0);
 		for(int j=0; j<(int)EVENT.part.size(); ++j){
 
