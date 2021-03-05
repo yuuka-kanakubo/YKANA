@@ -22,17 +22,17 @@ namespace constants{
 #elif defined VNMULTI
 	const std::string MODE = "vnmulti";
 	const string default_out_directory_name="vnmulti";
-	const double x_max = 150.0;
+	const double x_max = 100.0;
 	const double x_min = 0.0;
-	const double d_x = 2.5;
+	const double d_x = 10.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 #elif defined VNPT
 	const std::string MODE = "vnpt";
 	const string default_out_directory_name="vnpt";
-	const double x_max = 1.5;
+	const double x_max = 20.0;
 	const double x_min = 0.0;
-	const double d_x = 0.05;
+	const double d_x = 0.5;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 #elif defined MEANMT

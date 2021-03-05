@@ -275,14 +275,14 @@ private:
 			//-------------------------------------
 			//ct->Hist[i]/=constants::d_x;
 
-			//if(constants::MODE.find("vnmulti")!=string::npos){
+			if(constants::MODE.find("vnmulti")!=string::npos){
 
 			//	//Obtain vn{2} = sqrt(cn{2})
 			//	//--------------------------- 
-			//	ct->Hist[i]=sqrt(ct->Hist[i]);
-			//	ct->HistHist[i]=sqrt(ct->HistHist[i]);
+				ct->Hist[i]=sqrt(ct->Hist[i]);
+				ct->HistHist[i]=sqrt(ct->HistHist[i]);
 
-			//}
+			}
 		}
 
 
@@ -290,7 +290,7 @@ private:
 		//-------------------------------------
 		for(int i=0; i<ct->max_nx+1; ++i){
 			double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-			ct->HistErr[i]=sqrt(var/ct->Hist_weight[i]);
+			ct->HistErr[i]=sqrt(var/ct->HistHit[i]);
 		}
 
 
@@ -388,6 +388,7 @@ private:
 		double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
 
 		ct->Hist[nx]+=corr*EVENT.weight();
+		ct->HistHit[nx]++;
 		ct->HistHist[nx]+=corr*corr*EVENT.weight();
 		ct->Hist_weight[nx]+=EVENT.weight();
 		if(ct->max_nx<nx) ct->max_nx=nx;
@@ -441,6 +442,7 @@ private:
 			double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
 
 			ct->Hist[nx]+=corr*EVENT.weight();
+			ct->HistHit[nx]++;
 			ct->HistHist[nx]+=corr*corr*EVENT.weight();
 			ct->Hist_weight[nx]+=EVENT.weight();
 
@@ -506,6 +508,7 @@ private:
 			double corr = (squared_Qvec)/(hit_A[nx]*hit_B[nx]);
 
 			ct->Hist[nx]+=corr*EVENT.weight();
+			ct->HistHit[nx]++;
 			ct->HistHist[nx]+=corr*corr*EVENT.weight();
 			ct->Hist_weight[nx]+=EVENT.weight();
 
@@ -556,6 +559,7 @@ private:
 		double corr = (squared_Qvec)/(hit_A*hit_B);
 
 		ct->Hist[nx]+=corr*EVENT.weight();
+		ct->HistHit[nx]++;
 		ct->HistHist[nx]+=corr*corr*EVENT.weight();
 		ct->Hist_weight[nx]+=EVENT.weight();
 		if(ct->max_nx<nx) ct->max_nx=nx;
