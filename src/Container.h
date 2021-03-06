@@ -64,6 +64,7 @@ class Container{
 	double Hist_weight[constants::x_cell_capa]={};
 	double HistHist[constants::x_cell_capa]={};
 	double HistErr[constants::x_cell_capa]={};
+	double Hist_img_Qvec[constants::x_cell_capa]={};
 	int HistHit[constants::x_cell_capa]={};
 	double SumWeight;
 	int max_nx=-1;

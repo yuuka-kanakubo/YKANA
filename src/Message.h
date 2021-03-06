@@ -43,5 +43,10 @@ class Message{
     cout << "MODE: " << constants::MODE << endl;
  }
 
+
+  const void WARNING_LARGE_IMAGINARYPART(const double IMG){
+	  cout << "WARNING :o  You've got large value for imaginary part of Q vector. " << IMG << endl;
+  }
+
 };
 #endif

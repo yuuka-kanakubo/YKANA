@@ -6,7 +6,7 @@ DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 EV="ev"
 #EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 EXT="default.txt"
-outputdir="VNMULTI_PYTHIA13TEV_PP_etagap0.0"
+outputdir="VNPT_PYTHIA13TeV_PP_etagap0.0"
 n=1000000
 
 
@@ -34,7 +34,7 @@ fi
 #Options.
 #--------------
 #--CentralityCut 9 --CentralityCut_ext hadronFinal_corecorona_weakStop.txt 
+# --HI 
 
-
-./analysis -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} --INEL_lg_0   --twosub > ${log_dname}${log_fname}.log  2>&1  &
+./analysis -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} --INEL_lg_0   --twosub  --vn > ${log_dname}${log_fname}.log  2>&1  &
 

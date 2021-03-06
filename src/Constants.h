@@ -19,20 +19,24 @@ namespace constants{
 	const double d_x = 0.5;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
-#elif defined VNMULTI
-	const std::string MODE = "vnmulti";
-	const string default_out_directory_name="vnmulti";
-	const double x_max = 100.0;
+#elif defined CUMULANTMULTI
+	const std::string MODE = "cumulant_multi";
+	const string default_out_directory_name="cumulant_multi";
+	const double x_max = 150.0;
+	const double x_max_HI = 1500.0;
 	const double x_min = 0.0;
 	const double d_x = 10.0;
+	const double d_x_HI = 50.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
-#elif defined VNPT
-	const std::string MODE = "vnpt";
-	const string default_out_directory_name="vnpt";
+#elif defined CUMULANTPT
+	const std::string MODE = "cumulant_pt";
+	const string default_out_directory_name="cumulant_pt";
 	const double x_max = 20.0;
+	const double x_max_HI = 20.0;
 	const double x_min = 0.0;
 	const double d_x = 0.5;
+	const double d_x_HI = 0.5;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 #elif defined MEANMT
@@ -47,16 +51,20 @@ namespace constants{
 	const std::string MODE = "MtNch";
 	const string default_out_directory_name="MtNch";
 	const double x_max = 150;
+	const double x_max_HI = 1500;
 	const double x_min = 0.0;
 	const double d_x = 2.5;
+	const double d_x_HI = 10.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 #elif defined MEANPT
 	const std::string MODE = "meanpt";
 	const string default_out_directory_name="meanpt";
 	const double x_max = 100.0;
+	const double x_max_HI = 1500.0;
 	const double x_min = 0.0;
 	const double d_x = 5.0;
+	const double d_x_HI = 10.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 #elif defined VERTICES
@@ -180,6 +188,7 @@ namespace constants{
 	//DEFINITION OF i
 	//----------------
 	const   std::complex<double> i_img(0.0,1.0);  
+	const double WARNING_IMAGINARY_MAX = 100.0;
 
 
 

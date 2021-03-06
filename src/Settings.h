@@ -69,6 +69,8 @@ class Settings{
 				bool flag_multiplicity_cut;
 				bool zerofill;
 				bool two_subevent;
+				bool HI;
+				bool vn;
 				unsigned int mid_rapidity_cut_type;
 				unsigned int axis_type;
 				unsigned int collision_type;
@@ -125,6 +127,8 @@ class Settings{
 				void set_flag_print_eBye(){print_eBye=true;}
 				void set_flag_print_dndmt(){this->print_dndmt=true;}
 				void set_flag_2subevent(){this->two_subevent=true;}
+				void set_flag_HI(){this->HI=true;}
+				void set_flag_vn(){this->vn=true;}
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
@@ -186,6 +190,10 @@ class Settings{
 				bool get_flag_Specify_f_for_CentralityCut()const{return this->Specify_f_for_CentralityCut;}
 				bool get_flag_Specify_ext_for_CentralityCut()const{return this->Specify_ext_for_CentralityCut;}
 				bool get_flag_2subevent()const{return this->two_subevent;}
+				bool get_flag_HI()const{return this->HI;}
+				bool get_flag_vn()const{return this->vn;}
+
+		
 
 
 
@@ -222,6 +230,8 @@ class Settings{
 					flag_multiplicity_cut(false),
 					zerofill(true),
 					two_subevent(false),
+					HI(false),
+					vn(false),
 
 					mid_rapidity_cut_type(0),
 					axis_type(0),
@@ -282,6 +292,8 @@ class Settings{
 				else if(!strcmp(argv[i],"--CentralityCut_f")){options.set_flag_Specify_f_for_CentralityCut(); options.set_f_name_CentCut(argv[i+1]);}
 				else if(!strcmp(argv[i],"--CentralityCut_ext")){options.set_flag_Specify_ext_for_CentralityCut(); options.set_ext_name_CentCut(argv[i+1]);}
 				else if(!strcmp(argv[i],"--twosub")){options.set_flag_2subevent();}
+				else if(!strcmp(argv[i],"--HI")){options.set_flag_HI();}
+				else if(!strcmp(argv[i],"--vn")){options.set_flag_vn();}
 				else { 
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;

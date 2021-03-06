@@ -31,12 +31,23 @@ private:
 	Settings::Options options;
 	LogSettings log;
 
+
+	//Maximum value for histgram
+	//-------------------------
+	double x_max;
+	double d_x;
+
 	public:
 
-	Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in){
-		this->ana();
+	Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in), x_max(constants::x_max), d_x(constants::d_x){
 		ms = make_shared<Message>();
 		uf = make_shared<Util_func>();
+		if(options.get_flag_HI()){
+			cout << ":) HI option is called.\n  Maximum value of xaxis is adjusted to HI data." << endl;
+			x_max=constants::x_max_HI;
+			d_x=constants::d_x_HI;
+		}
+		this->ana();
 	};
 	~Analysis(){};
 
@@ -162,9 +173,21 @@ private:
 						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
 
 
-					}else if(constants::MODE.find("vnmulti")!=string::npos || constants::MODE.find("vnpt")!=string::npos){
+					}else if(constants::MODE.find("cumulant_multi")!=string::npos){
 
 						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ){
+							Container::ParticleInfo part_in;
+							part_in.pt=pt;
+							part_in.eta=eta;
+							part_in.phi=phi;
+							part_1ev.push_back(part_in);
+						}
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ) Nch++;
+
+
+					}else if(constants::MODE.find("cumulant_pt")!=string::npos){
+
+						if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<1.0 ){
 							Container::ParticleInfo part_in;
 							part_in.pt=pt;
 							part_in.eta=eta;
@@ -270,17 +293,26 @@ private:
 		for(int i=0; i<ct->max_nx+1; ++i){
 			ct->Hist[i]/=ct->Hist_weight[i];
 			ct->HistHist[i]/=ct->Hist_weight[i];
+			ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
 
 			// devide by cell width 
 			//-------------------------------------
-			//ct->Hist[i]/=constants::d_x;
+			//ct->Hist[i]/=this->d_x;
 
-			if(constants::MODE.find("vnmulti")!=string::npos){
+			if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos)){
+				if(options.get_flag_vn()){
+					cout << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-			//	//Obtain vn{2} = sqrt(cn{2})
-			//	//--------------------------- 
+				//Obtain vn{2} = sqrt(cn{2})
+				//--------------------------- 
 				ct->Hist[i]=sqrt(ct->Hist[i]);
 				ct->HistHist[i]=sqrt(ct->HistHist[i]);
+
+				}
+
+				if(fabs(ct->Hist_img_Qvec[i])>constants::WARNING_IMAGINARY_MAX){
+					ms->WARNING_LARGE_IMAGINARYPART(ct->Hist_img_Qvec[i]);
+				}
 
 			}
 		}
@@ -290,7 +322,15 @@ private:
 		//-------------------------------------
 		for(int i=0; i<ct->max_nx+1; ++i){
 			double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-			ct->HistErr[i]=sqrt(var/ct->HistHit[i]);
+			double error=constants::dummy;
+			if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos) && options.get_flag_vn()){
+				double error_=sqrt(var/ct->HistHit[i]);
+				error=(1.0/2.0)*(error_/sqrt(ct->Hist[i]));
+			}else{
+				error=sqrt(var/ct->HistHit[i]);
+			}
+
+			ct->HistErr[i]=error;
 		}
 
 
@@ -311,8 +351,8 @@ private:
 		if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("MtNch")!=string::npos){
 			x_val=EVENT.Nch();
 		}
-		if(x_val<constants::x_min || x_val>constants::x_max) return;
-		int nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+		if(x_val<constants::x_min || x_val>this->x_max) return;
+		int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 
 
 		//Count particle by particle.
@@ -325,8 +365,8 @@ private:
 				y_val = EVENT.part[j].mt - EVENT.part[j].m;
 			}else if(constants::MODE.find("meanmt")!=string::npos){
 				x_val=EVENT.part[j].m;
-				if(x_val<constants::x_min || x_val>constants::x_max) continue;
-				nx=(int)((x_val/constants::d_x)+(std::fabs(constants::x_min)/constants::d_x));
+				if(x_val<constants::x_min || x_val>this->x_max) continue;
+				nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 				this->fix_ax(EVENT.part[j].id, nx, x_val);
 				y_val = EVENT.part[j].mt - EVENT.part[j].m;
 			}
@@ -371,8 +411,8 @@ private:
 		//Determine xbin
 		//---------------
 		double x_val=EVENT.Nch();
-		if(x_val<constants::x_min || x_val>constants::x_max) return;
-		int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
+		if(x_val<constants::x_min || x_val>this->x_max) return;
+		int nx=(int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x));
 
 		//Count particle by particle.
 		//----------------------------
@@ -384,6 +424,7 @@ private:
 			Qvec_tot += Qvec;
 		}
 		double squared_Qvec = real(Qvec_tot * conj(Qvec_tot));
+		double squared_Qvec_img = imag(Qvec_tot * conj(Qvec_tot));
 		double totN = (double)EVENT.part.size();
 		double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
 
@@ -391,6 +432,7 @@ private:
 		ct->HistHit[nx]++;
 		ct->HistHist[nx]+=corr*corr*EVENT.weight();
 		ct->Hist_weight[nx]+=EVENT.weight();
+		ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 		if(ct->max_nx<nx) ct->max_nx=nx;
 
 		ct->SumWeight+=EVENT.weight();
@@ -422,8 +464,8 @@ private:
 			//Determine xbin
 			//---------------
 			double x_val=EVENT.part[j].pt;
-			if(x_val<constants::x_min || x_val>constants::x_max) continue;
-			int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
+			if(x_val<constants::x_min || x_val>this->x_max) continue;
+			int nx=(int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x));
 
 			std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 			std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
@@ -437,6 +479,7 @@ private:
 
 		for(int nx=0; nx<ct->max_nx+constants::margin; nx++){
 			double squared_Qvec = real(Qvec_tot[nx] * conj(Qvec_tot[nx]));
+			double squared_Qvec_img = imag(Qvec_tot[nx] * conj(Qvec_tot[nx]));
 			double totN = hit[nx];
 			if(totN<2) continue;
 			double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
@@ -445,6 +488,7 @@ private:
 			ct->HistHit[nx]++;
 			ct->HistHist[nx]+=corr*corr*EVENT.weight();
 			ct->Hist_weight[nx]+=EVENT.weight();
+			ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 
 			ct->SumWeight+=EVENT.weight();
 		}
@@ -484,15 +528,15 @@ private:
 			//Determine xbin
 			//---------------
 			double x_val=EVENT.part[j].pt;
-			if(x_val<constants::x_min || x_val>constants::x_max) continue;
-			int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
+			if(x_val<constants::x_min || x_val>this->x_max) continue;
+			int nx=(int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x));
 
 			std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 			std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
-			if(EVENT.part[j].eta<-0.7){
+			if(EVENT.part[j].eta<-0.0){
 				Qvec_tot_A[nx] += Qvec;
 				hit_A[nx]++;
-			}else if(EVENT.part[j].eta>0.7){
+			}else if(EVENT.part[j].eta>0.0){
 				Qvec_tot_B[nx] += Qvec;
 				hit_B[nx]++;
 			}
@@ -503,7 +547,7 @@ private:
 
 		for(int nx=0; nx<ct->max_nx+constants::margin; nx++){
 			double squared_Qvec = real(Qvec_tot_A[nx] * conj(Qvec_tot_B[nx]));
-			std::complex<double> squared_Qvec_comp = Qvec_tot_A[nx] * conj(Qvec_tot_B[nx]);
+			double squared_Qvec_img = imag(Qvec_tot_A[nx] * conj(Qvec_tot_B[nx]));
 			if(hit_A[nx]==0.0 || hit_B[nx]==0.0) continue;
 			double corr = (squared_Qvec)/(hit_A[nx]*hit_B[nx]);
 
@@ -511,6 +555,7 @@ private:
 			ct->HistHit[nx]++;
 			ct->HistHist[nx]+=corr*corr*EVENT.weight();
 			ct->Hist_weight[nx]+=EVENT.weight();
+			ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 
 			ct->SumWeight+=EVENT.weight();
 		}
@@ -531,8 +576,8 @@ private:
 		//Determine xbin
 		//---------------
 		double x_val=EVENT.Nch();
-		if(x_val<constants::x_min || x_val>constants::x_max) return;
-		int nx=(int)((x_val/constants::d_x)+(fabs(constants::x_min)/constants::d_x));
+		if(x_val<constants::x_min || x_val>this->x_max) return;
+		int nx=(int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x));
 
 		//Count particle by particle.
 		//----------------------------
@@ -552,7 +597,7 @@ private:
 			}
 		}
 		double squared_Qvec = real(Qvec_tot_A * conj(Qvec_tot_B));
-		std::complex<double> squared_Qvec_comp = Qvec_tot_A * conj(Qvec_tot_B);
+		double squared_Qvec_img = imag(Qvec_tot_A * conj(Qvec_tot_B));
 
 		if(hit_A==0.0 || hit_B==0.0) return;
 
@@ -562,6 +607,7 @@ private:
 		ct->HistHit[nx]++;
 		ct->HistHist[nx]+=corr*corr*EVENT.weight();
 		ct->Hist_weight[nx]+=EVENT.weight();
+		ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 		if(ct->max_nx<nx) ct->max_nx=nx;
 
 		ct->SumWeight+=EVENT.weight();
@@ -588,7 +634,7 @@ private:
 
 		ct->max_nx+=constants::margin;
 		for(int i=0; i<ct->max_nx; ++i){
-			double x_axis = ((constants::x_min+(constants::d_x*i))+(constants::x_min+(constants::d_x*(i+1))))/2.0;
+			double x_axis = ((constants::x_min+(this->d_x*i))+(constants::x_min+(this->d_x*(i+1))))/2.0;
 			ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
 				<< setw(16) << ct->Hist[i] << "  "
 				<< setw(16) << ct->HistErr[i] << "  "
@@ -677,10 +723,10 @@ private:
 				}else{
 					if(!read(inputpath, ct)) continue;
 				}
-				if(constants::MODE.find("vnmulti")!=std::string::npos){
+				if(constants::MODE.find("cumulant_multi")!=std::string::npos){
 					if(options.get_flag_2subevent()) this->fill_vnmulti_sub(ct); 
 					else this->fill_vnmulti(ct);
-				}else if(constants::MODE.find("vnpt")!=std::string::npos){
+				}else if(constants::MODE.find("cumulant_pt")!=std::string::npos){
 					if(options.get_flag_2subevent()) this->fill_vnpt_sub(ct); 
 					else this->fill_vnpt(ct);
 				}else{
