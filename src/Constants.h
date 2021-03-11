@@ -43,8 +43,10 @@ namespace constants{
 	const std::string MODE = "meanmt";
 	const string default_out_directory_name="meanmt";
 	const double x_max = 1.5;
+	const double x_max_HI = 1.5;
 	const double x_min = 0.0;
 	const double d_x = 0.05;
+	const double d_x_HI = 0.05;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 #elif defined MTNCH

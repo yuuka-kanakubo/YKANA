@@ -208,7 +208,7 @@ class Util_func{
   
   void make_output_directory(const std::string name_){
     
-    if(stat(name_.c_str(),&st)!=0) mkdir(name_.c_str(),0775);
+    if(stat(name_.c_str(),&st)!=0) mkdir(name_.c_str(), 0775);
     else {
 
     };

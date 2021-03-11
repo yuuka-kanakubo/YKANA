@@ -141,6 +141,7 @@ class Analysis{
 
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)){
 
+cout << "Counted " << endl;
 
 									Container::ParticleInfo part_in;
 									part_in.id=ID;
@@ -368,10 +369,12 @@ class Analysis{
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}else if(constants::MODE.find("meanmt")!=string::npos){
 						x_val=EVENT.part[j].m;
+cout << x_val << endl;
 						if(x_val<constants::x_min || x_val>this->x_max) continue;
 						nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 						this->fix_ax(EVENT.part[j].id, nx, x_val);
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
+cout << nx << endl;
 					}
 					ct->Hist[nx]+=y_val*EVENT.weight();
 					ct->HistHit[nx]++;
