@@ -168,10 +168,13 @@ class Analysis{
 
 						}else if(constants::MODE.find("meanpt")!=string::npos){
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
+								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 
 								Container::ParticleInfo part_in;
 								part_in.pt=pt;
 								part_1ev.push_back(part_in);
+
+								}
 
 							}
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
