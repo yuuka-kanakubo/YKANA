@@ -180,11 +180,13 @@ class Analysis{
 						}else if(constants::MODE.find("cumulant_multi")!=string::npos){
 
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ){
-								Container::ParticleInfo part_in;
-								part_in.pt=pt;
-								part_in.eta=eta;
-								part_in.phi=phi;
-								part_1ev.push_back(part_in);
+								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)){
+									Container::ParticleInfo part_in;
+									part_in.pt=pt;
+									part_in.eta=eta;
+									part_in.phi=phi;
+									part_1ev.push_back(part_in);
+								}
 							}
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ) Nch++;
 
@@ -192,11 +194,13 @@ class Analysis{
 						}else if(constants::MODE.find("cumulant_pt")!=string::npos){
 
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<1.0 ){
-								Container::ParticleInfo part_in;
-								part_in.pt=pt;
-								part_in.eta=eta;
-								part_in.phi=phi;
-								part_1ev.push_back(part_in);
+								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)){
+									Container::ParticleInfo part_in;
+									part_in.pt=pt;
+									part_in.eta=eta;
+									part_in.phi=phi;
+									part_1ev.push_back(part_in);
+								}
 							}
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ) Nch++;
 
