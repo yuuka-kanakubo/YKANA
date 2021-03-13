@@ -158,9 +158,6 @@ namespace constants{
 	const std::string name_cent_original[4]={"0-10pct","10-30pct", "30-50pct", "50-100pct"};
 	const std::string name_cent_pPb[7]={"0-5pct", "5-10pct", "10-20pct", "20-40pct", "40-60pct", "60-80pct", "80-100pct"};
 	const std::string name_cent_PbPb[11]={"0-5pct","5-10pct", "10-20pct","20-30pct", "30-40pct","40-50pct","50-60pct","60-70pct","70-80pct","80-90pct","90-100pct"};
-	const double binSize_small=0.25;
-	const double binSize_log=1.5;
-	const double switchBin_x = 1.0;
 	const double ptMax = 50.0;
 	const double etaMax = 10.0;
 	const double yMax = 10.0;
@@ -172,6 +169,9 @@ namespace constants{
 
 	const int margin = 10;
 	const std::string data_directory="data";
+	const double binSize_small=d_x_HI;
+	const double binSize_log=5.0;
+	const double switchBin_x = 100.0;
 
 	const string default_inputfname = "input";
 	const string default_out_fname="hist.txt";
