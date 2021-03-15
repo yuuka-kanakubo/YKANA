@@ -303,6 +303,7 @@ class Analysis{
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
 					ct->Hist[i]/=ct->Hist_weight[i];
+					ct->Hist_x[i]/=ct->Hist_weight[i];
 					ct->HistHist[i]/=ct->Hist_weight[i];
 					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
 
@@ -381,6 +382,7 @@ class Analysis{
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}
 					ct->Hist[nx]+=y_val*EVENT.weight();
+					ct->Hist_x[nx]+=x_val*EVENT.weight();
 					ct->HistHit[nx]++;
 					ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
 					ct->Hist_weight[nx]+=EVENT.weight();
@@ -417,13 +419,14 @@ class Analysis{
 				double x_val=x_val_;
 				int ncell=0;
 
+
 				if(x_val<constants::switchBin_x){
 					int ncell=(int) floor((x_val-constants::x_min)/constants::binSize_small);
 					return ncell;
 				}else{
 
 					int ncell_log=1;
-					int ncell_start=floor(constants::switchBin_x/constants::binSize_small);
+					int ncell_start=floor(constants::switchBin_x/constants::binSize_small)-1;
 					while(ncell_log<constants::x_cell_capa){
 
 						if(x_val<pow(constants::binSize_log,ncell_log)+constants::switchBin_x){
@@ -469,6 +472,7 @@ class Analysis{
 				double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
 
 				ct->Hist[nx]+=corr*EVENT.weight();
+				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
 				ct->HistHist[nx]+=corr*corr*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
@@ -644,6 +648,7 @@ class Analysis{
 				double corr = (squared_Qvec)/(hit_A*hit_B);
 
 				ct->Hist[nx]+=corr*EVENT.weight();
+				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
 				ct->HistHist[nx]+=corr*corr*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
@@ -675,7 +680,10 @@ class Analysis{
 
 				ct->max_nx+=constants::margin;
 				for(int i=0; i<ct->max_nx; ++i){
-					double x_axis = ((constants::x_min+(this->d_x*i))+(constants::x_min+(this->d_x*(i+1))))/2.0;
+
+					if(ct->HistHit[i]==0) continue;
+
+					double x_axis =(constants::MODE.find("cumulant_pt")!=string::npos)? ((constants::x_min+(this->d_x*i))+(constants::x_min+(this->d_x*(i+1))))/2.0: ct->Hist_x[i];
 					ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
 						<< setw(16) << ct->Hist[i] << "  "
 						<< setw(16) << ct->HistErr[i] << "  "

@@ -170,8 +170,8 @@ namespace constants{
 	const int margin = 10;
 	const std::string data_directory="data";
 	const double binSize_small=d_x_HI;
-	const double binSize_log=5.0;
-	const double switchBin_x = 100.0;
+	const double binSize_log=2.0;
+	const double switchBin_x = 150.0;
 
 	const string default_inputfname = "input";
 	const string default_out_fname="hist.txt";
