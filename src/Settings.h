@@ -71,6 +71,7 @@ class Settings{
 				bool two_subevent;
 				bool HI;
 				bool vn;
+				bool _4particle;
 				unsigned int mid_rapidity_cut_type;
 				unsigned int axis_type;
 				unsigned int collision_type;
@@ -129,6 +130,7 @@ class Settings{
 				void set_flag_2subevent(){this->two_subevent=true;}
 				void set_flag_HI(){this->HI=true;}
 				void set_flag_vn(){this->vn=true;}
+				void set_flag__4particle(){this->_4particle=true;}
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
@@ -192,8 +194,8 @@ class Settings{
 				bool get_flag_2subevent()const{return this->two_subevent;}
 				bool get_flag_HI()const{return this->HI;}
 				bool get_flag_vn()const{return this->vn;}
+				bool get_flag__4particle()const{return this->_4particle;}
 
-		
 
 
 
@@ -232,6 +234,7 @@ class Settings{
 					two_subevent(false),
 					HI(false),
 					vn(false),
+					_4particle(false),
 
 					mid_rapidity_cut_type(0),
 					axis_type(0),
@@ -294,6 +297,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--twosub")){options.set_flag_2subevent();}
 				else if(!strcmp(argv[i],"--HI")){options.set_flag_HI();}
 				else if(!strcmp(argv[i],"--vn")){options.set_flag_vn();}
+				else if(!strcmp(argv[i],"--4particle")){options.set_flag__4particle(); cout << ";) Four particle cumulant calculation started!" << endl;}
 				else { 
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;

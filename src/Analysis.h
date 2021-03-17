@@ -660,6 +660,61 @@ class Analysis{
 			}
 
 
+			void fill_vn4multi_sub(shared_ptr<Container>& ct){
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+
+				//Determine xbin
+				//---------------
+				double x_val=EVENT.Nch();
+				if(x_val<constants::x_min || x_val>this->x_max) return;
+				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+
+				//Count particle by particle.
+				//----------------------------
+				std::complex<double> Qvec_tot_A=constants::initialval_comp;
+				std::complex<double> Qvec_tot_B=constants::initialval_comp;
+				std::complex<double> Qvec2_tot_A=constants::initialval_comp;
+				std::complex<double> Qvec2_tot_B=constants::initialval_comp;
+				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n2_coeff (2.0*2.0, 0.0);
+				double hit_A=0.0, hit_B=0.0;
+				for(int j=0; j<(int)EVENT.part.size(); ++j){
+					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
+					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
+					std::complex<double> Qvec2=exp(constants::i_img*n2_coeff*phi_);
+					if(EVENT.part[j].eta<-0.0){
+						Qvec_tot_A += Qvec;
+						Qvec2_tot_A += Qvec2;
+						hit_A++;
+					}else if(EVENT.part[j].eta>0.0){
+						Qvec_tot_B += Qvec;
+						Qvec2_tot_B += Qvec2;
+						hit_B++;
+					}
+				}
+				double squared_Qvec = real((pow(Qvec_tot_A,2) -  Qvec2_tot_A)* conj(pow(Qvec_tot_B,2) - Qvec2_tot_B));
+				double squared_Qvec_img = imag((pow(Qvec_tot_A,2) -  Qvec2_tot_A)* conj(pow(Qvec_tot_B,2) - Qvec2_tot_B));
+
+				if(hit_A==0.0 || hit_B==0.0) return;
+
+				double corr = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*(hit_B-1));
+
+				ct->Hist[nx]+=corr*EVENT.weight();
+				ct->Hist_x[nx]+=x_val*EVENT.weight();
+				ct->HistHit[nx]++;
+				ct->HistHist[nx]+=corr*corr*EVENT.weight();
+				ct->Hist_weight[nx]+=EVENT.weight();
+				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
+				if(ct->max_nx<nx) ct->max_nx=nx;
+
+				ct->SumWeight+=EVENT.weight();
+
+			}
+
+
 			//----------2sub
 
 
@@ -773,8 +828,13 @@ class Analysis{
 							if(!read(inputpath, ct)) continue;
 						}
 						if(constants::MODE.find("cumulant_multi")!=std::string::npos){
-							if(options.get_flag_2subevent()) this->fill_vnmulti_sub(ct); 
-							else this->fill_vnmulti(ct);
+							if(options.get_flag_2subevent()){ 
+								if(options.get_flag__4particle()){
+									this->fill_vn4multi_sub(ct); 
+								}else{		
+									this->fill_vnmulti_sub(ct); 
+								}              
+							}else this->fill_vnmulti(ct);
 						}else if(constants::MODE.find("cumulant_pt")!=std::string::npos){
 							if(options.get_flag_2subevent()) this->fill_vnpt_sub(ct); 
 							else this->fill_vnpt(ct);
