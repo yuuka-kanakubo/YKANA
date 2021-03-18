@@ -303,13 +303,25 @@ class Analysis{
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
 					ct->Hist[i]/=ct->Hist_weight[i];
+					ct->Hist_sub[i]/=ct->Hist_weight[i];
 					ct->Hist_x[i]/=ct->Hist_weight[i];
 					ct->HistHist[i]/=ct->Hist_weight[i];
+					ct->HistHist_sub[i]/=ct->Hist_weight[i];
 					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
 
 					// devide by cell width 
 					//-------------------------------------
 					//ct->Hist[i]/=this->d_x;
+
+
+
+					//For cumulant analysis
+					//----------------------
+					if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos) && options.get_flag__4particle()){
+
+						ct->Hist[i]=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
+
+					}
 
 					if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos)){
 						if(options.get_flag_vn()){
@@ -472,23 +484,30 @@ class Analysis{
 				}
 
 				double totN = (double)EVENT.part.size();
-				double corr = real(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
+				double corr4 = real(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
 						- Qvec_tot * conj(Qvec_tot)*(4.0*totN-8.0)
 						-conj(Qvec2_tot)* pow(Qvec_tot,2) - Qvec2_tot* conj(pow(Qvec_tot,2)) 
 						+  Qvec2_tot*conj(Qvec2_tot) - 6.0*totN +2.0*pow(totN,2))/(pow(totN,4)-6.0*pow(totN,3)+11.0*pow(totN,2)-6.0*totN);
 
-				double corr_img = imag(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
+				double corr4_img = imag(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
 						- Qvec_tot * conj(Qvec_tot)*(4.0*totN-8.0)
 						-conj(Qvec2_tot)* pow(Qvec_tot,2) - Qvec2_tot* conj(pow(Qvec_tot,2)) 
 						+  Qvec2_tot*conj(Qvec2_tot) - 6.0*totN +2.0*pow(totN,2))/(pow(totN,4)-6.0*pow(totN,3)+11.0*pow(totN,2)-6.0*totN);
 
+				//Obtain 2particle correlation
+				//-------------------------------
+				double squared_Qvec = real(Qvec_tot * conj(Qvec_tot));
+				double corr2 = (squared_Qvec-totN)/(totN*(totN-1.0));
 
-				ct->Hist[nx]+=corr*EVENT.weight();
+
+				ct->Hist[nx]+=corr4*EVENT.weight();
+				ct->Hist_sub[nx]+=corr4*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr*corr*EVENT.weight();
+				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();
+				ct->HistHist_sub[nx]+=corr2*corr2*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
-				ct->Hist_img_Qvec[nx]+=corr_img*EVENT.weight();
+				ct->Hist_img_Qvec[nx]+=corr4_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;
 
 				ct->SumWeight+=EVENT.weight();
@@ -753,12 +772,20 @@ class Analysis{
 
 				if(hit_A==0.0 || hit_B==0.0) return;
 
-				double corr = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*(hit_B-1));
+				double corr4 = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*(hit_B-1));
 
-				ct->Hist[nx]+=corr*EVENT.weight();
+				//Obtain 2particle correlation
+				//------------------------------
+				double squared_Qvec_2part = real(Qvec_tot_A * conj(Qvec_tot_B));
+				double corr2 = (squared_Qvec_2part)/(hit_A*hit_B);
+
+
+				ct->Hist[nx]+=corr4*EVENT.weight();
+				ct->Hist_sub[nx]+=corr2*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr*corr*EVENT.weight();
+				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();
+				ct->HistHist_sub[nx]+=corr2*corr2*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
 				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;

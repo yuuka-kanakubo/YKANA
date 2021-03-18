@@ -60,10 +60,12 @@ class Container{
 
 	public:
 	double Hist[constants::x_cell_capa]={};
+	double Hist_sub[constants::x_cell_capa]={};
 	double Hist_x[constants::x_cell_capa]={};
 	double Hist_1ev[constants::x_cell_capa]={};
 	double Hist_weight[constants::x_cell_capa]={};
 	double HistHist[constants::x_cell_capa]={};
+	double HistHist_sub[constants::x_cell_capa]={};
 	double HistErr[constants::x_cell_capa]={};
 	double Hist_img_Qvec[constants::x_cell_capa]={};
 	int HistHit[constants::x_cell_capa]={};
