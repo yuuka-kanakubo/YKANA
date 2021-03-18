@@ -444,6 +444,59 @@ class Analysis{
 
 
 
+			void fill_vn4multi(shared_ptr<Container>& ct){
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				if((int)EVENT.part.size()<4) return;
+
+				//Determine xbin
+				//---------------
+				double x_val=EVENT.Nch();
+				if(x_val<constants::x_min || x_val>this->x_max) return;
+				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+
+				//Count particle by particle.
+				//----------------------------
+				std::complex<double> Qvec_tot=constants::initialval_comp;
+				std::complex<double> Qvec2_tot=constants::initialval_comp;
+				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n2_coeff (2.0*2.0, 0.0);
+				for(int j=0; j<(int)EVENT.part.size(); ++j){
+					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
+					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
+					std::complex<double> Qvec2=exp(constants::i_img*n2_coeff*phi_);
+					Qvec_tot += Qvec;
+					Qvec2_tot += Qvec2;
+				}
+
+				double totN = (double)EVENT.part.size();
+				double corr = real(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
+						- Qvec_tot * conj(Qvec_tot)*(4.0*totN-8.0)
+						-conj(Qvec2_tot)* pow(Qvec_tot,2) - Qvec2_tot* conj(pow(Qvec_tot,2)) 
+						+  Qvec2_tot*conj(Qvec2_tot) - 6.0*totN +2.0*pow(totN,2))/(pow(totN,4)-6.0*pow(totN,3)+11.0*pow(totN,2)-6.0*totN);
+
+				double corr_img = imag(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
+						- Qvec_tot * conj(Qvec_tot)*(4.0*totN-8.0)
+						-conj(Qvec2_tot)* pow(Qvec_tot,2) - Qvec2_tot* conj(pow(Qvec_tot,2)) 
+						+  Qvec2_tot*conj(Qvec2_tot) - 6.0*totN +2.0*pow(totN,2))/(pow(totN,4)-6.0*pow(totN,3)+11.0*pow(totN,2)-6.0*totN);
+
+
+				ct->Hist[nx]+=corr*EVENT.weight();
+				ct->Hist_x[nx]+=x_val*EVENT.weight();
+				ct->HistHit[nx]++;
+				ct->HistHist[nx]+=corr*corr*EVENT.weight();
+				ct->Hist_weight[nx]+=EVENT.weight();
+				ct->Hist_img_Qvec[nx]+=corr_img*EVENT.weight();
+				if(ct->max_nx<nx) ct->max_nx=nx;
+
+				ct->SumWeight+=EVENT.weight();
+
+			}
+
+
+
 			void fill_vnmulti(shared_ptr<Container>& ct){
 
 
@@ -834,7 +887,13 @@ class Analysis{
 								}else{		
 									this->fill_vnmulti_sub(ct); 
 								}              
-							}else this->fill_vnmulti(ct);
+							}else{
+								if(options.get_flag__4particle()){
+									this->fill_vn4multi(ct);
+								}else{
+									this->fill_vnmulti(ct);
+								}
+							}
 						}else if(constants::MODE.find("cumulant_pt")!=std::string::npos){
 							if(options.get_flag_2subevent()) this->fill_vnpt_sub(ct); 
 							else this->fill_vnpt(ct);
