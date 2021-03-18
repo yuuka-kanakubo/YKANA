@@ -501,7 +501,7 @@ class Analysis{
 
 
 				ct->Hist[nx]+=corr4*EVENT.weight();
-				ct->Hist_sub[nx]+=corr4*EVENT.weight();
+				ct->Hist_sub[nx]+=corr2*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
 				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();

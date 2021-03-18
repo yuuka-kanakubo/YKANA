@@ -1,13 +1,13 @@
 #!/bin/sh
 
 #DIR="../DCCI/data/20210212_PBPB_PT0REF0.9_SIGMA0.5_tau0Unlimited_for_DCCI_CF_T165_NOparticlization"
-DIR="../DCCI/data/20210302_PP_PT0REF1.8_SIGMA0.5_tau0Unlimited_for_DCCI_CF_T165_MB_0Kto100K_NOparticlization"
-#DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
+#DIR="../DCCI/data/20210302_PP_PT0REF1.8_SIGMA0.5_tau0Unlimited_for_DCCI_CF_T165_MB_0Kto100K_NOparticlization"
+DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop_wcol.txt"
-#EXT="default.txt"
-outputdir="CN4MULTI_PP_DCCI"
-n=100000
+#EXT="hadronFinal_corecorona_weakStop_wcol.txt"
+EXT="default.txt"
+outputdir="CN4MULTI_PP_PYTHIA"
+n=1000000
 
 
 #Do not modify this.
