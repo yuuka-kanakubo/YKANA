@@ -182,7 +182,7 @@ class Analysis{
 
 						}else if(constants::MODE.find("cumulant_multi")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::etaRange_cumulantmulti && 0.2 < pt && pt<3.0 ){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.pt=pt;
@@ -302,24 +302,19 @@ class Analysis{
 				//take average    
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
-					ct->Hist[i]/=ct->Hist_weight[i];
-					ct->Hist_sub[i]/=ct->Hist_weight[i];
+					ct->FinalHist[i]=ct->Hist[i]/ct->Hist_weight[i];
 					ct->Hist_x[i]/=ct->Hist_weight[i];
-					ct->HistHist[i]/=ct->Hist_weight[i];
-					ct->HistHist_sub[i]/=ct->Hist_weight[i];
-					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
+					double meanxx  = ct->HistHist[i]/ct->Hist_weight[i];
+					double meanx = ct->FinalHist[i];
 
 					// devide by cell width 
 					//-------------------------------------
 					//ct->Hist[i]/=this->d_x;
 
-				}
 
-
-				//Get standard error
-				//-------------------------------------
-				for(int i=0; i<ct->max_nx+1; ++i){
-					double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+					//Get standard error
+					//-------------------------------------
+					double var=meanxx-pow(meanx,2.0);
 					double error=sqrt(var/ct->HistHit[i]);
 					ct->HistErr[i]=error;
 				}
@@ -352,7 +347,8 @@ class Analysis{
 					}
 				}
 
-                                if(!options.get_flag_vn()){
+				//CUMULANT
+				//-------------
 
 					if(!options.get_flag__4particle()){
 
@@ -365,6 +361,7 @@ class Analysis{
 						for(int i=0; i<ct->max_nx+1; ++i){
 							double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
 							ct->HistErr[i]=sqrt(var/ct->HistHit[i]);
+							ct->FinalHist[i]=ct->Hist[i];
 						}
 
 
@@ -386,15 +383,16 @@ class Analysis{
 
 							//Get error  delta c2{4}
 							//-------------------------
-							double err = sqrt(std4part*std4part - 2.0*std2part*std2part);
+							double err = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
 							ct->HistErr[i]=err;
-							ct->Hist[i]=c24;
+							ct->FinalHist[i]=c24;
 						}
 
 					}
 
-				}else{
 
+					//FOURIER COEFFICIENT
+					//----------------------
 
 					if(!options.get_flag__4particle()){
 
@@ -414,8 +412,8 @@ class Analysis{
 							//Get error  delta v2{2}
 							//-------------------------
 							double err=(1.0/2.0)*(std2part/sqrt(v22));
-							ct->HistErr[i]=err;
-							ct->Hist[i]=v22;
+							ct->HistErr_vn[i]=err;
+							ct->FinalHist_vn[i]=v22;
 						}
 
 
@@ -439,7 +437,7 @@ class Analysis{
 
 							//Get error  delta c2{4}
 							//-------------------------
-							double errc24 = sqrt(std4part*std4part - 2.0*std2part*std2part);
+							double errc24 = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
 
 							//Get v2{4} = (-c2{4})**(1/4)
 							//---------------------------
@@ -448,15 +446,14 @@ class Analysis{
 							//Get error delta v2{4}.
 							//----------------------------
 							double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
-							ct->Hist[i]=v24;
-							ct->HistErr[i]=err;
+							ct->FinalHist_vn[i]=v24;
+							ct->HistErr_vn[i]=err;
 						}
 
 
 					}
 
 
-				}
 
 
 			}
@@ -897,6 +894,11 @@ class Analysis{
 			}
 
 
+
+
+
+
+
 			//----------2sub
 
 
@@ -916,15 +918,33 @@ class Analysis{
 				if(!ofs){ms->open(fname+"/"+constants::default_out_fname); return false;}
 
 				ct->max_nx+=constants::margin;
-				for(int i=0; i<ct->max_nx; ++i){
 
-					if(ct->HistHit[i]==0) continue;
+				if(constants::MODE.find("cumulant_multi")!=string::npos) {
 
-					double x_axis =(constants::MODE.find("cumulant_pt")!=string::npos)? ((constants::x_min+(this->d_x*i))+(constants::x_min+(this->d_x*(i+1))))/2.0: ct->Hist_x[i];
-					ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
-						<< setw(16) << ct->Hist[i] << "  "
-						<< setw(16) << ct->HistErr[i] << "  "
-						<< setw(16) << ct->HistHit[i] << endl;
+					for(int i=0; i<ct->max_nx; ++i){
+
+						if(ct->HistHit[i]==0) continue;
+
+						double x_axis =ct->Hist_x[i];
+						ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
+							<< setw(16) << ct->FinalHist[i] << "  "
+							<< setw(16) << ct->HistErr[i] << "  "
+							<< setw(16) << ct->FinalHist_vn[i] << "  "
+							<< setw(16) << ct->HistErr_vn[i] << "  "
+							<< setw(16) << ct->HistHit[i] << endl;
+					}
+
+				}else{
+					for(int i=0; i<ct->max_nx; ++i){
+
+						if(ct->HistHit[i]==0) continue;
+
+						double x_axis =(constants::MODE.find("cumulant_pt")!=string::npos)? ((constants::x_min+(this->d_x*i))+(constants::x_min+(this->d_x*(i+1))))/2.0: ct->Hist_x[i];
+						ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
+							<< setw(16) << ct->FinalHist[i] << "  "
+							<< setw(16) << ct->HistErr[i] << "  "
+							<< setw(16) << ct->HistHit[i] << endl;
+					}
 				}
 				ofs << endl;
 				return true;

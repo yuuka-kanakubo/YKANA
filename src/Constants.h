@@ -9,6 +9,7 @@ using std::vector;
 
 namespace constants{
 
+	const double etaRange_cumulantmulti=1.0;
 
 
 #ifdef DNDETA_PROTON
