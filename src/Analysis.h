@@ -313,31 +313,6 @@ class Analysis{
 					//-------------------------------------
 					//ct->Hist[i]/=this->d_x;
 
-
-
-					//For cumulant analysis
-					//----------------------
-					if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos) && options.get_flag__4particle()){
-
-						ct->Hist[i]=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
-
-					}
-
-					if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos)){
-						if(options.get_flag_vn()){
-
-							//Obtain vn{2} = sqrt(cn{2})
-							//--------------------------- 
-							ct->Hist[i]=sqrt(ct->Hist[i]);
-							ct->HistHist[i]=sqrt(ct->HistHist[i]);
-
-						}
-
-						if(fabs(ct->Hist_img_Qvec[i])>constants::WARNING_IMAGINARY_MAX){
-							ms->WARNING_LARGE_IMAGINARYPART(ct->Hist_img_Qvec[i]);
-						}
-
-					}
 				}
 
 
@@ -345,15 +320,142 @@ class Analysis{
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
 					double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-					double error=constants::dummy;
-					if((constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos) && options.get_flag_vn()){
-						double error_=sqrt(var/ct->HistHit[i]);
-						error=(1.0/2.0)*(error_/sqrt(ct->Hist[i]));
+					double error=sqrt(var/ct->HistHit[i]);
+					ct->HistErr[i]=error;
+				}
+
+
+			}
+
+
+
+
+
+			void stat_flow(shared_ptr<Container>& ct){
+
+				//take average    
+				//-------------------------------------
+				for(int i=0; i<ct->max_nx+1; ++i){
+					ct->Hist[i]/=ct->Hist_weight[i];
+					ct->Hist_sub[i]/=ct->Hist_weight[i];
+					ct->Hist_x[i]/=ct->Hist_weight[i];
+					ct->HistHist[i]/=ct->Hist_weight[i];
+					ct->HistHist_sub[i]/=ct->Hist_weight[i];
+					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
+
+					// devide by cell width 
+					//-------------------------------------
+					//ct->Hist[i]/=this->d_x;
+
+					if(fabs(ct->Hist_img_Qvec[i])>constants::WARNING_IMAGINARY_MAX){
+						ms->WARNING_LARGE_IMAGINARYPART(ct->Hist_img_Qvec[i]);
+					}
+				}
+
+                                if(!options.get_flag_vn()){
+
+					if(!options.get_flag__4particle()){
+
+						//c2{2}
+						//---------
+
+						//Get standard error
+						//c2{2} = <<2>>, so no need to worry about error propagation.
+						//-------------------------------------
+						for(int i=0; i<ct->max_nx+1; ++i){
+							double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+							ct->HistErr[i]=sqrt(var/ct->HistHit[i]);
+						}
+
+
 					}else{
-						error=sqrt(var/ct->HistHit[i]);
+						//c2{4}
+						//---------
+
+						for(int i=0; i<ct->max_nx+1; ++i){
+							//Get c2{4} = <<4>>-2*<<2>>
+							//------------------------
+							double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
+
+							//Prepare standard error of <<2>> and <<4>>.
+							//----------------------------------------
+							double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+							double std2part =sqrt(var2part/ct->HistHit[i]);
+							double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+							double std4part =sqrt(var4part/ct->HistHit[i]);
+
+							//Get error  delta c2{4}
+							//-------------------------
+							double err = sqrt(std4part*std4part - 2.0*std2part*std2part);
+							ct->HistErr[i]=err;
+							ct->Hist[i]=c24;
+						}
+
 					}
 
-					ct->HistErr[i]=error;
+				}else{
+
+
+					if(!options.get_flag__4particle()){
+
+						//v2{2}
+						//---------
+
+						for(int i=0; i<ct->max_nx+1; ++i){
+							//Obtain vn{2} = sqrt(cn{2})
+							//--------------------------- 
+							double v22 =sqrt(ct->Hist[i]);
+
+							//Prepare standard error of <<2>>.
+							//----------------------------------------
+							double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+							double std2part =sqrt(var2part/ct->HistHit[i]);
+
+							//Get error  delta v2{2}
+							//-------------------------
+							double err=(1.0/2.0)*(std2part/sqrt(v22));
+							ct->HistErr[i]=err;
+							ct->Hist[i]=v22;
+						}
+
+
+
+
+					}else{
+						//v2{4}
+						//---------
+						
+						for(int i=0; i<ct->max_nx+1; ++i){
+							//Get c2{4} = <<4>>-2*<<2>>
+							//------------------------
+							double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
+
+							//Prepare standard error of <<2>> and <<4>>.
+							//----------------------------------------
+							double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+							double std2part =sqrt(var2part/ct->HistHit[i]);
+							double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+							double std4part =sqrt(var4part/ct->HistHit[i]);
+
+							//Get error  delta c2{4}
+							//-------------------------
+							double errc24 = sqrt(std4part*std4part - 2.0*std2part*std2part);
+
+							//Get v2{4} = (-c2{4})**(1/4)
+							//---------------------------
+							double v24 = pow(-c24, 1.0/4.0);
+
+							//Get error delta v2{4}.
+							//----------------------------
+							double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
+							ct->Hist[i]=v24;
+							ct->HistErr[i]=err;
+						}
+
+
+					}
+
+
 				}
 
 
@@ -930,7 +1032,8 @@ class Analysis{
 
 					}//Event loop
 
-					this->stat(ct);
+					if(constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos) this->stat_flow(ct);
+					else this->stat(ct);
 
 
 					//Making output directory name
