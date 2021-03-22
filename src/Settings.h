@@ -69,6 +69,7 @@ class Settings{
 				bool flag_multiplicity_cut;
 				bool zerofill;
 				bool two_subevent;
+				bool three_subevent;
 				bool HI;
 				bool vn;
 				bool _4particle;
@@ -128,6 +129,7 @@ class Settings{
 				void set_flag_print_eBye(){print_eBye=true;}
 				void set_flag_print_dndmt(){this->print_dndmt=true;}
 				void set_flag_2subevent(){this->two_subevent=true;}
+				void set_flag_3subevent(){this->three_subevent=true;}
 				void set_flag_HI(){this->HI=true;}
 				void set_flag_vn(){this->vn=true;}
 				void set_flag__4particle(){this->_4particle=true;}
@@ -192,6 +194,7 @@ class Settings{
 				bool get_flag_Specify_f_for_CentralityCut()const{return this->Specify_f_for_CentralityCut;}
 				bool get_flag_Specify_ext_for_CentralityCut()const{return this->Specify_ext_for_CentralityCut;}
 				bool get_flag_2subevent()const{return this->two_subevent;}
+				bool get_flag_3subevent()const{return this->three_subevent;}
 				bool get_flag_HI()const{return this->HI;}
 				bool get_flag_vn()const{return this->vn;}
 				bool get_flag__4particle()const{return this->_4particle;}
@@ -232,6 +235,7 @@ class Settings{
 					flag_multiplicity_cut(false),
 					zerofill(true),
 					two_subevent(false),
+					three_subevent(false),
 					HI(false),
 					vn(false),
 					_4particle(false),
@@ -295,6 +299,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--CentralityCut_f")){options.set_flag_Specify_f_for_CentralityCut(); options.set_f_name_CentCut(argv[i+1]);}
 				else if(!strcmp(argv[i],"--CentralityCut_ext")){options.set_flag_Specify_ext_for_CentralityCut(); options.set_ext_name_CentCut(argv[i+1]);}
 				else if(!strcmp(argv[i],"--twosub")){options.set_flag_2subevent();}
+				else if(!strcmp(argv[i],"--threesub")){options.set_flag_3subevent();}
 				else if(!strcmp(argv[i],"--HI")){options.set_flag_HI();}
 				else if(!strcmp(argv[i],"--vn")){options.set_flag_vn();}
 				else if(!strcmp(argv[i],"--4particle")){options.set_flag__4particle(); cout << ";) Four particle cumulant calculation started!" << endl;}

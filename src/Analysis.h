@@ -333,9 +333,11 @@ class Analysis{
 				for(int i=0; i<ct->max_nx+1; ++i){
 					ct->Hist[i]/=ct->Hist_weight[i];
 					ct->Hist_sub[i]/=ct->Hist_weight[i];
+					ct->Hist_subsub[i]/=ct->Hist_weight[i];
 					ct->Hist_x[i]/=ct->Hist_weight[i];
 					ct->HistHist[i]/=ct->Hist_weight[i];
 					ct->HistHist_sub[i]/=ct->Hist_weight[i];
+					ct->HistHist_subsub[i]/=ct->Hist_weight[i];
 					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
 
 					// devide by cell width 
@@ -366,27 +368,61 @@ class Analysis{
 
 
 					}else{
-						//c2{4}
-						//---------
 
-						for(int i=0; i<ct->max_nx+1; ++i){
-							//Get c2{4} = <<4>>-2*<<2>>
-							//------------------------
-							double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
 
-							//Prepare standard error of <<2>> and <<4>>.
-							//----------------------------------------
-							double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
-							double std2part =sqrt(var2part/ct->HistHit[i]);
-							double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-							double std4part =sqrt(var4part/ct->HistHit[i]);
+						if(!options.get_flag_3subevent()){
 
-							//Get error  delta c2{4}
-							//-------------------------
-							double err = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
-							ct->HistErr[i]=err;
-							ct->FinalHist[i]=c24;
+							//c2{4} (standard., 2subevent)
+							//---------
+							for(int i=0; i<ct->max_nx+1; ++i){
+								//Get c2{4} = <<4>>-2*<<2>>^2
+								//------------------------
+								double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
+
+								//Prepare standard error of <<2>> and <<4>>.
+								//----------------------------------------
+								double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+								double std2part =sqrt(var2part/ct->HistHit[i]);
+								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+								double std4part =sqrt(var4part/ct->HistHit[i]);
+
+								//Get error  delta c2{4}
+								//-------------------------
+								double err = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
+								ct->HistErr[i]=err;
+								ct->FinalHist[i]=c24;
+							}
+
+						}else{
+
+							//c2{4} (3subevent)
+							//---------
+							for(int i=0; i<ct->max_nx+1; ++i){
+								//Get c2{4} = <<4>>aa|bc - 2 * <<2>>a|b * <<2>>a|c
+								//----------------------------------------------------
+								double c24=ct->Hist[i] - 2.0 * ct->Hist_sub[i]*ct->Hist_subsub[i];
+
+								//Prepare standard error of <<2>>a|b, <<2>>a|c, and <<4>>aa|bb.
+								//----------------------------------------
+								double var2partAB=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+								double std2partAB =sqrt(var2partAB/ct->HistHit[i]);
+								double var2partAC=ct->HistHist_subsub[i]-pow(ct->Hist_subsub[i],2.0);
+								double std2partAC =sqrt(var2partAC/ct->HistHit[i]);
+								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+								double std4part =sqrt(var4part/ct->HistHit[i]);
+
+								//Get error  delta c2{4}
+								//-------------------------
+								double err = sqrt(std4part*std4part 
+										+ 4.0*pow(ct->Hist_subsub[i],2)*pow(std2partAB,2)
+										+ 4.0*pow(ct->Hist_sub[i],2)*pow(std2partAC,2));
+								ct->HistErr[i]=err;
+								ct->FinalHist[i]=c24;
+							}
+
+
 						}
+
 
 					}
 
@@ -420,37 +456,79 @@ class Analysis{
 
 
 					}else{
-						//v2{4}
-						//---------
-						
-						for(int i=0; i<ct->max_nx+1; ++i){
-							//Get c2{4} = <<4>>-2*<<2>>
-							//------------------------
-							double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
 
-							//Prepare standard error of <<2>> and <<4>>.
-							//----------------------------------------
-							double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
-							double std2part =sqrt(var2part/ct->HistHit[i]);
-							double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-							double std4part =sqrt(var4part/ct->HistHit[i]);
 
-							//Get error  delta c2{4}
-							//-------------------------
-							double errc24 = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
+						if(!options.get_flag_3subevent()){
 
-							//Get v2{4} = (-c2{4})**(1/4)
-							//---------------------------
-							double v24 = pow(-c24, 1.0/4.0);
+							//v2{4} (standard., 2-subevent)
+							//---------
+							for(int i=0; i<ct->max_nx+1; ++i){
+								//Get c2{4} = <<4>>-2*<<2>>
+								//------------------------
+								double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
 
-							//Get error delta v2{4}.
-							//----------------------------
-							double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
-							ct->FinalHist_vn[i]=v24;
-							ct->HistErr_vn[i]=err;
+								//Prepare standard error of <<2>> and <<4>>.
+								//----------------------------------------
+								double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+								double std2part =sqrt(var2part/ct->HistHit[i]);
+								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+								double std4part =sqrt(var4part/ct->HistHit[i]);
+
+								//Get error  delta c2{4}
+								//-------------------------
+								double errc24 = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
+
+								//Get v2{4} = (-c2{4})**(1/4)
+								//---------------------------
+								double v24 = pow(-c24, 1.0/4.0);
+
+								//Get error delta v2{4}.
+								//----------------------------
+								double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
+								ct->FinalHist_vn[i]=v24;
+								ct->HistErr_vn[i]=err;
+							}
+
+						}else{
+
+
+							//v2{4} (3subevent)
+							//---------
+							for(int i=0; i<ct->max_nx+1; ++i){
+
+								//Get c2{4} = <<4>>aa|bc - 2 * <<2>>a|b * <<2>>a|c
+								//----------------------------------------------------
+								double c24=ct->Hist[i] - 2.0 * ct->Hist_sub[i]*ct->Hist_subsub[i];
+
+								//Prepare standard error of <<2>>a|b, <<2>>a|c, and <<4>>aa|bb.
+								//----------------------------------------
+								double var2partAB=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+								double std2partAB =sqrt(var2partAB/ct->HistHit[i]);
+								double var2partAC=ct->HistHist_subsub[i]-pow(ct->Hist_subsub[i],2.0);
+								double std2partAC =sqrt(var2partAC/ct->HistHit[i]);
+								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
+								double std4part =sqrt(var4part/ct->HistHit[i]);
+
+								//Get error  delta c2{4}
+								//-------------------------
+								double errc24 = sqrt(std4part*std4part 
+										+ 4.0*pow(ct->Hist_subsub[i],2)*pow(std2partAB,2)
+										+ 4.0*pow(ct->Hist_sub[i],2)*pow(std2partAC,2));
+
+								//Get v2{4} = (-c2{4})**(1/4)
+								//---------------------------
+								double v24 = pow(-c24, 1.0/4.0);
+
+								//Get error delta v2{4}.
+								//----------------------------
+								double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
+								ct->FinalHist_vn[i]=v24;
+								ct->HistErr_vn[i]=err;
+							}
+
+
+
 						}
-
-
 					}
 
 
@@ -717,7 +795,7 @@ class Analysis{
 			//-------2sub
 
 
-			void fill_vnpt_sub(shared_ptr<Container>& ct){
+			void fill_vnpt_2sub(shared_ptr<Container>& ct){
 
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -782,7 +860,7 @@ class Analysis{
 
 
 
-			void fill_vnmulti_sub(shared_ptr<Container>& ct){
+			void fill_vnmulti_2sub(shared_ptr<Container>& ct){
 
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -831,7 +909,7 @@ class Analysis{
 			}
 
 
-			void fill_vn4multi_sub(shared_ptr<Container>& ct){
+			void fill_vn4multi_2sub(shared_ptr<Container>& ct){
 
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -869,7 +947,7 @@ class Analysis{
 				double squared_Qvec = real((pow(Qvec_tot_A,2) -  Qvec2_tot_A)* conj(pow(Qvec_tot_B,2) - Qvec2_tot_B));
 				double squared_Qvec_img = imag((pow(Qvec_tot_A,2) -  Qvec2_tot_A)* conj(pow(Qvec_tot_B,2) - Qvec2_tot_B));
 
-				if(hit_A==0.0 || hit_B==0.0) return;
+				if(hit_A<=1.0 || hit_B<=1.0) return;
 
 				double corr4 = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*(hit_B-1));
 
@@ -895,11 +973,84 @@ class Analysis{
 
 
 
+			//----------3sub
+
+			void fill_vn4multi_3sub(shared_ptr<Container>& ct){
 
 
+				Container::EventInfo& EVENT= ct->EVENTINFO;
 
 
-			//----------2sub
+				//Determine xbin
+				//---------------
+				double x_val=EVENT.Nch();
+				if(x_val<constants::x_min || x_val>this->x_max) return;
+				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+
+				//Count particle by particle.
+				//----------------------------
+				std::complex<double> Qvec_tot_A=constants::initialval_comp;
+				std::complex<double> Qvec_tot_B=constants::initialval_comp;
+				std::complex<double> Qvec_tot_C=constants::initialval_comp;
+				std::complex<double> Qvec2_tot_A=constants::initialval_comp;
+				std::complex<double> Qvec2_tot_B=constants::initialval_comp;
+				std::complex<double> Qvec2_tot_C=constants::initialval_comp;
+				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n2_coeff (2.0*2.0, 0.0);
+				double hit_A=0.0, hit_B=0.0, hit_C=0.0;
+				for(int j=0; j<(int)EVENT.part.size(); ++j){
+					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
+					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
+					std::complex<double> Qvec2=exp(constants::i_img*n2_coeff*phi_);
+					if(EVENT.part[j].eta<constants::etaA_3sub){
+						Qvec_tot_B += Qvec;
+						Qvec2_tot_B += Qvec2;
+						hit_B++;
+					}else if(EVENT.part[j].eta<=constants::etaB_3sub){
+						Qvec_tot_A += Qvec;
+						Qvec2_tot_A += Qvec2;
+						hit_A++;
+					}else{
+						Qvec_tot_C += Qvec;
+						Qvec2_tot_C += Qvec2;
+						hit_C++;
+					}
+				}
+				double squared_Qvec = real((pow(Qvec_tot_A,2)-Qvec2_tot_A)*conj(Qvec_tot_B)*conj(Qvec_tot_C));
+				double squared_Qvec_img = imag((pow(Qvec_tot_A,2)-Qvec2_tot_A)*conj(Qvec_tot_B)*conj(Qvec_tot_C));
+
+				if(hit_A<=1.0 || hit_B<=1.0) return;
+
+				double corr4 = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*hit_C);
+
+				//Obtain 2particle correlation btw A and B.
+				//----------------------------------------
+				double squared_Qvec_2partAB = real(Qvec_tot_A * conj(Qvec_tot_B));
+				double corr2_AB = (squared_Qvec_2partAB)/(hit_A*hit_B);
+
+
+				//Obtain 2particle correlation btw A and C.
+				//----------------------------------------
+				double squared_Qvec_2partAC = real(Qvec_tot_A * conj(Qvec_tot_C));
+				double corr2_AC = (squared_Qvec_2partAC)/(hit_A*hit_C);
+
+
+				ct->Hist[nx]+=corr4*EVENT.weight();
+				ct->Hist_sub[nx]+=corr2_AB*EVENT.weight();
+				ct->Hist_subsub[nx]+=corr2_AC*EVENT.weight();
+				ct->Hist_x[nx]+=x_val*EVENT.weight();
+				ct->HistHit[nx]++;
+				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();
+				ct->HistHist_sub[nx]+=corr2_AB*corr2_AB*EVENT.weight();
+				ct->HistHist_subsub[nx]+=corr2_AC*corr2_AC*EVENT.weight();
+				ct->Hist_weight[nx]+=EVENT.weight();
+				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
+				if(ct->max_nx<nx) ct->max_nx=nx;
+
+				ct->SumWeight+=EVENT.weight();
+
+			}
+
 
 
 
@@ -1032,9 +1183,9 @@ class Analysis{
 						if(constants::MODE.find("cumulant_multi")!=std::string::npos){
 							if(options.get_flag_2subevent()){ 
 								if(options.get_flag__4particle()){
-									this->fill_vn4multi_sub(ct); 
+									this->fill_vn4multi_2sub(ct); 
 								}else{		
-									this->fill_vnmulti_sub(ct); 
+									this->fill_vnmulti_2sub(ct); 
 								}              
 							}else{
 								if(options.get_flag__4particle()){
@@ -1044,7 +1195,7 @@ class Analysis{
 								}
 							}
 						}else if(constants::MODE.find("cumulant_pt")!=std::string::npos){
-							if(options.get_flag_2subevent()) this->fill_vnpt_sub(ct); 
+							if(options.get_flag_2subevent()) this->fill_vnpt_2sub(ct); 
 							else this->fill_vnpt(ct);
 						}else{
 							this->fill(ct);
