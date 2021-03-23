@@ -9,9 +9,9 @@ using std::vector;
 
 namespace constants{
 
-	const double etaRange_cumulantmulti=0.8;
-	const double etaA_3sub = -0.4;
-	const double etaB_3sub = 0.4;
+	const double etaRange_cumulantmulti=3.0;
+	const double etaA_3sub = -1.0;
+	const double etaB_3sub = 1.0;
 
 
 #ifdef DNDETA_PROTON

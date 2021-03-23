@@ -1019,7 +1019,7 @@ class Analysis{
 				double squared_Qvec = real((pow(Qvec_tot_A,2)-Qvec2_tot_A)*conj(Qvec_tot_B)*conj(Qvec_tot_C));
 				double squared_Qvec_img = imag((pow(Qvec_tot_A,2)-Qvec2_tot_A)*conj(Qvec_tot_B)*conj(Qvec_tot_C));
 
-				if(hit_A<=1.0 || hit_B<=1.0) return;
+				if(hit_A<=1.0 || hit_B<=0.0|| hit_C<=0.0) return;
 
 				double corr4 = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*hit_C);
 
@@ -1186,6 +1186,13 @@ class Analysis{
 									this->fill_vn4multi_2sub(ct); 
 								}else{		
 									this->fill_vnmulti_2sub(ct); 
+								}              
+							}else if(options.get_flag_3subevent()){
+								if(options.get_flag__4particle()){
+									this->fill_vn4multi_3sub(ct); 
+								}else{		
+									cout << "ERROR :( Option is wrong. --threesub should be used with --4particle." << endl;
+									exit(1);
 								}              
 							}else{
 								if(options.get_flag__4particle()){
