@@ -442,7 +442,7 @@ class Analysis{
 
 							//Prepare standard error of <<2>>.
 							//----------------------------------------
-							double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+							double var2part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
 							double std2part =sqrt(var2part/ct->HistHit[i]);
 
 							//Get error  delta v2{2}
