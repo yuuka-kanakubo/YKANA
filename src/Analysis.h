@@ -191,7 +191,7 @@ class Analysis{
 									part_1ev.push_back(part_in);
 								}
 							}
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && 0.2 < pt && pt<3.0 ) Nch++;
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRange_cumulantmulti && 0.2 < pt && pt<3.0 ) Nch++;
 
 
 						}else if(constants::MODE.find("cumulant_pt")!=string::npos){
