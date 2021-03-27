@@ -552,7 +552,7 @@ class Analysis{
 					x_val=EVENT.Nch();
 					if(x_val<constants::x_min || x_val>this->x_max) return;
 				}
-				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 
 				//Count particle by particle.
@@ -602,6 +602,15 @@ class Analysis{
 			}
 
 
+			int get_cell_index(const double x_val_){
+				int ncell = (int)((x_val_/this->d_x)+(fabs(constants::x_min)/this->d_x));
+				if(constants::MODE.find("cumulant_multi")!=string::npos){
+					if(x_val_<constants::maxNchPP) ncell=6;
+				}
+				return  ncell;
+			}
+
+
 
 			int get_cell_index_logplot(const double x_val_){
 
@@ -611,6 +620,11 @@ class Analysis{
 
 				if(x_val<constants::switchBin_x){
 					int ncell=(int) floor((x_val-constants::x_min)/constants::binSize_small);
+
+					//Put small multiplicity events into one bin.
+					//---------------------------------------------
+					if(constants::MODE.find("cumulant_multi")!=string::npos && x_val<constants::minNchHI) ncell=0;
+
 					return ncell;
 				}else{
 
@@ -644,7 +658,7 @@ class Analysis{
 				//---------------
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->x_max) return;
-				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------
@@ -704,7 +718,7 @@ class Analysis{
 				//---------------
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->x_max) return;
-				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------
@@ -870,7 +884,7 @@ class Analysis{
 				//---------------
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->x_max) return;
-				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------
@@ -919,7 +933,7 @@ class Analysis{
 				//---------------
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->x_max) return;
-				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------
@@ -985,7 +999,7 @@ class Analysis{
 				//---------------
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->x_max) return;
-				int nx=(!options.get_flag_HI())? (int)((x_val/this->d_x)+(fabs(constants::x_min)/this->d_x)):this->get_cell_index_logplot(x_val);
+				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------

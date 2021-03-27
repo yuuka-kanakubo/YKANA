@@ -176,6 +176,9 @@ namespace constants{
 	const double binSize_log=2.0;
 	const double switchBin_x = 0.0;
 
+	const double minNchHI=20.0;
+	const double maxNchPP=60.0;
+
 	const string default_inputfname = "input";
 	const string default_out_fname="hist.txt";
 	const int default_nfiles=10000;
