@@ -4,10 +4,10 @@
 DIR="../DCCI/data/20210322_PP_PT0REF1.8_SIGMA0.5_MB_tau0Unlimited_for_DCCI_CF_T165_0Kto300K_NOparticlization"
 #DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
+EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="V22MULTI_PP_DCCI_ETA0.8_WOCOL_CORONA"
-n=300000
+outputdir="MTSCALING_PP_DCCI_TESTXAXIS"
+n=3000
 
 
 #Do not modify this.
@@ -44,7 +44,6 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --only_corona \
  --INEL_lg_0 \
  > ${log_dname}${log_fname}.log  2>&1  &
 

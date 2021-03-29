@@ -195,6 +195,22 @@ class Util_func{
  
 
 
+  bool checkMassOnShell(const double m, const double e, const double px, const double py, const double pz){
+
+	  double P_squared=px*px+py*py+pz*pz;
+	  double E_squared=e*e;
+
+	  bool mos = fabs(m*m - E_squared + P_squared)<constants::SMALL;
+
+	  if(mos){
+		  //std::cout << ":) This is mass on shell " << std::fixed << std::setprecision(10) << "E_squared: " << E_squared << "   P_squared: " << P_squared<< "   M_squared: " << m*m << std::endl;
+		  return true;
+	  }else{
+		  std::cout << ":O This is NOT mass on shell " << std::fixed << std::setprecision(10) << "E: " << e << "   P : " << sqrt(P_squared) << "   M: " << m << std::endl;
+		  std::cout << "                             " << std::fixed << std::setprecision(10) << "E_squared: " << E_squared << "   P_squared: " << P_squared<< "   M_squared: " << m*m << "    mm - ee + pp " <<  fabs(m*m - E_squared + P_squared)  << std::endl;
+		  return false;
+	  }
+  }
 
 
 

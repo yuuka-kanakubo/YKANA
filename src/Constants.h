@@ -42,9 +42,9 @@ namespace constants{
 	const double d_x_HI = 0.5;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
-#elif defined MEANMT
-	const std::string MODE = "meanmt";
-	const string default_out_directory_name="meanmt";
+#elif defined MTSCALING
+	const std::string MODE = "mtscaling";
+	const string default_out_directory_name="mtscaling";
 	const double x_max = 1.5;
 	const double x_max_HI = 1.5;
 	const double x_min = 0.0;
@@ -52,9 +52,9 @@ namespace constants{
 	const double d_x_HI = 0.05;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
-#elif defined MTNCH
-	const std::string MODE = "MtNch";
-	const string default_out_directory_name="MtNch";
+#elif defined MEANMT
+	const std::string MODE = "meanmt";
+	const string default_out_directory_name="meanmt";
 	const double x_max = 150;
 	const double x_max_HI = 1500;
 	const double x_min = 0.0;
@@ -65,7 +65,7 @@ namespace constants{
 #elif defined MEANPT
 	const std::string MODE = "meanpt";
 	const string default_out_directory_name="meanpt";
-	const double x_max = 100.0;
+	const double x_max = 150.0;
 	const double x_max_HI = 1500.0;
 	const double x_min = 0.0;
 	const double d_x = 5.0;
@@ -125,6 +125,7 @@ namespace constants{
 	const int id_proton=2212;
 	const int id_lambda=3122;
 	const int id_cascade=3312;
+	const int id_omega=3334;
 	const int id_phi=333;
 
 	const double w_eta_multiplicity=0.5;
@@ -145,6 +146,7 @@ namespace constants{
 	const double pPb_rap_shift_from_lab_to_cm=0.465;
 	const double default_midy_pm = 0.5;
 	const double LARGE=1.0e+16;
+	const double SMALL=1.0e-5;
 	const double multip_cut_more_than=-LARGE;
 	const double multip_cut_less_than=LARGE;
 
