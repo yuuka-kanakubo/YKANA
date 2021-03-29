@@ -136,15 +136,20 @@ class Analysis{
 
 							}
 
-						}else if(constants::MODE.find("meanmt")!=string::npos){
+						}else if(constants::MODE.find("mtscaling")!=string::npos){
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon||abs(ID)==constants::id_phi||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade ) && std::fabs(eta)<0.5 ) { 
 
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag) || (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 
 
+
 									Container::ParticleInfo part_in;
 									part_in.id=ID;
 									part_in.mt=mt;
+									part_in.e=e;
+									part_in.px=px;
+									part_in.py=py;
+									part_in.pz=pz;
 									part_in.m=m;
 									part_1ev.push_back(part_in);
 								}
@@ -153,7 +158,7 @@ class Analysis{
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
 
 
-						}else if(constants::MODE.find("MtNch")!=string::npos){
+						}else if(constants::MODE.find("meanmt")!=string::npos){
 							//if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 							if(abs(ID)==constants::id_cascade && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 
@@ -548,7 +553,7 @@ class Analysis{
 				//Determine xbin
 				//---------------
 				double x_val=constants::dummy;
-				if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("MtNch")!=string::npos){
+				if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("meanmt")!=string::npos){
 					x_val=EVENT.Nch();
 					if(x_val<constants::x_min || x_val>this->x_max) return;
 				}
@@ -561,13 +566,18 @@ class Analysis{
 					double y_val=constants::dummy;
 					if(constants::MODE.find("meanpt")!=string::npos){
 						y_val = EVENT.part[j].pt;
-					}else if(constants::MODE.find("MtNch")!=string::npos){
-						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}else if(constants::MODE.find("meanmt")!=string::npos){
+						y_val = EVENT.part[j].mt - EVENT.part[j].m;
+					}else if(constants::MODE.find("mtscaling")!=string::npos){
 						x_val=EVENT.part[j].m;
 						if(x_val<constants::x_min || x_val>this->x_max) continue;
 						nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
-						this->fix_ax(EVENT.part[j].id, nx, x_val);
+
+			 			if(EVENT.part[j].id==constants::id_phi){
+							uf->checkMassOnShell(EVENT.part[j].m, EVENT.part[j].e, EVENT.part[j].px, EVENT.part[j].py, EVENT.part[j].pz);
+						}
+
+						if(!this->fix_ax(EVENT.part[j].id, nx, x_val)) continue;
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}
 					ct->Hist[nx]+=y_val*EVENT.weight();
@@ -585,27 +595,29 @@ class Analysis{
 			}
 
 
-			void fix_ax(const int id, int &nx, double m){
+			bool fix_ax(const int id, int &nx, double m){
 
-				if(nx!=2 && nx!=9 && nx!=18){
-
-					if(id==constants::id_ch_pion) nx=2;
-					else if(id==constants::id_ch_kaon) nx=9;
-					else if(id==constants::id_proton) nx=18;
-					else if(id==constants::id_phi) nx=20;
-					else if(id==constants::id_lambda) nx=22;
-					else if(id==constants::id_cascade) nx=26;
-
-
-				}else return;
-
+					//Current 
+					//----------
+					if(abs(id)==constants::id_ch_pion) nx=0;
+					else if(abs(id)==constants::id_ch_kaon) nx=1;
+					else if(abs(id)==constants::id_proton) nx=2;
+					else if(abs(id)==constants::id_phi) nx=3;
+					else if(abs(id)==constants::id_lambda) nx=4;
+					else if(abs(id)==constants::id_cascade) nx=5;
+					else if(abs(id)==constants::id_omega) nx=6;
+					else {
+						cout << "continue " << endl;
+						return false;
+					}
+					return true;
 			}
 
 
 			int get_cell_index(const double x_val_){
 				int ncell = (int)((x_val_/this->d_x)+(fabs(constants::x_min)/this->d_x));
 				if(constants::MODE.find("cumulant_multi")!=string::npos){
-					if(x_val_<constants::maxNchPP) ncell=6;
+					if(x_val_>constants::maxNchPP) ncell=6;
 				}
 				return  ncell;
 			}
