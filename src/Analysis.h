@@ -627,6 +627,12 @@ class Analysis{
 
 					return ncell;
 				}else{
+					//Put small multiplicity events into one bin.
+					//---------------------------------------------
+					if(constants::MODE.find("cumulant_multi")!=string::npos && x_val<constants::minNchHI){
+						ncell=0;
+						return ncell;
+					}
 
 					int ncell_log=1;
 					int ncell_start=floor(constants::switchBin_x/constants::binSize_small)-1;
