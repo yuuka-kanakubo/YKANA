@@ -577,7 +577,7 @@ class Analysis{
 							uf->checkMassOnShell(EVENT.part[j].m, EVENT.part[j].e, EVENT.part[j].px, EVENT.part[j].py, EVENT.part[j].pz);
 						}
 
-						if(this->fix_ax(EVENT.part[j].id, nx, x_val)) continue;
+						if(!this->fix_ax(EVENT.part[j].id, nx, x_val)) continue;
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}
 					ct->Hist[nx]+=y_val*EVENT.weight();
@@ -597,22 +597,19 @@ class Analysis{
 
 			bool fix_ax(const int id, int &nx, double m){
 
-					//if(id==constants::id_ch_pion) nx=2;
-					//else if(id==constants::id_ch_kaon) nx=9;
-					//else if(id==constants::id_proton) nx=18;
-					//else if(id==constants::id_phi) nx=20;
-					//else if(id==constants::id_lambda) nx=22;
-					//else if(id==constants::id_cascade) nx=26;
-					//else if(id==constants::id_omega) nx=27;
-					//
-
-					if(id==constants::id_ch_pion) nx=0;
-					else if(id==constants::id_ch_kaon) nx=1;
-					else if(id==constants::id_proton) nx=2;
-					else if(id==constants::id_phi) nx=3;
-					else if(id==constants::id_lambda) nx=4;
-					else if(id==constants::id_cascade) nx=5;
-					else return false;
+					//Current 
+					//----------
+					if(abs(id)==constants::id_ch_pion) nx=0;
+					else if(abs(id)==constants::id_ch_kaon) nx=1;
+					else if(abs(id)==constants::id_proton) nx=2;
+					else if(abs(id)==constants::id_phi) nx=3;
+					else if(abs(id)==constants::id_lambda) nx=4;
+					else if(abs(id)==constants::id_cascade) nx=5;
+					else if(abs(id)==constants::id_omega) nx=6;
+					else {
+						cout << "continue " << endl;
+						return false;
+					}
 					return true;
 			}
 
