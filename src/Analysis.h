@@ -159,6 +159,9 @@ class Analysis{
 
 
 						}else if(constants::MODE.find("meanmt")!=string::npos){
+
+							cout << "ERROR:( -DMEANMT is still under construction." << endl;
+							exit(1);
 							//if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 							if(abs(ID)==constants::id_cascade && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 
