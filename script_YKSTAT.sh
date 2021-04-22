@@ -1,13 +1,12 @@
 #!/bin/sh
 
 #DIR="../DCCI/data/20210324_PBPB_PT0REF0.9_SIGMA0.5_tau0Unlimited_for_DCCI_CF_T165_MB_0Kto10K_NOparticlization"
-DIR="../DCCI/data/20210322_PP_PT0REF1.8_SIGMA0.5_MB_tau0Unlimited_for_DCCI_CF_T165_0Kto300K_NOparticlization"
-#DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
+#DIR="../DCCI/data/20210322_PP_PT0REF1.8_SIGMA0.5_MB_tau0Unlimited_for_DCCI_CF_T165_0Kto300K_NOparticlization"
+DIR="../pythia8244/default_pythia_mymain/data/20210325_DEFAULT_PBPB2760GEV_weakStop_100K"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
-#EXT="default.txt"
-outputdir="MEANPT_PP_DCCI_WOCOL_CORE"
-n=3
+EXT="default.txt"
+outputdir="V22_PBPB_PYTHIA_LESSSTAT"
+n=10000
 
 
 #Do not modify this.
@@ -44,6 +43,5 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --INEL_lg_0 \
- --only_core \
+ --HI \
  > ${log_dname}${log_fname}.log  2>&1  &
