@@ -1,11 +1,9 @@
 #!/bin/sh
 
-#DIR="../DCCI/data/20210324_PBPB_PT0REF0.9_SIGMA0.5_tau0Unlimited_for_DCCI_CF_T165_MB_0Kto10K_NOparticlization"
-#DIR="../DCCI/data/20210322_PP_PT0REF1.8_SIGMA0.5_MB_tau0Unlimited_for_DCCI_CF_T165_0Kto300K_NOparticlization"
-DIR="../pythia8244/default_pythia_mymain/data/20210325_DEFAULT_PBPB2760GEV_weakStop_100K"
+DIR="../DCCI/data/DCCI_PBPB_MB_0to10K"
 EV="ev"
-EXT="default.txt"
-outputdir="V22_PBPB_PYTHIA_LESSSTAT"
+EXT="hadronFinal_corecorona_weakStop.txt"
+outputdir="MTSCALING_PBPB_DCCI_CORONA_WOCOL"
 n=10000
 
 
@@ -44,4 +42,6 @@ fi
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
  --HI \
+ --only_corona \
+ --CentralityCut 9 \
  > ${log_dname}${log_fname}.log  2>&1  &
