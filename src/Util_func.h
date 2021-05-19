@@ -12,6 +12,8 @@ class Util_func{
 
  private:
 
+	 std::string DATE;
+
     bool isQuark(const int pid) {
       if(abs(pid)<9||this->is_diquark(pid)) return true;
       else return false;
@@ -169,22 +171,25 @@ class Util_func{
  };
  
   const std::string get_date(){
-    time_t now = time(NULL);
-    struct tm *pnow = localtime(&now);  
-    int Y=pnow->tm_year+1900;
-    int M=pnow->tm_mon + 1;
-    int D=pnow->tm_mday;
-    std::string date=generateS(Y)+generateS2(M)+generateS2(D);    
-    return date;
+	  return this->DATE;
   };
 
 
-
-
+  void get_nowdata(){
+	  time_t now = time(NULL);
+	  struct tm *pnow = localtime(&now);  
+	  int Y=pnow->tm_year+1900;
+	  int M=pnow->tm_mon + 1;
+	  int D=pnow->tm_mday;
+	  std::string date=generateS(Y)+generateS2(M)+generateS2(D);    
+	  this->DATE=date;
+  }
 
 
  public:
-  Util_func(){};
+  Util_func():DATE(""){
+    this->get_nowdata(); 
+ };
   ~Util_func(){};
   
   std::string generateS(double n){

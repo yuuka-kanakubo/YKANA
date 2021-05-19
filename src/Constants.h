@@ -45,8 +45,8 @@ namespace constants{
 #elif defined MTSCALING
 	const std::string MODE = "mtscaling";
 	const string default_out_directory_name="mtscaling";
-	const double x_max = 1.5;
-	const double x_max_HI = 1.5;
+	const double x_max = 5.0; //Needs to be changed depends on what you wanna see.
+	const double x_max_HI = 5.0;
 	const double x_min = 0.0;
 	const double d_x = 0.05;
 	const double d_x_HI = 0.05;

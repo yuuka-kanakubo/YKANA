@@ -1,10 +1,10 @@
 #!/bin/sh
 
-DIR="../DCCI/data/DCCI_PBPB_MB_0to10K"
+DIR="../DCCI/data/20210511_PBPB_MB_0Kto5K"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
-outputdir="MTSCALING_PBPB_DCCI_CORONA_WOCOL"
-n=10000
+EXT="hadronFinal_corecorona_weakStop_wcol.txt"
+outputdir="CUMULANTPT_PBPB_DCCI"
+n=5000
 
 
 #Do not modify this.
@@ -42,6 +42,4 @@ fi
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
  --HI \
- --only_corona \
- --CentralityCut 9 \
  > ${log_dname}${log_fname}.log  2>&1  &
