@@ -42,6 +42,16 @@ namespace constants{
 	const double d_x_HI = 0.5;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+#elif defined CUMULANTETA
+	const std::string MODE = "cumulant_eta";
+	const string default_out_directory_name="cumulant_eta";
+	const double x_max = 10.0;
+	const double x_max_HI = 10.0;
+	const double x_min = -10.0;
+	const double d_x = 0.5;
+	const double d_x_HI = 0.5;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
 #elif defined MTSCALING
 	const std::string MODE = "mtscaling";
 	const string default_out_directory_name="mtscaling";
