@@ -101,9 +101,11 @@ namespace constants{
 #elif defined JET_PRAC
 	const std::string MODE = "JET_PRAC";
 	const string default_out_directory_name="JET_PRAC";
-	const double x_max = 10.0;
-	const double x_min = -10.0;
-	const double d_x = 0.5;
+	const double x_max = 1.0;
+	const double x_max_HI = 1.0;
+	const double x_min = 0.0;
+	const double d_x = 0.1;
+	const double d_x_HI = 0.1;
 	const int x_cell_capa=1000;
 	const string default_ext="/jetinfo.txt";
 #elif defined DEF

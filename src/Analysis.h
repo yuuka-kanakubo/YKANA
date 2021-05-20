@@ -258,66 +258,63 @@ class Analysis{
 
 
 
-			//
-			//	bool read_jetinfo(const std::string& fname, shared_ptr<Container>& ct){
-			//
-			//		ifstream in;
-			//		in.open(fname.c_str(),ios::in);
-			//		if(!in){ ms->open(fname); return false;}
-			//
-			//		vector <Container::ParticleInfo> Parents, Jets;
-			//
-			//		{
-			//			std::string templine;
-			//			while(getline(in,templine)) {
-			//				if(templine.find('G')!=std::string::npos) {
-			//				} else if(templine.find('P')!=std::string::npos){
-			//					istringstream iss(templine);
-			//					double e,px,py,pz;
-			//					std::string TAG;
-			//					iss >> TAG >> e >> px >> py >> pz;
-			//					Container::ParticleInfo info;
-			//					info.e=e;
-			//					info.px=px;
-			//					info.py=py;
-			//					info.pz=pz;
-			//					info.phi=atan2(py, px);
-			//					Parents.push_back(info);
-			//				}else{
-			//					istringstream is(templine);
-			//					double e,px,py,pz;
-			//					int num;
-			//					is >> num >> e >> px >> py >> pz;
-			//					Container::ParticleInfo info;
-			//					info.e=e;
-			//					info.px=px;
-			//					info.py=py;
-			//					info.pz=pz;
-			//					info.phi=atan2(py, px);
-			//					Jets.push_back(info);
-			//				}
-			//			}
-			//			in.close();
-			//		}
-			//
-			//
-			//		for(int i =0; i<(int)Jets.size(); i++){
-			//			double phi_J = Jets[i].phi;
-			//			for(int j =0; j<(int)Parents.size(); j++){
-			//				if(std::fabs(phi_J-Parents[j].phi)<constants::delta_phi_SMALL){
-			//
-			//					double frac = (Jets[i].e - Parents[j].e)/Parents[j].e;
-			//					ct->value.push_back(frac);
-			//					ct->Nev_tot+=1;
-			//
-			//				}
-			//
-			//			}
-			//		}
-			//
-			//		return true;
-			//	}
-			//
+			
+				bool read_jetinfo(const std::string& fname, shared_ptr<Container>& ct){
+			
+					ifstream in;
+					in.open(fname.c_str(),ios::in);
+					if(!in){ ms->open(fname); return false;}
+			
+					Container::EventInfo info_1ev;
+					vector <Container::ParticleInfo> Jets, Gamma;
+					{
+						std::string templine;
+						while(getline(in,templine)) {
+							if(templine.find('G')!=std::string::npos) {
+								istringstream is(templine);
+								double e,px,py,pz;
+								int num;
+								is >> num >> e >> px >> py >> pz;
+								Container::ParticleInfo info;
+								info.e=e;
+								info.px=px;
+								info.py=py;
+								info.pz=pz;
+								info.pt=sqrt(px*px + py*py);
+								info.phi=atan2(py, px);
+								Gamma.push_back(info);
+							}else if(templine.find('P')!=std::string::npos){
+							}else if(templine.find('#')!=std::string::npos){
+							}else{
+								istringstream is(templine);
+								double e,px,py,pz;
+								int num;
+								is >> num >> e >> px >> py >> pz;
+								Container::ParticleInfo info;
+								info.e=e;
+								info.px=px;
+								info.py=py;
+								info.pz=pz;
+								info.pt=sqrt(px*px + py*py);
+								info.phi=atan2(py, px);
+								Jets.push_back(info);
+							}
+						}
+						in.close();
+					}
+			
+			
+					//for(int i =0; i<(int)Jets.size(); i++){
+					if((int)Jets.size()<2) return false;
+					for(int i =0; i<1; i++){
+                                                if((Jets[i].pt+Jets[i+1].pt)<=0.0) return false;
+						info_1ev.Aj(fabs((Jets[i].pt-Jets[i+1].pt)/(Jets[i].pt+Jets[i+1].pt)));
+					}
+			
+					ct->EVENTINFO=info_1ev;
+					return true;
+				}
+			
 
 			void stat(shared_ptr<Container>& ct){
 
@@ -339,6 +336,30 @@ class Analysis{
 					double var=meanxx-pow(meanx,2.0);
 					double error=sqrt(var/ct->HistHit[i]);
 					ct->HistErr[i]=error;
+				}
+
+
+			}
+
+			void stat_jets(shared_ptr<Container>& ct){
+
+cout << "Stat jets" << endl;
+cout << ct->max_nx << endl;
+
+				//take average    
+				//-------------------------------------
+				for(int i=0; i<ct->max_nx+1; ++i){
+					ct->FinalHist[i]=ct->Hist[i]/ct->SumWeight;
+					ct->Hist_x[i]/=ct->Hist_weight[i];
+
+					// devide by cell width 
+					//-------------------------------------
+					ct->FinalHist[i]/=this->d_x;
+
+
+					//Get standard error
+					//-------------------------------------
+					ct->HistErr[i]=0.0;
 				}
 
 
@@ -567,6 +588,29 @@ class Analysis{
 			}
 
 
+			void fill_jets(shared_ptr<Container>& ct){
+cout << "fill jet " << endl; 
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Determine xbin
+				//---------------
+				double x_val=EVENT.Aj();
+				double y_val=1.0;
+				if(x_val<constants::x_min || x_val>this->x_max) return;
+				int nx=this->get_cell_index(x_val);
+
+cout << "nx " << nx << endl; 
+
+				ct->Hist[nx]+=y_val;
+				ct->Hist_x[nx]+=x_val;
+				ct->Hist_weight[nx]+=1.0;
+				if(ct->max_nx<nx) ct->max_nx=nx;
+
+				ct->SumWeight+=1.0;
+
+			}
 
 
 
@@ -1201,7 +1245,7 @@ class Analysis{
 				}else{
 					for(int i=0; i<ct->max_nx; ++i){
 
-						if(ct->HistHit[i]==0) continue;
+						if(constants::MODE.find("JET_PRAC")==std::string::npos && ct->HistHit[i]==0) continue;
 
 						double x_axis =ct->Hist_x[i];
 						ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
@@ -1289,7 +1333,7 @@ class Analysis{
 						//Read events
 						//---------------
 						if(constants::MODE.find("JET_PRAC")!=std::string::npos){
-							//read_jetinfo(inputpath, ct);
+							if(!read_jetinfo(inputpath, ct)) continue;
 						}else{
 							if(!read(inputpath, ct)) continue;
 						}
@@ -1319,14 +1363,21 @@ class Analysis{
 							else this->fill_vnpt(ct);
 						}else if(constants::MODE.find("cumulant_eta")!=std::string::npos){
 							this->fill_vneta(ct);
+						}else if(constants::MODE.find("JET_PRAC")!=std::string::npos){
+							this->fill_jets(ct);
 						}else{
 							this->fill(ct);
 						}
 
 					}//Event loop
 
-					if(constants::MODE.find("cumulant_eta")!=string::npos || constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos) this->stat_flow(ct);
-					else this->stat(ct);
+					if(constants::MODE.find("cumulant_eta")!=string::npos || constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos){ 
+						this->stat_flow(ct);
+					}else if(constants::MODE.find("JET_PRAC")!=string::npos){
+						this->stat_jets(ct);
+					}else{
+						this->stat(ct);
+					}
 
 
 					//Making output directory name

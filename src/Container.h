@@ -39,15 +39,18 @@ class Container{
 
 			double weight_;
 			int Nch_;
+			double Aj_;
 
 		public:
-			EventInfo(): weight_(1.0), Nch_(0){};
+			EventInfo(): weight_(1.0), Nch_(0), Aj_(1.0){};
 
 			vector<ParticleInfo> part;
 			void weight(double weight_in){this->weight_=weight_in;}
 			void Nch(int Nch_in){this->Nch_=Nch_in;}
+			void Aj(double Aj_in){this->Aj_=Aj_in;}
 			double weight()const{return this->weight_;}
 			int Nch()const{return this->Nch_;}
+			double Aj()const{return this->Aj_;}
 
 	};
 
