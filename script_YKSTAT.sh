@@ -1,12 +1,12 @@
 #!/bin/sh
 
-#DIR="../DCCI/data/20210511_PBPB_MB_0Kto5K"
+DIR="../DCCI/data/20210511_PBPB_MB_0Kto5K"
 #DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
-DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
+#DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
 EV="ev"
-EXT="default.txt"
-outputdir="V22MULTI_PP_PYTHIA"
-n=1000
+EXT="hadronFinal_corecorona_weakStop.txt"
+outputdir="NORMTWOPC_lowpt_PBPB_DCCI_WOCOL"
+n=5000
 
 
 #Do not modify this.
@@ -43,5 +43,5 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --INEL_lg_0 \
+ --HI \
  > ${log_dname}${log_fname}.log  2>&1  &

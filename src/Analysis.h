@@ -35,23 +35,35 @@ class Analysis{
 		//Maximum value for histgram
 		//-------------------------
 		double x_max;
+		double y_max;
 		double d_x;
+		double d_y;
 
 	public:
 
-		Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in), x_max(constants::x_max), d_x(constants::d_x){
+		Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in), x_max(constants::x_max), y_max(constants::y_max), d_x(constants::d_x), d_y(constants::d_y){
 			ms = make_shared<Message>();
 			uf = make_shared<Util_func>();
 			if(options.get_flag_HI()){
 				cout << ":) HI option is called.\n  Maximum value of xaxis is adjusted to HI data." << endl;
 				x_max=constants::x_max_HI;
 				d_x=constants::d_x_HI;
+				y_max=constants::y_max_HI;
+				d_y=constants::d_y_HI;
 			}
 			this->ana();
 		};
 		~Analysis(){};
 
 
+		int getMapEdgeX(const double maxval){
+			int n=(int)((maxval/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+			return n;
+		}
+		int getMapEdgeY(const double maxval){
+			int n=(int)((maxval/this->d_y)+(std::fabs(constants::y_min)/this->d_y));
+			return n;
+		}
 
 
 
@@ -162,7 +174,6 @@ class Analysis{
 
 							cout << "ERROR:( -DMEANMT is still under construction." << endl;
 							exit(1);
-							//if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 							if(abs(ID)==constants::id_cascade && std::fabs(eta)<0.3 && pt>0.15 && pt<10.0 ) { 
 
 								Container::ParticleInfo part_in;
@@ -204,7 +215,7 @@ class Analysis{
 
 						}else if(constants::MODE.find("cumulant_pt")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<1.0 ){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)>2.0 && fabs(eta)<4.0){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.pt=pt;
@@ -219,6 +230,20 @@ class Analysis{
 						}else if(constants::MODE.find("cumulant_eta")!=string::npos){
 
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon )){
+								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
+									Container::ParticleInfo part_in;
+									part_in.pt=pt;
+									part_in.eta=eta;
+									part_in.phi=phi;
+									part_1ev.push_back(part_in);
+								}
+							}
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && pt<3.0 ) Nch++;
+
+
+						}else if(constants::MODE.find("twopc")!=string::npos){
+
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && pt<2.0 && pt>0.0 && fabs(eta)<4.0){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.pt=pt;
@@ -252,6 +277,7 @@ class Analysis{
 				info_1ev.Nch(Nch);
 				info_1ev.part=part_1ev;
 				ct->EVENTINFO=info_1ev;
+				vector<Container::ParticleInfo>().swap(part_1ev);
 
 				return true;
 			}
@@ -260,7 +286,7 @@ class Analysis{
 
 			
 				bool read_jetinfo(const std::string& fname, shared_ptr<Container>& ct){
-			
+
 					ifstream in;
 					in.open(fname.c_str(),ios::in);
 					if(!in){ ms->open(fname); return false;}
@@ -304,17 +330,45 @@ class Analysis{
 					}
 			
 			
-					//for(int i =0; i<(int)Jets.size(); i++){
-					if((int)Jets.size()<2) return false;
+					if((int)Jets.size()<2){ 
+						vector<Container::ParticleInfo>().swap(Jets);
+						vector<Container::ParticleInfo>().swap(Gamma);
+						return false;
+					}
 					for(int i =0; i<1; i++){
-                                                if((Jets[i].pt+Jets[i+1].pt)<=0.0) return false;
+						if((Jets[i].pt+Jets[i+1].pt)<=0.0) {
+							vector<Container::ParticleInfo>().swap(Jets);
+							vector<Container::ParticleInfo>().swap(Gamma);
+							return false;
+						}
 						info_1ev.Aj(fabs((Jets[i].pt-Jets[i+1].pt)/(Jets[i].pt+Jets[i+1].pt)));
 					}
 			
 					ct->EVENTINFO=info_1ev;
+
+					vector<Container::ParticleInfo>().swap(Jets);
+					vector<Container::ParticleInfo>().swap(Gamma);
 					return true;
 				}
-			
+
+			void stat_twopc(shared_ptr<Container>& ct){
+
+				//take average    
+				//-------------------------------------
+				for(int i=0; i<ct->max_nx+1; ++i){
+					for(int j=0; j<ct->max_ny+1; ++j){
+						ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumPair;
+						ct->Hist2D_x[i][j]/=ct->Hist2DPartHit[i][j];
+						ct->Hist2D_y[i][j]/=ct->Hist2DPartHit[i][j];
+
+						//Devide by bin width
+						//---------------------------
+						ct->Final2DHist[i][j]/=this->d_x;
+						ct->Final2DHist[i][j]/=this->d_y;
+					}
+				}
+
+			}
 
 			void stat(shared_ptr<Container>& ct){
 
@@ -612,6 +666,85 @@ cout << "nx " << nx << endl;
 
 			}
 
+
+
+			void fill_twopc(shared_ptr<Container>& ct){
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Count particle by particle.
+				//----------------------------
+				double **Hit1ev;
+				Hit1ev = new double *[constants::x_cell_capa];
+				for(int i_cell=0; i_cell<constants::x_cell_capa; i_cell++){
+					Hit1ev[i_cell] = new double [constants::y_cell_capa];
+				}
+				for(int i=0; i<constants::x_cell_capa; i++){
+					for(int j=0; j<constants::y_cell_capa; j++){
+						Hit1ev[i][j]=0.0;
+					}
+				}
+				int max_nx = 0, max_ny = 0;
+				int NumPair=0;
+				for(int i=0; i<(int)EVENT.part.size(); ++i){
+					for(int j=0; j<(int)EVENT.part.size(); ++j){
+						if (i==j) continue;
+
+						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
+						if(x_val<constants::x_min || x_val>this->x_max) continue;
+						int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+
+						double y_val=this->getDeltaPhi(EVENT.part[i].phi, EVENT.part[j].phi);
+						if(y_val<constants::y_min || y_val>this->y_max) continue;
+						int ny=(int)((y_val/this->d_y)+(std::fabs(constants::y_min)/this->d_y));
+
+						if(max_nx<nx) max_nx = nx;
+						if(max_ny<ny) max_ny = ny;
+						Hit1ev[nx][ny]+=1.0;
+						ct->Hist2D_x[nx][ny]+=x_val;
+						ct->Hist2D_y[nx][ny]+=y_val;
+						if(ct->max_nx<nx) ct->max_nx=nx;
+						if(ct->max_ny<ny) ct->max_ny=ny;
+						NumPair+=1.0;
+
+					}
+				}
+				//---------------
+				
+				for(int nx = 0; nx<max_nx+1; nx++){
+					for(int ny = 0; ny<max_ny+1; ny++){
+						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny];
+					}
+				}
+
+				ct->SumWeight+=EVENT.weight();
+				ct->SumPair+=NumPair;
+
+
+				for(int i = 0; i < constants::x_cell_capa; i++) {
+					delete[] Hit1ev[i];
+				}
+				delete[] Hit1ev;
+
+			}
+
+
+			double getDeltaPhi(const double phi1, const double phi2){
+				double deltaPhi = phi1 - phi2;
+				if(deltaPhi>=constants::y_min && deltaPhi<=this->y_max){
+					return deltaPhi;
+				}else if(deltaPhi<constants::y_min){
+					return 2.0*M_PI + deltaPhi;
+				}else if(deltaPhi>this->y_max){
+					return 2.0*M_PI - deltaPhi;
+				}else{
+					cout << ":( Error. Something wrong in double getDeltaPhi." << deltaPhi << endl;
+					exit(1);
+				}
+
+			}
 
 
 			void fill(shared_ptr<Container>& ct){
@@ -1229,7 +1362,7 @@ cout << "nx " << nx << endl;
 
 				if(constants::MODE.find("cumulant_pt")!=string::npos || constants::MODE.find("cumulant_eta")!=string::npos || constants::MODE.find("cumulant_multi")!=string::npos) {
 
-					for(int i=0; i<ct->max_nx; ++i){
+					for(int i=0; i<ct->max_nx+1; ++i){
 
 						if(ct->HistHit[i]==0) continue;
 
@@ -1242,8 +1375,25 @@ cout << "nx " << nx << endl;
 							<< setw(16) << ct->HistHit[i] << endl;
 					}
 
+				}else if(constants::MODE.find("twopc")!=string::npos) {
+
+					for(int i=0; i<this->getMapEdgeX(this->x_max); ++i){
+						for(int j=0; j<this->getMapEdgeY(this->y_max); ++j){
+
+							double xaxis=((constants::x_min+(this->d_x*i))+(constants::x_min+(this->d_x*(i+1))))/2.0;
+							double yaxis=((constants::y_min+(this->d_y*j))+(constants::y_min+(this->d_y*(j+1))))/2.0;
+							//ct->Hist2D_x[i][j];
+							//ct->Hist2D_y[i][j];
+							ofs << setw(16) << fixed << setprecision(8) << xaxis << "  "
+								<< setw(16) << yaxis << "  "
+								<< setw(16) << ct->Final2DHist[i][j] << "  "
+								<< setw(16) << ct->Hist2DPartHit[i][j] << endl;
+						}
+						ofs << endl;
+					}
+
 				}else{
-					for(int i=0; i<ct->max_nx; ++i){
+					for(int i=0; i<ct->max_nx+1; ++i){
 
 						if(constants::MODE.find("JET_PRAC")==std::string::npos && ct->HistHit[i]==0) continue;
 
@@ -1363,6 +1513,8 @@ cout << "nx " << nx << endl;
 							else this->fill_vnpt(ct);
 						}else if(constants::MODE.find("cumulant_eta")!=std::string::npos){
 							this->fill_vneta(ct);
+						}else if(constants::MODE.find("twopc")!=std::string::npos){
+							this->fill_twopc(ct);
 						}else if(constants::MODE.find("JET_PRAC")!=std::string::npos){
 							this->fill_jets(ct);
 						}else{
@@ -1375,6 +1527,8 @@ cout << "nx " << nx << endl;
 						this->stat_flow(ct);
 					}else if(constants::MODE.find("JET_PRAC")!=string::npos){
 						this->stat_jets(ct);
+					}else if(constants::MODE.find("twopc")!=string::npos){
+						this->stat_twopc(ct);
 					}else{
 						this->stat(ct);
 					}
@@ -1403,8 +1557,6 @@ cout << "nx " << nx << endl;
 
 				return 0;
 			}
-
-
 
 
 
