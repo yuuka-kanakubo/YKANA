@@ -73,8 +73,6 @@ class Settings{
 				bool HI;
 				bool _4particle;
 				bool _2PCfull;
-				bool _2PCnearside;
-				bool _2PCout;
 				unsigned int mid_rapidity_cut_type;
 				unsigned int axis_type;
 				unsigned int collision_type;
@@ -135,8 +133,6 @@ class Settings{
 				void set_flag_HI(){this->HI=true;}
 				void set_flag__4particle(){this->_4particle=true;}
 				void set_flag__2PCfull(){this->_2PCfull=true;}
-				void set_flag__2PCnearside(){this->_2PCnearside=true;}
-				void set_flag__2PCout(){this->_2PCout=true;}
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
@@ -202,8 +198,6 @@ class Settings{
 				bool get_flag_HI()const{return this->HI;}
 				bool get_flag__4particle()const{return this->_4particle;}
 				bool get_flag__2PCfull()const{return this->_2PCfull;}
-				bool get_flag__2PCnearside()const{return this->_2PCnearside;}
-				bool get_flag__2PCout()const{return this->_2PCout;}
 
 
 
@@ -245,8 +239,6 @@ class Settings{
 					HI(false),
 					_4particle(false),
 					_2PCfull(false),
-					_2PCnearside(false),
-					_2PCout(false),
 
 					mid_rapidity_cut_type(0),
 					axis_type(0),
@@ -267,7 +259,6 @@ class Settings{
 
 			ms = std::make_shared<Message>();
 			init(argc, argv);
-			consistency_check();
 
 		};
 		~Settings(){};
@@ -311,9 +302,6 @@ class Settings{
 				else if(!strcmp(argv[i],"--threesub")){options.set_flag_3subevent();}
 				else if(!strcmp(argv[i],"--HI")){options.set_flag_HI();}
 				else if(!strcmp(argv[i],"--4particle")){options.set_flag__4particle(); cout << ";) Four particle cumulant calculation started!" << endl;}
-				else if(!strcmp(argv[i],"--2PCfull")){options.set_flag__2PCfull(); cout << ";) 2PC correlation in 1D calculation started with --2PCfull." << endl;}
-				else if(!strcmp(argv[i],"--2PCnearside")){options.set_flag__2PCnearside(); cout << ";) 2PC correlation in 1D calculation started with --2PCnearside." << endl;}
-				else if(!strcmp(argv[i],"--2PCout")){options.set_flag__2PCout(); cout << ";) 2PC correlation in 1D calculation started with --2PCout." << endl;}
 				else { 
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;
@@ -322,22 +310,6 @@ class Settings{
 				}
 			}
 		}
-
-void consistency_check(){
-
-	if(constants::MODE.find("twopc1D")!=std::string::npos){
-		if(!options.get_flag__2PCfull() && !options.get_flag__2PCnearside() && !options.get_flag__2PCout()) {
-			cout << ":( ERROR. Option --2PCfull, --2PCnearside, or --2PCout is needed. " << endl;
-			exit(1);
-		}
-		if((options.get_flag__2PCfull() && options.get_flag__2PCnearside()) || (options.get_flag__2PCfull() && options.get_flag__2PCout()) || (options.get_flag__2PCnearside() && options.get_flag__2PCout())) {
-			cout << ":( ERROR. Use only one option from --2PCfull, --2PCnearside, or --2PCout. " << endl;
-			exit(1);
-		}
-	}
-
-}
-
 
 
 };

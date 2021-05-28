@@ -75,8 +75,8 @@ namespace constants{
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
 #elif defined TWOPC
-	const std::string MODE = "twopc";
-	const string default_out_directory_name="twopc";
+	const std::string MODE = "twopc2D";
+	const string default_out_directory_name="twopc2D";
 	const double x_max = 10;
 	const double x_max_HI = 10;
 	const double x_min = -10.0;
@@ -90,6 +90,25 @@ namespace constants{
 	const int x_cell_capa=1000;
 	const int y_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+#elif defined TWOPC1D
+	const std::string MODE = "twopc1D";
+	const string default_out_directory_name="twopc1D";
+	const double x_max = (3.0/2.0)*M_PI;
+	const double x_max_HI = (3.0/2.0)*M_PI;
+	const double x_min = -(1.0/2.0)*M_PI;
+	//const double x_max = 2.0*M_PI;
+	//const double x_max_HI = 2.0*M_PI;
+	//const double x_min = 0.0;
+	const double d_x = (2.0*M_PI)/25.0;
+	const double d_x_HI = 0.25;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined MEANMT
 	const std::string MODE = "meanmt";
 	const string default_out_directory_name="meanmt";
@@ -100,6 +119,12 @@ namespace constants{
 	const double d_x_HI = 10.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined MEANPT
 	const std::string MODE = "meanpt";
 	const string default_out_directory_name="meanpt";
@@ -110,6 +135,12 @@ namespace constants{
 	const double d_x_HI = 10.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined VERTICES
 	const std::string MODE = "vertices";
 	const string default_out_directory_name="vertices";
@@ -118,6 +149,12 @@ namespace constants{
 	const double d_x = 0.5;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined DNDPT
 	const std::string MODE = "dndpt";
 	const string default_out_directory_name="dndpt";
@@ -126,6 +163,12 @@ namespace constants{
 	const double d_x = 1.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined JET_PRAC
 	const std::string MODE = "JET_PRAC";
 	const string default_out_directory_name="JET_PRAC";
@@ -136,6 +179,12 @@ namespace constants{
 	const double d_x_HI = 0.1;
 	const int x_cell_capa=1000;
 	const string default_ext="/jetinfo.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined DEF
 	const std::string MODE = "default";
 	const string default_out_directory_name="output";
@@ -167,6 +216,7 @@ namespace constants{
 	const int id_cascade=3312;
 	const int id_omega=3334;
 	const int id_phi=333;
+	const int id_K0S=310;
 
 	const double w_eta_multiplicity=0.5;
 	const double w_eta_multiplicity_INEL_lg_0=1.0;
