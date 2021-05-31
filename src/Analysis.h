@@ -257,8 +257,7 @@ class Analysis{
 
 						}else if(constants::MODE.find("twopc1D")!=string::npos){
 
-							//if(((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<2.0 && pt > 2.0)|| (abs(ID)==constants::id_K0S && fabs(eta)<2.0 )){
-							if(((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<2.0 && pt<0.5)){
+							if(((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<4.0 && pt > 3.0)|| (abs(ID)==constants::id_K0S && fabs(eta)<2.0 && pt>1.2 && pt<1.6)){
 
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
@@ -389,17 +388,27 @@ class Analysis{
 
 			void stat_twopc1D(shared_ptr<Container>& ct){
 
-cout << "stat twoPC1D" << endl;
-
 				//take average    
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
-					ct->FinalHist[i]=ct->Hist[i]/ct->SumPair;
-					ct->Hist_x[i]/=ct->HistHit[i];
+					if(options.get_flag_tagged()){
+						ct->FinalHist[i]=ct->Hist[i]/ct->SumTrig;
+						if(options.get_flag__2PCfull()){
+							ct->FinalHist[i]/=2.0*constants::DeltaEtaFULL;
+						}else if(options.get_flag__2PCnearside()){
+							ct->FinalHist[i]/=2.0*constants::DeltaEtaNS;
+						}else if(options.get_flag__2PCout()){
+							ct->FinalHist[i]/=2.0*fabs(constants::DeltaEtaFULL-constants::DeltaEtaNS);
+						}else{
+							cout << ":( ERROR Something wrong with the flags. " << endl;
+							exit(1);
+						}
+					}else{
+						ct->FinalHist[i]=ct->Hist[i]/ct->SumPair;
+						ct->FinalHist[i]/=this->d_x;
+					}
+					ct->Hist_x[i]/=ct->Hist_weight[i];
 
-					// devide by cell width 
-					//-------------------------------------
-					ct->FinalHist[i]/=this->d_x;
 				}
 
 			}
@@ -731,11 +740,11 @@ cout << "stat twoPC1D" << endl;
 						if(max_nx<nx) max_nx = nx;
 						if(max_ny<ny) max_ny = ny;
 						Hit1ev[nx][ny]+=1.0;
-						ct->Hist2D_x[nx][ny]+=x_val;
-						ct->Hist2D_y[nx][ny]+=y_val;
+						ct->Hist2D_x[nx][ny]+=x_val*EVENT.weight();
+						ct->Hist2D_y[nx][ny]+=y_val*EVENT.weight();
 						if(ct->max_nx<nx) ct->max_nx=nx;
 						if(ct->max_ny<ny) ct->max_ny=ny;
-						NumPair+=1.0;
+						NumPair++;
 
 					}
 				}
@@ -744,12 +753,12 @@ cout << "stat twoPC1D" << endl;
 				for(int nx = 0; nx<max_nx+1; nx++){
 					for(int ny = 0; ny<max_ny+1; ny++){
 						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
-						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny];
+						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
 					}
 				}
 
 				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=NumPair;
+				ct->SumPair+=((double)NumPair)*EVENT.weight();
 
 
 				for(int i = 0; i < constants::x_cell_capa; i++) {
@@ -759,6 +768,58 @@ cout << "stat twoPC1D" << endl;
 
 			}
 
+			void fill_twopc1D_tagged(shared_ptr<Container>& ct){
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Count particle by particle.
+				//----------------------------
+				int NumPair=0;
+				int NumTrig=0;
+				int itrig=-1;
+				double max_pt=-1.0;
+				for(int i=0; i<(int)EVENT.part.size(); ++i){
+					if(abs(EVENT.part[i].id)==constants::id_K0S) continue;
+					if(max_pt<EVENT.part[i].pt) {
+						max_pt = EVENT.part[i].pt;
+						itrig=i;
+					}
+				}
+				if(itrig<0) {
+					NumTrig++;
+				}
+
+				//Seeing K0S.
+				//-------------------------------
+				for(int j=0; j<(int)EVENT.part.size(); ++j){
+					if(itrig<0) {
+						break;
+					}
+					if(abs(EVENT.part[j].id)!=constants::id_K0S) continue;
+
+					double x_val=this->getDeltaPhi_twopc1D(EVENT.part[itrig].phi, EVENT.part[j].phi);
+					double DeltaEta=fabs(EVENT.part[itrig].eta - EVENT.part[j].eta);
+					if(options.get_flag__2PCfull() && DeltaEta> constants::DeltaEtaFULL) continue;
+					else if(options.get_flag__2PCnearside() && DeltaEta>constants::DeltaEtaNS) continue;
+					else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL)) continue;
+
+					if(x_val<constants::x_min || x_val>this->x_max) continue;
+					int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+
+					ct->Hist[nx]+=1.0*EVENT.weight();
+					ct->Hist_x[nx]+=x_val*EVENT.weight();
+					ct->Hist_weight[nx]+=EVENT.weight();
+					ct->HistHit[nx]++;
+					if(ct->max_nx<nx) ct->max_nx=nx;
+					NumPair++;
+
+				}
+				//---------------
+				ct->SumWeight+=EVENT.weight();
+				ct->SumPair+=((double)NumPair)*EVENT.weight();
+				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
+				return;
+			}
 			void fill_twopc1D(shared_ptr<Container>& ct){
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -766,43 +827,33 @@ cout << "stat twoPC1D" << endl;
 				//Count particle by particle.
 				//----------------------------
 				int NumPair=0;
-				int itrig=-1;
-				double max_pt=-1.0;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					//if(abs(EVENT.part[i].id)==constants::id_K0S) continue;
-					//if(max_pt<EVENT.part[i].pt) {
-					//	max_pt = EVENT.part[i].pt;
-					//	itrig=i;
-					//}
 
-				//Seeing only hadrons. Not K0S.
-				//-------------------------------
-				for(int j=0; j<(int)EVENT.part.size(); ++j){
-					//if(itrig<0) {cout << "There is no chHadron pt>3.0 " << endl; break;}
-					if(i==j) continue;
-					//if(abs(EVENT.part[j].id)!=constants::id_K0S) continue;
+					for(int j=0; j<(int)EVENT.part.size(); ++j){
+						if(i==j) continue;
 
-					double x_val=this->getDeltaPhi_twopc1D(EVENT.part[i].phi, EVENT.part[j].phi);
-					double DeltaEta=fabs(EVENT.part[i].eta - EVENT.part[j].eta);
-					if(options.get_flag__2PCfull() && DeltaEta>1.0) continue;
-					//else if(options.get_flag__2PCnearside() && DeltaEta>0.75) continue;
-					//else if(options.get_flag__2PCout() && (DeltaEta<0.75 || DeltaEta>1.2)) continue;
+						double x_val=this->getDeltaPhi_twopc1D(EVENT.part[i].phi, EVENT.part[j].phi);
+						double DeltaEta=fabs(EVENT.part[i].eta - EVENT.part[j].eta);
+						if(options.get_flag__2PCfull() && DeltaEta>constants::DeltaEtaFULL) continue;
+						else if(options.get_flag__2PCnearside() && DeltaEta>constants::DeltaEtaNS) continue;
+						else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL)) continue;
 
-					if(x_val<constants::x_min || x_val>this->x_max) continue;
-					int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+						if(x_val<constants::x_min || x_val>this->x_max) continue;
+						int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 
-					ct->Hist[nx]+=1.0;
-					ct->Hist_x[nx]+=x_val;
-					ct->HistHit[nx]++;
-					if(ct->max_nx<nx) ct->max_nx=nx;
-					NumPair+=1.0;
+						ct->Hist[nx]+=1.0*EVENT.weight();
+						ct->Hist_x[nx]+=x_val*EVENT.weight();
+						ct->Hist_weight[nx]+=EVENT.weight();
+						ct->HistHit[nx]++;
+						if(ct->max_nx<nx) ct->max_nx=nx;
+						NumPair++;
 
-				}
+					}
 				}
 				//---------------
-				
+
 				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=NumPair;
+				ct->SumPair+=((double)NumPair)*EVENT.weight();
 				return;
 			}
 
@@ -1610,7 +1661,8 @@ cout << "stat twoPC1D" << endl;
 						}else if(constants::MODE.find("twopc2D")!=std::string::npos){
 							this->fill_twopc(ct);
 						}else if(constants::MODE.find("twopc1D")!=std::string::npos){
-							this->fill_twopc1D(ct);
+							if(options.get_flag_tagged()) this->fill_twopc1D_tagged(ct); 
+							else this->fill_twopc1D(ct);
 						}else if(constants::MODE.find("JET_PRAC")!=std::string::npos){
 							this->fill_jets(ct);
 						}else{

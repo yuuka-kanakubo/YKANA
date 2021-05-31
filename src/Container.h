@@ -66,7 +66,7 @@ class Container{
 
 	public:
 
-       Container():SumWeight(0.0), SumPair(0.0){
+       Container():SumWeight(0.0), SumPair(0.0), SumTrig(0.0){
 cout << "Calling Container." << endl;
 	       if(constants::MODE.find("twopc")!=string::npos){
 		       Hist2D = new double *[constants::x_cell_capa];
@@ -139,6 +139,7 @@ cout << "Calling Container." << endl;
 	double HistPartHit[constants::x_cell_capa]={};
 	double SumWeight;
 	double SumPair;
+	double SumTrig;
 	int max_nx=-1;
 	int max_ny=-1;
 

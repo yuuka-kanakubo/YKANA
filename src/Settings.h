@@ -75,6 +75,7 @@ class Settings{
 				bool _2PCfull;
 				bool _2PCnearside;
 				bool _2PCout;
+				bool tagged;
 				unsigned int mid_rapidity_cut_type;
 				unsigned int axis_type;
 				unsigned int collision_type;
@@ -137,6 +138,7 @@ class Settings{
 				void set_flag__2PCfull(){this->_2PCfull=true;}
 				void set_flag__2PCnearside(){this->_2PCnearside=true;}
 				void set_flag__2PCout(){this->_2PCout=true;}
+				void set_flag_tagged(){this->tagged=true;}
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
@@ -204,6 +206,7 @@ class Settings{
 				bool get_flag__2PCfull()const{return this->_2PCfull;}
 				bool get_flag__2PCnearside()const{return this->_2PCnearside;}
 				bool get_flag__2PCout()const{return this->_2PCout;}
+				bool get_flag_tagged()const{return this->tagged;}
 
 
 
@@ -247,6 +250,7 @@ class Settings{
 					_2PCfull(false),
 					_2PCnearside(false),
 					_2PCout(false),
+					tagged(false),
 
 					mid_rapidity_cut_type(0),
 					axis_type(0),
@@ -314,6 +318,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--2PCfull")){options.set_flag__2PCfull(); cout << ";) 2PC correlation in 1D calculation started with --2PCfull." << endl;}
 				else if(!strcmp(argv[i],"--2PCnearside")){options.set_flag__2PCnearside(); cout << ";) 2PC correlation in 1D calculation started with --2PCnearside." << endl;}
 				else if(!strcmp(argv[i],"--2PCout")){options.set_flag__2PCout(); cout << ";) 2PC correlation in 1D calculation started with --2PCout." << endl;}
+				else if(!strcmp(argv[i],"--tagged")){options.set_flag_tagged(); cout << ";) 2PC TAGGED calculation will be performed." << endl;}
 				else { 
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;
@@ -334,6 +339,8 @@ void consistency_check(){
 			cout << ":( ERROR. Use only one option from --2PCfull, --2PCnearside, or --2PCout. " << endl;
 			exit(1);
 		}
+	}else{
+		if(options.get_flag_tagged()) cout << ":o WARNING. --tagged option works when TWOPC1D is activated." << endl;
 	}
 
 }

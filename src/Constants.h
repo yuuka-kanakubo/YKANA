@@ -12,6 +12,8 @@ namespace constants{
 	const double etaRange_cumulantmulti=0.8;
 	const double etaA_3sub = -1.0;
 	const double etaB_3sub = 1.0;
+	const double DeltaEtaFULL=1.2;
+	const double DeltaEtaNS=0.75;
 
 
 #ifdef DNDETA_PROTON
@@ -74,7 +76,7 @@ namespace constants{
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
-#elif defined TWOPC
+#elif defined TWOPC2D
 	const std::string MODE = "twopc2D";
 	const string default_out_directory_name="twopc2D";
 	const double x_max = 10;
@@ -84,9 +86,9 @@ namespace constants{
 	const double y_max_HI = (3.0/2.0)*M_PI;
 	const double y_min = -(1.0/2.0)*M_PI;
 	const double d_x = 0.5;
-	const double d_y = 0.25;
+	const double d_y = (2.0*M_PI)/25.0;
 	const double d_x_HI = 0.5;
-	const double d_y_HI = 0.25;
+	const double d_y_HI = (2.0*M_PI)/25.0;
 	const int x_cell_capa=1000;
 	const int y_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
@@ -96,11 +98,8 @@ namespace constants{
 	const double x_max = (3.0/2.0)*M_PI;
 	const double x_max_HI = (3.0/2.0)*M_PI;
 	const double x_min = -(1.0/2.0)*M_PI;
-	//const double x_max = 2.0*M_PI;
-	//const double x_max_HI = 2.0*M_PI;
-	//const double x_min = 0.0;
 	const double d_x = (2.0*M_PI)/25.0;
-	const double d_x_HI = 0.25;
+	const double d_x_HI = (2.0*M_PI)/25.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 	const double y_max = 0.0;
