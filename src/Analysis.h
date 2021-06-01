@@ -199,6 +199,20 @@ class Analysis{
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 ) Nch++;
 
 
+						}else if(constants::MODE.find("Rt_spectra")!=string::npos){
+
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::etaRange_Rt ){
+								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
+									Container::ParticleInfo part_in;
+									part_in.pt=pt;
+									part_in.eta=eta;
+									part_in.phi=phi;
+									part_1ev.push_back(part_in);
+								}
+							}
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRange_cumulantmulti && 0.2 < pt && pt<3.0 ) Nch++;
+
+
 						}else if(constants::MODE.find("cumulant_multi")!=string::npos){
 
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::etaRange_cumulantmulti && 0.2 < pt && pt<3.0 ){
@@ -433,6 +447,49 @@ class Analysis{
 					double var=meanxx-pow(meanx,2.0);
 					double error=sqrt(var/ct->HistHit[i]);
 					ct->HistErr[i]=error;
+				}
+
+
+			}
+
+			void stat_Rt(shared_ptr<Container>& ct){
+
+				//Get <Nt>
+				//-------------------------------------
+				double Nt_tot=0.0;
+				for(int i=0; i<(int)ct->Nt_eBye.size(); ++i){
+					Nt_tot+=(double)ct->Nt_eBye[i]*ct->weight_eBye[i];
+				}
+				double meanNt = Nt_tot/ct->SumWeight;
+
+				for(int i=0; i<(int)ct->Nt_eBye.size(); ++i){
+
+					//Rt
+					//----
+					double x_val=((double)ct->Nt_eBye[i])/meanNt;
+					if(x_val<constants::x_min || x_val>this->x_max) continue;
+					int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+
+					//If the event is weighted with w_i where \Sum_i^ev w_i = w_tot, 
+					//The event should be counted as (w_i/w_tot) event.
+					//---------------------------------------------------------- 
+					ct->Hist[nx]+=1.0*(ct->weight_eBye[i]/ct->SumWeight);
+					ct->Hist_x[nx]+=x_val*ct->weight_eBye[i];
+					ct->Hist_weight[nx]+=ct->weight_eBye[i];
+					ct->HistHit[nx]++;
+					if(ct->max_nx<nx) ct->max_nx=nx;
+
+				}
+
+				for(int i=0; i<ct->max_nx+1; ++i){
+					ct->FinalHist[i]=ct->Hist[i];
+					ct->Hist_x[i]/=ct->Hist_weight[i];
+
+					// devide by cell width 
+					//-------------------------------------
+					//ct->Hist[i]/=this->d_x;
+
+					ct->HistErr[i]=0.0;
 				}
 
 
@@ -768,6 +825,44 @@ class Analysis{
 
 			}
 
+			void fill_Rt(shared_ptr<Container>& ct){
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Find max pt particle.
+				//----------------------------
+				double max_pt=-1.0;
+				int itrig=-1;
+				for(int i=0; i<(int)EVENT.part.size(); ++i){
+					if(abs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
+					if(max_pt<EVENT.part[i].pt) {
+						max_pt = EVENT.part[i].pt;
+						itrig=i;
+					}
+				}
+				if(itrig<0) {
+					return;
+				}
+
+				//Get Nt.
+				//-------------------------------
+				int Nt=0;
+				for(int j=0; j<(int)EVENT.part.size(); ++j){
+					//Count Nt
+					//-----------
+					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
+						Nt++;
+					}
+				}
+				//---------------
+				//Store 
+				//--------
+				ct->Nt_eBye.push_back(Nt);
+				ct->weight_eBye.push_back(EVENT.weight());
+				ct->SumWeight+=EVENT.weight();
+				return;
+			}
+
 			void fill_twopc1D_tagged(shared_ptr<Container>& ct){
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -820,6 +915,7 @@ class Analysis{
 				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 				return;
 			}
+
 			void fill_twopc1D(shared_ptr<Container>& ct){
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -1665,6 +1761,8 @@ class Analysis{
 							else this->fill_twopc1D(ct);
 						}else if(constants::MODE.find("JET_PRAC")!=std::string::npos){
 							this->fill_jets(ct);
+						}else if(constants::MODE.find("Rt_spectra")!=string::npos){
+							this->fill_Rt(ct);
 						}else{
 							this->fill(ct);
 						}
@@ -1679,6 +1777,8 @@ class Analysis{
 						this->stat_twopc(ct);
 					}else if(constants::MODE.find("twopc1D")!=string::npos){
 						this->stat_twopc1D(ct);
+					}else if(constants::MODE.find("Rt_spectra")!=string::npos){
+						this->stat_Rt(ct);
 					}else{
 						this->stat(ct);
 					}

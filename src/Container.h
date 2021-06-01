@@ -38,17 +38,19 @@ class Container{
 		private:
 
 			double weight_;
+			int Nt_;
 			int Nch_;
 			double Aj_;
 
 		public:
-			EventInfo(): weight_(1.0), Nch_(0), Aj_(1.0){};
+			EventInfo(): weight_(1.0), Nt_(0), Nch_(0), Aj_(1.0){};
 			~EventInfo(){
 				vector<ParticleInfo>().swap(part);
 			};
 
 			vector<ParticleInfo> part;
 			void weight(double weight_in){this->weight_=weight_in;}
+			void Nt(int Nt_in){this->Nt_=Nt_in;}
 			void Nch(int Nch_in){this->Nch_=Nch_in;}
 			void Aj(double Aj_in){this->Aj_=Aj_in;}
 			double weight()const{return this->weight_;}
@@ -140,6 +142,12 @@ cout << "Calling Container." << endl;
 	double SumWeight;
 	double SumPair;
 	double SumTrig;
+
+	//Special case: Rt analysis needs eBye Nt. So need to store info of all events.
+	//------------------------------------------------------------------
+	vector<int> Nt_eBye;
+	vector<double> weight_eBye;
+
 	int max_nx=-1;
 	int max_ny=-1;
 
