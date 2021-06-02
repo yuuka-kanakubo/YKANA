@@ -49,6 +49,22 @@ namespace constants{
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
+#elif RT_YIELD
+	const std::string MODE = "Rt_yield";
+	const string default_out_directory_name="Rt_yield";
+	const double x_max = 10.0;
+	const double x_min = 0.0;
+	const double x_max_HI = 10.0;
+	const double d_x = 0.5;
+	const double d_x_HI = 0.5;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined CUMULANTMULTI
 	const std::string MODE = "cumulant_multi";
 	const string default_out_directory_name="cumulant_multi";
@@ -295,7 +311,7 @@ namespace constants{
 
 	const std::string core_tag="H";
 	const std::string corona_tag="S";
-
+	int num_of_Species_Rt = 7;
 
 
 	const int margin = 10;

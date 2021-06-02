@@ -1,13 +1,14 @@
 #!/bin/sh
 
-#DIR="../DCCI/data/20210511_PBPB_MB_0Kto5K"
+DIR="../DCCI/data/DCCI_PBPB_MB"
 #DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
-DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
+#DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
+#DIR="../pythia8244/highpt_mode_pythia/data/20210602PP7TEV_HIGHPT_10KxnBin"
 EV="ev"
-#EXT="hadronFinal_corecorona_weakStop.txt"
-EXT="default.txt"
-outputdir="RtSpectra_PP_PYTHIA"
-n=1000
+EXT="hadronFinal_corecorona_weakPhiStop.txt"
+#EXT="default.txt"
+outputdir="MTSCALING_PBPB_MB_DCCI_PHI_WOCOL_CORONA"
+n=20000
 
 
 #Do not modify this.
@@ -48,4 +49,8 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
+ --HI \
+ --CentralityCut 9 \
+ --only_corona \
+ --CentralityCut_ext hadronFinal_corecorona_weakStop.txt \
  > ${log_dname}${log_fname}.log  2>&1  &
