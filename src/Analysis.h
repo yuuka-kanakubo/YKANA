@@ -38,10 +38,11 @@ class Analysis{
 		double y_max;
 		double d_x;
 		double d_y;
+		double N_coeff;
 
 	public:
 
-		Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in), x_max(constants::x_max), y_max(constants::y_max), d_x(constants::d_x), d_y(constants::d_y){
+		Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in), x_max(constants::x_max), y_max(constants::y_max), d_x(constants::d_x), d_y(constants::d_y), N_coeff(2.0){
 			ms = make_shared<Message>();
 			uf = make_shared<Util_func>();
 			if(options.get_flag_HI()){
@@ -50,6 +51,9 @@ class Analysis{
 				d_x=constants::d_x_HI;
 				y_max=constants::y_max_HI;
 				d_y=constants::d_y_HI;
+			}
+			if(options.get_flag_set_Ncoeff()){
+				this->N_coeff = options.get_Ncoeff();
 			}
 			this->ana();
 		};
@@ -510,6 +514,21 @@ class Analysis{
 
 
 			}
+
+
+			int get_xaxis_RtClass(double xval){
+				if(xval<constants::RtBins[0]) return 0;
+				else if(xval<constants::RtBins[1]) return 1;
+				else if(xval<constants::RtBins[2]) return 2;
+				else if(xval<constants::RtBins[3]) return 3;
+				else if(xval<constants::RtBins[4]) return 4;
+				else{
+					cout << "ERROR:( Something is wrong! Rt:" << xval << endl; 
+					exit(1);
+				}
+			}
+
+
 			void stat_RtYield(shared_ptr<Container>& ct){
 
 				//Get <Nt>
@@ -531,7 +550,8 @@ class Analysis{
 					//----
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
 					if(x_val<constants::x_min || x_val>this->x_max) continue;
-					int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+					//int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+					int nx=this->get_xaxis_RtClass(x_val);
 
 					for(int sp=0; sp<constants::num_of_Species_Rt; sp++){
 						double y_val_trans = ct->TransYield_eBye[i].get_sp(sp);
@@ -1285,8 +1305,8 @@ class Analysis{
 				//----------------------------
 				std::complex<double> Qvec_tot=constants::initialval_comp;
 				std::complex<double> Qvec2_tot=constants::initialval_comp;
-				std::complex<double> n_coeff (2.0, 0.0);
-				std::complex<double> n2_coeff (2.0*2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
+				std::complex<double> n2_coeff (this->N_coeff*2.0, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
@@ -1344,7 +1364,7 @@ class Analysis{
 				//Count particle by particle.
 				//----------------------------
 				std::complex<double> Qvec_tot=constants::initialval_comp;
-				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
@@ -1384,7 +1404,7 @@ class Analysis{
 					Qvec_tot[i]=constants::initialval_comp;
 					hit[i]=0.0;
 				}
-				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					//Determine xbin
@@ -1440,7 +1460,7 @@ class Analysis{
 					Qvec_tot[i]=constants::initialval_comp;
 					hit[i]=0.0;
 				}
-				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					//Determine xbin
@@ -1506,7 +1526,7 @@ class Analysis{
 					hit_A[i]=0.0;
 					hit_B[i]=0.0;
 				}
-				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					//Determine xbin
@@ -1567,7 +1587,7 @@ class Analysis{
 				//----------------------------
 				std::complex<double> Qvec_tot_A=constants::initialval_comp;
 				std::complex<double> Qvec_tot_B=constants::initialval_comp;
-				std::complex<double> n_coeff (2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
 				double hit_A=0.0, hit_B=0.0;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -1618,18 +1638,18 @@ class Analysis{
 				std::complex<double> Qvec_tot_B=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_A=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_B=constants::initialval_comp;
-				std::complex<double> n_coeff (2.0, 0.0);
-				std::complex<double> n2_coeff (2.0*2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
+				std::complex<double> n2_coeff (this->N_coeff*2.0, 0.0);
 				double hit_A=0.0, hit_B=0.0;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
 					std::complex<double> Qvec2=exp(constants::i_img*n2_coeff*phi_);
-					if(EVENT.part[j].eta<-0.0){
+					if(EVENT.part[j].eta<-(constants::etaGap/2.0)){
 						Qvec_tot_A += Qvec;
 						Qvec2_tot_A += Qvec2;
 						hit_A++;
-					}else if(EVENT.part[j].eta>0.0){
+					}else if(EVENT.part[j].eta>(constants::etaGap/2.0)){
 						Qvec_tot_B += Qvec;
 						Qvec2_tot_B += Qvec2;
 						hit_B++;
@@ -1686,8 +1706,8 @@ class Analysis{
 				std::complex<double> Qvec2_tot_A=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_B=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_C=constants::initialval_comp;
-				std::complex<double> n_coeff (2.0, 0.0);
-				std::complex<double> n2_coeff (2.0*2.0, 0.0);
+				std::complex<double> n_coeff (this->N_coeff, 0.0);
+				std::complex<double> n2_coeff (this->N_coeff*2.0, 0.0);
 				double hit_A=0.0, hit_B=0.0, hit_C=0.0;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);

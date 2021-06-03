@@ -35,6 +35,7 @@ class Settings{
 				vector<double> val_cent;
 				vector<string> name_cent;
 				double dlty;
+				double Ncoeff;
 
 			private:
 
@@ -76,6 +77,7 @@ class Settings{
 				bool _2PCnearside;
 				bool _2PCout;
 				bool tagged;
+				bool set_Ncoeff;
 				unsigned int mid_rapidity_cut_type;
 				unsigned int axis_type;
 				unsigned int collision_type;
@@ -139,6 +141,7 @@ class Settings{
 				void set_flag__2PCnearside(){this->_2PCnearside=true;}
 				void set_flag__2PCout(){this->_2PCout=true;}
 				void set_flag_tagged(){this->tagged=true;}
+				void set_flag_set_Ncoeff(){this->set_Ncoeff=true;}
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
@@ -185,6 +188,7 @@ class Settings{
 				bool get_flag_pPb_cm_calculation()const{return flag_pPb_cm_calculation;}
 				double get_multiplicity_cut_more_than()const{return multip_cut_more_than;};
 				double get_multiplicity_cut_less_than()const{return multip_cut_less_than;};
+				double get_Ncoeff()const{return Ncoeff;}
 				bool get_flag_multiplicity_cut()const{return flag_multiplicity_cut;};
 				bool get_flag_INEL_lg_0()const{return cut_INEL_lg_0;};
 				bool get_flag_3outof3_trigger()const{return trig_3outof3;};
@@ -207,6 +211,7 @@ class Settings{
 				bool get_flag__2PCnearside()const{return this->_2PCnearside;}
 				bool get_flag__2PCout()const{return this->_2PCout;}
 				bool get_flag_tagged()const{return this->tagged;}
+				bool get_flag_set_Ncoeff()const{return this->set_Ncoeff;}
 
 
 
@@ -251,6 +256,7 @@ class Settings{
 					_2PCnearside(false),
 					_2PCout(false),
 					tagged(false),
+					set_Ncoeff(false),
 
 					mid_rapidity_cut_type(0),
 					axis_type(0),
@@ -319,6 +325,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--2PCnearside")){options.set_flag__2PCnearside(); cout << ";) 2PC correlation in 1D calculation started with --2PCnearside." << endl;}
 				else if(!strcmp(argv[i],"--2PCout")){options.set_flag__2PCout(); cout << ";) 2PC correlation in 1D calculation started with --2PCout." << endl;}
 				else if(!strcmp(argv[i],"--tagged")){options.set_flag_tagged(); cout << ";) 2PC TAGGED calculation will be performed." << endl;}
+				else if(!strcmp(argv[i],"--setNcoeff")){options.set_flag_set_Ncoeff(); options.Ncoeff=(double)atoi(argv[i+1]); cout << ";) v"<< options.Ncoeff << " calculation is performed. " << endl;}
 				else { 
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;
