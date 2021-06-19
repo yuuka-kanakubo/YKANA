@@ -215,7 +215,7 @@ class Analysis{
 									part_1ev.push_back(part_in);
 								}
 							}
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRange_cumulantmulti && 0.2 < pt && pt<3.0 ) Nch++;
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRangeMultiplicity) Nch++;
 
 
 						}else if(constants::MODE.find("Rt_yield")!=string::npos){
@@ -484,11 +484,16 @@ class Analysis{
 
 				for(int i=0; i<(int)ct->Nt_eBye.size(); ++i){
 
+				//Container::EventInfo& EVENT= ct->EVENTINFO;
+				//double Nch = EVENT.Nch();
+
 					//Rt
 					//----
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
 					if(x_val<constants::x_min || x_val>this->x_max) continue;
 					int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+
+					//cout << Nch  << "   " << x_val << endl;
 
 					//If the event is weighted with w_i where \Sum_i^ev w_i = w_tot, 
 					//The event should be counted as (w_i/w_tot) event.
@@ -522,6 +527,10 @@ class Analysis{
 				else if(xval<constants::RtBins[2]) return 2;
 				else if(xval<constants::RtBins[3]) return 3;
 				else if(xval<constants::RtBins[4]) return 4;
+				else if(xval<constants::RtBins[5]) return 5;
+				else if(xval<constants::RtBins[6]) return 6;
+				else if(xval<constants::RtBins[7]) return 7;
+				else if(xval<constants::RtBins[8]) return 8;
 				else{
 					cout << "ERROR:( Something is wrong! Rt:" << xval << endl; 
 					exit(1);

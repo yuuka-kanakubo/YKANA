@@ -13,6 +13,7 @@ namespace constants{
         const double minPhi_RtTrans=(1.0/3.0)*M_PI;
 	const double etaRange_cumulantmulti=0.8;
 	const double etaRange_Rt=0.8;
+	const double etaRangeMultiplicity=0.5;
 	const double etaA_3sub = -1.0;
 	const double etaB_3sub = 1.0;
 	const double DeltaEtaFULL=1.2;
@@ -306,7 +307,8 @@ namespace constants{
 	const std::string name_cent_original[4]={"0-10pct","10-30pct", "30-50pct", "50-100pct"};
 	const std::string name_cent_pPb[7]={"0-5pct", "5-10pct", "10-20pct", "20-40pct", "40-60pct", "60-80pct", "80-100pct"};
 	const std::string name_cent_PbPb[11]={"0-5pct","5-10pct", "10-20pct","20-30pct", "30-40pct","40-50pct","50-60pct","60-70pct","70-80pct","80-90pct","90-100pct"};
-	const double RtBins[5]={0.5, 1.5, 2.5, 3.5, LARGE};
+	//const double RtBins[5]={0.5, 1.5, 2.5, 3.5, LARGE};
+	const double RtBins[9]={0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.5, 3.5, LARGE};
 	const double ptMax = 50.0;
 	const double etaMax = 10.0;
 	const double yMax = 10.0;
