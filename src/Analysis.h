@@ -285,6 +285,7 @@ class Analysis{
 									part_in.pt=pt;
 									part_in.eta=eta;
 									part_in.phi=phi;
+									part_in.TAG=TAG;
 									part_1ev.push_back(part_in);
 								}
 							}
@@ -572,7 +573,7 @@ class Analysis{
 
 					//dndeta, RcoreT, RcoreN, Rt, Rtmin, Rtmax 
 					//------------------------------------------
-					cout << fixed << setprecision(8) << ct->dNdeta_eBye[i]  << "  " << ct->FracCoreT_eBye[i] << "   " <<ct->FracCoreN_eBye[i] << "   " << x_val << "  " << Rtmin << "  " << Rtmax << endl;
+					//cout << fixed << setprecision(8) << ct->dNdeta_eBye[i]  << "  " << ct->FracCoreT_eBye[i] << "   " <<ct->FracCoreN_eBye[i] << "   " << x_val << "  " << Rtmin << "  " << Rtmax << endl;
 
 					for(int sp=0; sp<constants::num_of_Species_Rt; sp++){
 						double y_val_trans = ct->TransYield_eBye[i].get_sp(sp);
@@ -896,6 +897,72 @@ class Analysis{
 
 
 
+			void fill_twopc_tagged(shared_ptr<Container>& ct){
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Count particle by particle.
+				//----------------------------
+				double **Hit1ev;
+				Hit1ev = new double *[constants::x_cell_capa];
+				for(int i_cell=0; i_cell<constants::x_cell_capa; i_cell++){
+					Hit1ev[i_cell] = new double [constants::y_cell_capa];
+				}
+				for(int i=0; i<constants::x_cell_capa; i++){
+					for(int j=0; j<constants::y_cell_capa; j++){
+						Hit1ev[i][j]=0.0;
+					}
+				}
+				int max_nx = 0, max_ny = 0;
+				int NumPair=0;
+				for(int i=0; i<(int)EVENT.part.size(); ++i){
+
+					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
+
+					for(int j=0; j<(int)EVENT.part.size(); ++j){
+						if (i==j) continue;
+						string TAG = EVENT.part[j].TAG;
+						if(TAG==constants::core_tag) continue;
+
+						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
+						if(x_val<constants::x_min || x_val>this->x_max) continue;
+						int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+
+						double y_val=this->getDeltaPhi(EVENT.part[i].phi, EVENT.part[j].phi);
+						if(y_val<constants::y_min || y_val>this->y_max) continue;
+						int ny=(int)((y_val/this->d_y)+(std::fabs(constants::y_min)/this->d_y));
+
+						if(max_nx<nx) max_nx = nx;
+						if(max_ny<ny) max_ny = ny;
+						Hit1ev[nx][ny]+=1.0;
+						ct->Hist2D_x[nx][ny]+=x_val*EVENT.weight();
+						ct->Hist2D_y[nx][ny]+=y_val*EVENT.weight();
+						if(ct->max_nx<nx) ct->max_nx=nx;
+						if(ct->max_ny<ny) ct->max_ny=ny;
+						NumPair++;
+
+					}
+				}
+				//---------------
+				
+				for(int nx = 0; nx<max_nx+1; nx++){
+					for(int ny = 0; ny<max_ny+1; ny++){
+						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+					}
+				}
+
+				ct->SumWeight+=EVENT.weight();
+				ct->SumPair+=((double)NumPair)*EVENT.weight();
+
+
+				for(int i = 0; i < constants::x_cell_capa; i++) {
+					delete[] Hit1ev[i];
+				}
+				delete[] Hit1ev;
+
+			}
 			void fill_twopc(shared_ptr<Container>& ct){
 
 
@@ -2037,7 +2104,8 @@ class Analysis{
 						}else if(constants::MODE.find("cumulant_eta")!=std::string::npos){
 							this->fill_vneta(ct);
 						}else if(constants::MODE.find("twopc2D")!=std::string::npos){
-							this->fill_twopc(ct);
+							if(options.get_flag_tagged()) this->fill_twopc_tagged(ct); 
+							else this->fill_twopc(ct);
 						}else if(constants::MODE.find("twopc1D")!=std::string::npos){
 							if(options.get_flag_tagged()) this->fill_twopc1D_tagged(ct); 
 							else this->fill_twopc1D(ct);

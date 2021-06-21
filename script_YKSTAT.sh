@@ -7,7 +7,7 @@ DIR="../DCCI/data/DCCI_PP_MB"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="RTMultiMinMaxFracCoreInTransverse_DCCI_PP_MB"
+outputdir="RtYield_DCCI_WOCOL_leadingpt3.5"
 n=250000
 
 
