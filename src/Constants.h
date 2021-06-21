@@ -8,7 +8,10 @@ using std::string;
 using std::vector;
 
 namespace constants{
-        const double minpt_Rt=5.0;
+	double twopc2Dptmin=0.0;
+	double twopc2Dptmax=10000.0;
+	double twopc2DetaRange=4.0;
+	const double minpt_Rt=5.0;
         const double maxPhi_RtTrans=(2.0/3.0)*M_PI;
         const double minPhi_RtTrans=(1.0/3.0)*M_PI;
 	const double etaRange_cumulantmulti=0.8;

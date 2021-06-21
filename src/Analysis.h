@@ -212,6 +212,7 @@ class Analysis{
 									part_in.pt=pt;
 									part_in.eta=eta;
 									part_in.phi=phi;
+									part_in.TAG=TAG;
 									part_1ev.push_back(part_in);
 								}
 							}
@@ -227,10 +228,11 @@ class Analysis{
 									part_in.pt=pt;
 									part_in.eta=eta;
 									part_in.phi=phi;
+									part_in.TAG=TAG;
 									part_1ev.push_back(part_in);
 								}
 							}
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRange_cumulantmulti && 0.2 < pt && pt<3.0 ) Nch++;
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRangeMultiplicity) Nch++;
 
 
 						}else if(constants::MODE.find("cumulant_multi")!=string::npos){
@@ -277,7 +279,7 @@ class Analysis{
 
 						}else if(constants::MODE.find("twopc2D")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && pt<2.0 && pt>0.0 && fabs(eta)<4.0){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && pt<constants::twopc2Dptmax && pt>constants::twopc2Dptmin && fabs(eta)<constants::twopc2DetaRange){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.pt=pt;
@@ -484,8 +486,6 @@ class Analysis{
 
 				for(int i=0; i<(int)ct->Nt_eBye.size(); ++i){
 
-				//Container::EventInfo& EVENT= ct->EVENTINFO;
-				//double Nch = EVENT.Nch();
 
 					//Rt
 					//----
@@ -493,7 +493,7 @@ class Analysis{
 					if(x_val<constants::x_min || x_val>this->x_max) continue;
 					int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 
-					//cout << Nch  << "   " << x_val << endl;
+					//cout << ct->dNdeta_eBye[i]  << "   " << x_val << endl;
 
 					//If the event is weighted with w_i where \Sum_i^ev w_i = w_tot, 
 					//The event should be counted as (w_i/w_tot) event.
@@ -543,10 +543,16 @@ class Analysis{
 				//Get <Nt>
 				//-------------------------------------
 				double Nt_tot=0.0;
+				double Ntmin_tot=0.0;
+				double Ntmax_tot=0.0;
 				for(int i=0; i<(int)ct->Nt_eBye.size(); ++i){
 					Nt_tot+=(double)ct->Nt_eBye[i]*ct->weight_eBye[i];
+					Ntmin_tot+=(double)ct->Ntmin_eBye[i]*ct->weight_eBye[i];
+					Ntmax_tot+=(double)ct->Ntmax_eBye[i]*ct->weight_eBye[i];
 				}
 				double meanNt = Nt_tot/ct->SumWeight;
+				double meanNtmin = Ntmin_tot/ct->SumWeight;
+				double meanNtmax = Ntmax_tot/ct->SumWeight;
 				ct->meanNt=meanNt;
 				if((int)ct->Nt_eBye.size()!=(int)ct->TowardYield_eBye.size() || (int)ct->Nt_eBye.size()!=(int)ct->TransYield_eBye.size()){
 					cout << "ERROR:( Something wrong in stat_RtYield." << endl;
@@ -558,9 +564,15 @@ class Analysis{
 					//Rt
 					//----
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
+					double Rtmin=((double)ct->Ntmin_eBye[i])/meanNtmin;
+					double Rtmax=((double)ct->Ntmax_eBye[i])/meanNtmax;
 					if(x_val<constants::x_min || x_val>this->x_max) continue;
 					//int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 					int nx=this->get_xaxis_RtClass(x_val);
+
+					//dndeta, RcoreT, RcoreN, Rt, Rtmin, Rtmax 
+					//------------------------------------------
+					cout << fixed << setprecision(8) << ct->dNdeta_eBye[i]  << "  " << ct->FracCoreT_eBye[i] << "   " <<ct->FracCoreN_eBye[i] << "   " << x_val << "  " << Rtmin << "  " << Rtmax << endl;
 
 					for(int sp=0; sp<constants::num_of_Species_Rt; sp++){
 						double y_val_trans = ct->TransYield_eBye[i].get_sp(sp);
@@ -979,6 +991,7 @@ class Analysis{
 				//Store 
 				//--------
 				ct->Nt_eBye.push_back(Nt);
+				ct->dNdeta_eBye.push_back(EVENT.Nch());
 				ct->weight_eBye.push_back(EVENT.weight());
 				ct->SumWeight+=EVENT.weight();
 				return;
@@ -1006,6 +1019,12 @@ class Analysis{
 				//Get Nt.
 				//-------------------------------
 				int Nt=0;
+				int Ntmin=0;
+				int Ntmax=0;
+				int Ntcore=0;
+				int Ntcorona=0;
+				int Nncore=0;
+				int Nncorona=0;
 				Container::yield TransYield;
 				Container::yield TowardYield;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
@@ -1013,11 +1032,20 @@ class Analysis{
 					//----------------------------------------------
 					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
 						Nt++;
+						if(EVENT.part[j].phi-EVENT.part[itrig].phi>0.0) Ntmin++;
+						else Ntmax++;
 					}
+					if(Ntmin>Ntmax){
+						int Nttemp=Ntmin;
+						Ntmin=Ntmax;
+						Ntmax=Nttemp;
+					}
+
 					//Count Nth(yield in transverse region)
 					//----------------------------------------------
 					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
 						int ID = EVENT.part[j].id;
+						string TAG = EVENT.part[j].TAG;
 						if(abs(ID)==constants::id_proton) TransYield.add_ppbar(1.0);
 							if(abs(ID)==constants::id_ch_pion)TransYield.add_chpi(1.0); 
 							if(abs(ID)==constants::id_ch_kaon)TransYield.add_chkaon(1.0); 
@@ -1025,11 +1053,16 @@ class Analysis{
 							if(abs(ID)==constants::id_lambda)TransYield.add_lambda(1.0); 
 							if(abs(ID)==constants::id_cascade)TransYield.add_cascade(1.0); 
 							if(abs(ID)==constants::id_omega)TransYield.add_omega(1.0); 
+
+							if(TAG == constants::core_tag)Ntcore++;
+							else if(TAG == constants::corona_tag)Ntcorona++;
+
 					}
 					//Count Nth(yield in towards region)
 					//----------------------------------------------
 					else if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::minPhi_RtTrans){
 						int ID = EVENT.part[j].id;
+						string TAG = EVENT.part[j].TAG;
 						if(abs(ID)==constants::id_proton) TowardYield.add_ppbar(1.0);
 							if(abs(ID)==constants::id_ch_pion)TowardYield.add_chpi(1.0); 
 							if(abs(ID)==constants::id_ch_kaon)TowardYield.add_chkaon(1.0); 
@@ -1037,6 +1070,9 @@ class Analysis{
 							if(abs(ID)==constants::id_lambda)TowardYield.add_lambda(1.0); 
 							if(abs(ID)==constants::id_cascade)TowardYield.add_cascade(1.0); 
 							if(abs(ID)==constants::id_omega)TowardYield.add_omega(1.0); 
+
+							if(TAG == constants::core_tag)Nncore++;
+							else if(TAG == constants::corona_tag)Nncorona++;
 					}
 				}
 				//---------------
@@ -1045,6 +1081,13 @@ class Analysis{
 				ct->TransYield_eBye.push_back(TransYield);
 				ct->TowardYield_eBye.push_back(TowardYield);
 				ct->Nt_eBye.push_back(Nt);
+				ct->dNdeta_eBye.push_back(EVENT.Nch());
+				double FracT = (Ntcore+Ntcorona)>0? (double)Ntcore/(Ntcore+Ntcorona):-1.0;
+				ct->FracCoreT_eBye.push_back(FracT);
+				double FracN = (Nncore+Nncorona)>0? (double)Nncore/(Nncore+Nncorona):-1.0;
+				ct->FracCoreN_eBye.push_back(FracN);
+				ct->Ntmin_eBye.push_back(Ntmin);
+				ct->Ntmax_eBye.push_back(Ntmax);
 				ct->weight_eBye.push_back(EVENT.weight());
 				ct->SumWeight+=EVENT.weight();
 				return;

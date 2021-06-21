@@ -27,6 +27,7 @@ class Container{
 			double rap;
 			double eta;
 			double phi;
+			string TAG;
 
 	};
 
@@ -262,7 +263,12 @@ cout << "Calling Container." << endl;
 
 
 	vector<int> Nt_eBye;
+	vector<int> Ntmin_eBye;
+	vector<int> Ntmax_eBye;
 	vector<double> weight_eBye;
+	vector<double> dNdeta_eBye;
+	vector<double> FracCoreT_eBye;
+	vector<double> FracCoreN_eBye;
 	vector<yield> TransYield_eBye;
 	vector<yield> TowardYield_eBye;
 	double meanNt;

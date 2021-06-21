@@ -5,9 +5,9 @@ DIR="../DCCI/data/DCCI_PP_MB"
 #DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
 #DIR="../pythia8244/highpt_mode_pythia/data/20210602PP7TEV_HIGHPT_100KxnBin"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop_wcol.txt"
+EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="RTMulti_DCCI_PP_MB"
+outputdir="RTMultiMinMaxFracCoreInTransverse_DCCI_PP_MB"
 n=250000
 
 
