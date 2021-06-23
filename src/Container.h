@@ -69,7 +69,7 @@ class Container{
 
 	public:
 
-       Container():SumWeight(0.0), SumPair(0.0), SumTrig(0.0), meanNt(-1.0){
+       Container():SumWeight(0.0), SumPair(0.0), SumTrig(0.0), CountEv(0), meanNt(-1.0){
 cout << "Calling Container." << endl;
 	       if(constants::MODE.find("twopc")!=string::npos){
 		       Hist2D = new double *[constants::x_cell_capa];
@@ -191,6 +191,7 @@ cout << "Calling Container." << endl;
 	double SumWeight;
 	double SumPair;
 	double SumTrig;
+	int CountEv;
 
 	//Special case: Rt analysis needs eBye Nt. So need to store info of all events.
 	//------------------------------------------------------------------
@@ -265,10 +266,11 @@ cout << "Calling Container." << endl;
 	vector<int> Nt_eBye;
 	vector<int> Ntmin_eBye;
 	vector<int> Ntmax_eBye;
+	vector<int> TagEventNum;
 	vector<double> weight_eBye;
 	vector<double> dNdeta_eBye;
-	vector<double> FracCoreT_eBye;
-	vector<double> FracCoreN_eBye;
+	vector<double> CoreT_eBye;
+	vector<double> CoreN_eBye;
 	vector<yield> TransYield_eBye;
 	vector<yield> TowardYield_eBye;
 	double meanNt;

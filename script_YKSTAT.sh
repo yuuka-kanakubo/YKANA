@@ -1,14 +1,15 @@
 #!/bin/sh
 
 DIR="../DCCI/data/DCCI_PP_MB"
+DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 #DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
 #DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
 #DIR="../pythia8244/highpt_mode_pythia/data/20210602PP7TEV_HIGHPT_100KxnBin"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
-#EXT="default.txt"
-outputdir="RtYield_DCCI_WOCOL_leadingpt3.5"
-n=250000
+#EXT="hadronFinal_corecorona_weakStop.txt"
+EXT="default.txt"
+outputdir="RteByeInfo_PP13TeV_PYTHIA_leading5.0"
+n=100000
 
 
 #Do not modify this.

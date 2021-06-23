@@ -12,7 +12,7 @@ namespace constants{
 	double twopc2Dptmax=10000.0;
 	double twopc2DetaRange=4.0;
 	double twopc_tagged_leadingptmin=3.5;
-	const double minpt_Rt=3.5;
+	const double minpt_Rt=5.0;
         const double maxPhi_RtTrans=(2.0/3.0)*M_PI;
         const double minPhi_RtTrans=(1.0/3.0)*M_PI;
 	const double etaRange_cumulantmulti=0.8;

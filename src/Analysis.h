@@ -221,10 +221,12 @@ class Analysis{
 
 						}else if(constants::MODE.find("Rt_yield")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ||abs(ID)==constants::id_phi||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade || abs(ID)==constants::id_omega) && fabs(eta)<constants::etaRange_Rt ){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ||abs(ID)==constants::id_phi||abs(ID)==constants::id_lambda ||abs(ID)==constants::id_cascade || abs(ID)==constants::id_omega) && fabs(eta)<constants::etaRange_Rt && pt>0.15){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.id=ID;
+									part_in.px=px;
+									part_in.py=py;
 									part_in.pt=pt;
 									part_in.eta=eta;
 									part_in.phi=phi;
@@ -565,21 +567,23 @@ class Analysis{
 					//Rt
 					//----
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
-					double Rtmin=((double)ct->Ntmin_eBye[i])/meanNtmin;
-					double Rtmax=((double)ct->Ntmax_eBye[i])/meanNtmax;
+					//double Rtmin=((double)ct->Ntmin_eBye[i])/meanNtmin;
+					//double Rtmax=((double)ct->Ntmax_eBye[i])/meanNtmax;
 					if(x_val<constants::x_min || x_val>this->x_max) continue;
 					//int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
 					int nx=this->get_xaxis_RtClass(x_val);
 
 					//dndeta, RcoreT, RcoreN, Rt, Rtmin, Rtmax 
 					//------------------------------------------
-					//cout << fixed << setprecision(8) << ct->dNdeta_eBye[i]  << "  " << ct->FracCoreT_eBye[i] << "   " <<ct->FracCoreN_eBye[i] << "   " << x_val << "  " << Rtmin << "  " << Rtmax << endl;
+					//cout << fixed << setprecision(8) << ct->TagEventNum[i] << "  "  << ct->dNdeta_eBye[i]  << "  " << ct->CoreT_eBye[i] << "   " <<ct->CoreN_eBye[i] << "   " << x_val << "  " << Rtmin << "  " << Rtmax << endl;
 
 					for(int sp=0; sp<constants::num_of_Species_Rt; sp++){
 						double y_val_trans = ct->TransYield_eBye[i].get_sp(sp);
+						//double y_val_trans = ct->CoreT_eBye[i];
 						ct->RtHist_RtTrans_yield[sp][nx] += y_val_trans*ct->weight_eBye[i];
 						ct->RtHist_RtTrans_yieldyield[sp][nx] += y_val_trans*y_val_trans*ct->weight_eBye[i];
 						double y_val_toward = ct->TowardYield_eBye[i].get_sp(sp);
+						//double y_val_toward = ct->CoreN_eBye[i];
 						ct->RtHist_RtToward_yield[sp][nx] += y_val_toward*ct->weight_eBye[i];
 						ct->RtHist_RtToward_yieldyield[sp][nx] += y_val_toward*y_val_toward*ct->weight_eBye[i];
 						ct->HistHit_Rt[sp][nx]++;
@@ -1034,7 +1038,7 @@ class Analysis{
 				double max_pt=-1.0;
 				int itrig=-1;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					if(abs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
+					if(fabs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
 					if(max_pt<EVENT.part[i].pt) {
 						max_pt = EVENT.part[i].pt;
 						itrig=i;
@@ -1073,7 +1077,7 @@ class Analysis{
 				double max_pt=-1.0;
 				int itrig=-1;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					if(abs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
+					if(fabs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
 					if(max_pt<EVENT.part[i].pt) {
 						max_pt = EVENT.part[i].pt;
 						itrig=i;
@@ -1140,6 +1144,8 @@ class Analysis{
 
 							if(TAG == constants::core_tag)Nncore++;
 							else if(TAG == constants::corona_tag)Nncorona++;
+					}else{
+
 					}
 				}
 				//---------------
@@ -1149,14 +1155,13 @@ class Analysis{
 				ct->TowardYield_eBye.push_back(TowardYield);
 				ct->Nt_eBye.push_back(Nt);
 				ct->dNdeta_eBye.push_back(EVENT.Nch());
-				double FracT = (Ntcore+Ntcorona)>0? (double)Ntcore/(Ntcore+Ntcorona):-1.0;
-				ct->FracCoreT_eBye.push_back(FracT);
-				double FracN = (Nncore+Nncorona)>0? (double)Nncore/(Nncore+Nncorona):-1.0;
-				ct->FracCoreN_eBye.push_back(FracN);
+				ct->CoreT_eBye.push_back(Ntcorona);
+				ct->CoreN_eBye.push_back(Nncorona);
 				ct->Ntmin_eBye.push_back(Ntmin);
 				ct->Ntmax_eBye.push_back(Ntmax);
 				ct->weight_eBye.push_back(EVENT.weight());
 				ct->SumWeight+=EVENT.weight();
+				ct->TagEventNum.push_back(ct->CountEv-1);
 				return;
 			}
 
@@ -2023,6 +2028,7 @@ class Analysis{
 					//Event Loop
 					for(int i=0; i<options.get_nfile(); ++i){
 						if(!(i%1000)) ms->read(i);
+						ct->CountEv++;
 						std::stringstream ss;
 						ss << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/" << options.get_ext_name();
 						std::string inputpath = ss.str();
