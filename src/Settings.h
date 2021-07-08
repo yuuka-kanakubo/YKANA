@@ -64,6 +64,8 @@ class Settings{
 				bool ATLAS_cut;
 				bool only_core;
 				bool only_corona;
+				bool only_core_associates;
+				bool only_corona_associates;
 				bool print_eBye;
 				bool print_dndmt;
 				bool flag_pPb_cm_calculation;
@@ -131,6 +133,8 @@ class Settings{
 				}
 				void set_flag_only_core(){only_core=true;}
 				void set_flag_only_corona(){only_corona=true;}
+				void set_flag_only_core_associates(){only_core_associates=true;}
+				void set_flag_only_corona_associates(){only_corona_associates=true;}
 				void set_flag_print_eBye(){print_eBye=true;}
 				void set_flag_print_dndmt(){this->print_dndmt=true;}
 				void set_flag_2subevent(){this->two_subevent=true;}
@@ -197,6 +201,8 @@ class Settings{
 				bool get_flag_ATLAS_cut()const{return ATLAS_cut;};
 				bool get_flag_only_core()const{return only_core;} 
 				bool get_flag_only_corona()const{return only_corona;}
+				bool get_flag_only_core_associates()const{return only_core_associates;} 
+				bool get_flag_only_corona_associates()const{return only_corona_associates;}
 				bool get_flag_print_eBye()const{return print_eBye;}
 				bool get_flag_CentralityCut() const{return CentralityCut;}
 				bool get_flag_print_dndmt()const{return print_dndmt;} 
@@ -243,6 +249,8 @@ class Settings{
 					ATLAS_cut(false),
 					only_core(false),
 					only_corona(false),
+					only_core_associates(false),
+					only_corona_associates(false),
 					print_eBye(false),
 					print_dndmt(false),
 					flag_pPb_cm_calculation(false),
@@ -311,6 +319,8 @@ class Settings{
 				else if(!strcmp(argv[i],"--ATLAS_cut")){options.set_ATLAS_cut();}
 				else if(!strcmp(argv[i],"--only_core")){options.set_flag_only_core();}
 				else if(!strcmp(argv[i],"--only_corona")){options.set_flag_only_corona();}
+				else if(!strcmp(argv[i],"--only_core_associates")){options.set_flag_only_core_associates();}
+				else if(!strcmp(argv[i],"--only_corona_associates")){options.set_flag_only_corona_associates();}
 				else if(!strcmp(argv[i],"--print_dndmt")){options.set_flag_print_dndmt();}
 				else if(!strcmp(argv[i],"--print_eBye")){options.set_flag_print_eBye();}
 				else if(!strcmp(argv[i],"--CentralityCut")){options.set_flag_CentralityCut(atoi(argv[i+1]));}

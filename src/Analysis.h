@@ -205,7 +205,7 @@ class Analysis{
 
 						}else if(constants::MODE.find("Rt_spectra")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::etaRange_Rt ){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::etaRange_Rt && pt>0.15){
 
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
@@ -284,6 +284,7 @@ class Analysis{
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && pt<constants::twopc2Dptmax && pt>constants::twopc2Dptmin && fabs(eta)<constants::twopc2DetaRange){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
+									part_in.id=ID;
 									part_in.pt=pt;
 									part_in.eta=eta;
 									part_in.phi=phi;
@@ -296,7 +297,7 @@ class Analysis{
 
 						}else if(constants::MODE.find("twopc1D")!=string::npos){
 
-							if(((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<4.0 && pt > 3.0)|| (abs(ID)==constants::id_K0S && fabs(eta)<2.0 && pt>1.2 && pt<1.6)){
+							if(((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)< constants::twopc1DetaRange && pt > constants::twopc1Dptmin && pt<constants::twopc1Dptmax)){
 
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
@@ -304,6 +305,7 @@ class Analysis{
 									part_in.id=ID;
 									part_in.eta=eta;
 									part_in.phi=phi;
+									part_in.TAG=TAG;
 									part_1ev.push_back(part_in);
 								}
 							}
@@ -554,8 +556,8 @@ class Analysis{
 					Ntmax_tot+=(double)ct->Ntmax_eBye[i]*ct->weight_eBye[i];
 				}
 				double meanNt = Nt_tot/ct->SumWeight;
-				double meanNtmin = Ntmin_tot/ct->SumWeight;
-				double meanNtmax = Ntmax_tot/ct->SumWeight;
+				//double meanNtmin = Ntmin_tot/ct->SumWeight;
+				//double meanNtmax = Ntmax_tot/ct->SumWeight;
 				ct->meanNt=meanNt;
 				if((int)ct->Nt_eBye.size()!=(int)ct->TowardYield_eBye.size() || (int)ct->Nt_eBye.size()!=(int)ct->TransYield_eBye.size()){
 					cout << "ERROR:( Something wrong in stat_RtYield." << endl;
@@ -927,7 +929,8 @@ class Analysis{
 					for(int j=0; j<(int)EVENT.part.size(); ++j){
 						if (i==j) continue;
 						string TAG = EVENT.part[j].TAG;
-						if(TAG==constants::core_tag) continue;
+						if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
+						if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
 
 						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
 						if(x_val<constants::x_min || x_val>this->x_max) continue;
@@ -1039,6 +1042,8 @@ class Analysis{
 				int itrig=-1;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 					if(fabs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
+					int ID = EVENT.part[i].id;
+					if(!(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)) continue;
 					if(max_pt<EVENT.part[i].pt) {
 						max_pt = EVENT.part[i].pt;
 						itrig=i;
@@ -1054,7 +1059,10 @@ class Analysis{
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					//Count Nt
 					//-----------
-					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
+					int ID = EVENT.part[j].id;
+					if(!(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)) continue;
+					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans 
+							&& fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
 						Nt++;
 					}
 				}
@@ -1077,6 +1085,8 @@ class Analysis{
 				double max_pt=-1.0;
 				int itrig=-1;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
+					int ID = EVENT.part[i].id;
+					if(!(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)) continue;
 					if(fabs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
 					if(max_pt<EVENT.part[i].pt) {
 						max_pt = EVENT.part[i].pt;
@@ -1101,7 +1111,8 @@ class Analysis{
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					//Count Nt (multiplicity in transverse region)
 					//----------------------------------------------
-					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
+					int ID = EVENT.part[j].id;
+					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans && (abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)){
 						Nt++;
 						if(EVENT.part[j].phi-EVENT.part[itrig].phi>0.0) Ntmin++;
 						else Ntmax++;
@@ -1166,6 +1177,52 @@ class Analysis{
 			}
 
 			void fill_twopc1D_tagged(shared_ptr<Container>& ct){
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Count particle by particle.
+				//----------------------------
+				int NumPair=0;
+				int NumTrig=0;
+				for(int i=0; i<(int)EVENT.part.size(); ++i){
+					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
+					NumTrig++;
+
+					//Seeing associates.
+					//-------------------------------
+					for(int j=0; j<(int)EVENT.part.size(); ++j){
+						if(i==j) continue;
+						string TAG = EVENT.part[j].TAG;
+						if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
+						if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
+
+						double x_val=this->getDeltaPhi_twopc1D(EVENT.part[i].phi, EVENT.part[j].phi);
+						double DeltaEta=fabs(EVENT.part[i].eta - EVENT.part[j].eta);
+						if(options.get_flag__2PCfull() && DeltaEta> constants::DeltaEtaFULL) continue;
+						else if(options.get_flag__2PCnearside() && DeltaEta>constants::DeltaEtaNS) continue;
+						else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL)) continue;
+
+						if(x_val<constants::x_min || x_val>this->x_max) continue;
+						int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+
+						ct->Hist[nx]+=1.0*EVENT.weight();
+						ct->Hist_x[nx]+=x_val*EVENT.weight();
+						ct->Hist_weight[nx]+=EVENT.weight();
+						ct->HistHit[nx]++;
+						if(ct->max_nx<nx) ct->max_nx=nx;
+						NumPair++;
+
+					}
+				}
+				//---------------
+				ct->SumWeight+=EVENT.weight();
+				ct->SumPair+=((double)NumPair)*EVENT.weight();
+				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
+				return;
+			}
+
+
+			void fill_twopc1D_tagged_1particle(shared_ptr<Container>& ct){
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
 
@@ -2113,7 +2170,8 @@ class Analysis{
 							if(options.get_flag_tagged()) this->fill_twopc_tagged(ct); 
 							else this->fill_twopc(ct);
 						}else if(constants::MODE.find("twopc1D")!=std::string::npos){
-							if(options.get_flag_tagged()) this->fill_twopc1D_tagged(ct); 
+							if(options.get_flag_tagged()) this->fill_twopc1D_tagged(ct);
+							//this->fill_twopc1D_tagged_1particle(ct); 
 							else this->fill_twopc1D(ct);
 						}else if(constants::MODE.find("JET_PRAC")!=std::string::npos){
 							this->fill_jets(ct);

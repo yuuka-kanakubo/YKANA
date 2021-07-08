@@ -8,6 +8,9 @@ using std::string;
 using std::vector;
 
 namespace constants{
+	double twopc1Dptmin=0.0;
+	double twopc1Dptmax=10000.0;
+	double twopc1DetaRange=4.0;
 	double twopc2Dptmin=0.0;
 	double twopc2Dptmax=10000.0;
 	double twopc2DetaRange=4.0;
@@ -20,8 +23,8 @@ namespace constants{
 	const double etaRangeMultiplicity=0.5;
 	const double etaA_3sub = -1.0;
 	const double etaB_3sub = 1.0;
-	const double DeltaEtaFULL=1.2;
-	const double DeltaEtaNS=0.75;
+	const double DeltaEtaFULL=4.0;
+	const double DeltaEtaNS=1.5;
 	const double etaGap=0.0;
 
 
