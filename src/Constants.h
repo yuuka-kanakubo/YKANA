@@ -25,6 +25,8 @@ namespace constants{
 	const double etaB_3sub = 1.0;
 	const double DeltaEtaFULL=4.0;
 	const double DeltaEtaNS=1.5;
+	const double DeltaPhiOUT=2.0;
+	const double DeltaPhiNS=0.85;
 	const double etaGap=0.0;
 
 
@@ -162,6 +164,22 @@ namespace constants{
 	const double x_min = -(1.0/2.0)*M_PI;
 	const double d_x = (2.0*M_PI)/25.0;
 	const double d_x_HI = (2.0*M_PI)/25.0;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
+#elif defined TWOPCINTEG
+	const std::string MODE = "twopcInteg";
+	const string default_out_directory_name="twopcInteg";
+	const double x_max = 30.0;
+	const double x_max_HI = 1500.0;
+	const double x_min = 0.0;
+	const double d_x = 5.0;
+	const double d_x_HI = 10.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 	const double y_max = 0.0;

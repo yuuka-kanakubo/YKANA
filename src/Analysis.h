@@ -295,7 +295,7 @@ class Analysis{
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && pt<3.0 ) Nch++;
 
 
-						}else if(constants::MODE.find("twopc1D")!=string::npos){
+						}else if(constants::MODE.find("twopc1D")!=string::npos || constants::MODE.find("twopcInteg")!=string::npos){
 
 							if(((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)< constants::twopc1DetaRange && pt > constants::twopc1Dptmin && pt<constants::twopc1Dptmax)){
 
@@ -309,7 +309,7 @@ class Analysis{
 									part_1ev.push_back(part_in);
 								}
 							}
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && pt<3.0 ) Nch++;
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<0.5) Nch++;
 
 
 						}else{
@@ -433,13 +433,17 @@ class Analysis{
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
 					if(options.get_flag_tagged()){
-						ct->FinalHist[i]=ct->Hist[i]/ct->SumTrig;
+						if(constants::MODE.find("twopcInteg")!=string::npos) ct->FinalHist[i]=ct->Hist[i]/ct->HistHit[i];
+						else ct->FinalHist[i]=ct->Hist[i]/ct->SumTrig;
 						if(options.get_flag__2PCfull()){
 							ct->FinalHist[i]/=2.0*constants::DeltaEtaFULL;
+							if(constants::MODE.find("twopcInteg")!=string::npos) ct->FinalHist[i]/=2.0*M_PI;
 						}else if(options.get_flag__2PCnearside()){
 							ct->FinalHist[i]/=2.0*constants::DeltaEtaNS;
+							if(constants::MODE.find("twopcInteg")!=string::npos) ct->FinalHist[i]/=2.0*constants::DeltaPhiNS;
 						}else if(options.get_flag__2PCout()){
 							ct->FinalHist[i]/=2.0*fabs(constants::DeltaEtaFULL-constants::DeltaEtaNS);
+							if(constants::MODE.find("twopcInteg")!=string::npos) ct->FinalHist[i]/=fabs(constants::DeltaPhiOUT-constants::DeltaPhiNS);
 						}else{
 							cout << ":( ERROR Something wrong with the flags. " << endl;
 							exit(1);
@@ -1173,6 +1177,50 @@ class Analysis{
 				ct->weight_eBye.push_back(EVENT.weight());
 				ct->SumWeight+=EVENT.weight();
 				ct->TagEventNum.push_back(ct->CountEv-1);
+				return;
+			}
+
+			void fill_twopc1D_taggedInteg(shared_ptr<Container>& ct){
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Count particle by particle.
+				//----------------------------
+				int NumPair=0;
+				int NumTrig=0;
+				double x_val=EVENT.Nch();
+				if(x_val<constants::x_min || x_val>this->x_max) return;
+				int nx=(int)((x_val/this->d_x)+(std::fabs(constants::x_min)/this->d_x));
+				for(int i=0; i<(int)EVENT.part.size(); ++i){
+					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
+					NumTrig++;
+
+					//Seeing associates.
+					//-------------------------------
+					for(int j=0; j<(int)EVENT.part.size(); ++j){
+						if(i==j) continue;
+						string TAG = EVENT.part[j].TAG;
+						if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
+						if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
+
+						double DeltaPhi=this->getDeltaPhi_twopc1D(EVENT.part[i].phi, EVENT.part[j].phi);
+						double DeltaEta=fabs(EVENT.part[i].eta - EVENT.part[j].eta);
+						if(options.get_flag__2PCfull() && DeltaEta> constants::DeltaEtaFULL ) continue;
+						else if(options.get_flag__2PCnearside() && (DeltaEta>constants::DeltaEtaNS || fabs(DeltaPhi)>constants::DeltaPhiNS)) continue;
+						else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL || DeltaPhi<constants::DeltaPhiNS || DeltaPhi>constants::DeltaPhiOUT)) continue;
+
+
+						ct->Hist[nx]+=1.0*EVENT.weight();
+						NumPair++;
+
+					}
+				}
+				//---------------
+				ct->HistHit[nx]+=((double)NumTrig)*EVENT.weight();
+				ct->Hist_x[nx]+=x_val*EVENT.weight();
+				ct->Hist_weight[nx]+=EVENT.weight();
+				ct->SumWeight+=EVENT.weight();
+				if(ct->max_nx<nx) ct->max_nx=nx;
 				return;
 			}
 
@@ -2173,6 +2221,8 @@ class Analysis{
 							if(options.get_flag_tagged()) this->fill_twopc1D_tagged(ct);
 							//this->fill_twopc1D_tagged_1particle(ct); 
 							else this->fill_twopc1D(ct);
+						}else if(constants::MODE.find("twopcInteg")!=string::npos){
+							this->fill_twopc1D_taggedInteg(ct);
 						}else if(constants::MODE.find("JET_PRAC")!=std::string::npos){
 							this->fill_jets(ct);
 						}else if(constants::MODE.find("Rt_spectra")!=string::npos){

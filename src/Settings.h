@@ -347,7 +347,7 @@ class Settings{
 
 void consistency_check(){
 
-	if(constants::MODE.find("twopc1D")!=std::string::npos){
+	if(constants::MODE.find("twopcInteg")!=string::npos || constants::MODE.find("twopc1D")!=std::string::npos){
 		if(!options.get_flag__2PCfull() && !options.get_flag__2PCnearside() && !options.get_flag__2PCout()) {
 			cout << ":( ERROR. Option --2PCfull, --2PCnearside, or --2PCout is needed. " << endl;
 			exit(1);
@@ -358,6 +358,11 @@ void consistency_check(){
 		}
 	}else{
 		if(options.get_flag_tagged()) cout << ":o WARNING. --tagged option works when TWOPC1D is activated." << endl;
+	}
+
+	if(constants::MODE.find("twopcInteg")!=string::npos){
+		options.set_flag_tagged();
+		cout << ":) Mode TWOPCINTEG is called. Option --tagged is forced to be used. " << endl;
 	}
 
 }

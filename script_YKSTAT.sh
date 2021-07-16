@@ -8,7 +8,7 @@ DIR="../DCCI/data/DCCI_PP_MB"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="TWOPC1DCENT_leading_core_DCCI_WOCOL_FULL"
+outputdir="TWOPC1DINTEG_leading_corona_DCCI_WOCOL_FULL"
 n=250000
 
 
@@ -52,9 +52,6 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --INEL_lg_0 \
- --CentralityCut 9 \
- --tagged \
  --2PCfull \
- --only_core_associates \
+ --only_corona_associates \
  > ${log_dname}${log_fname}.log  2>&1  &
