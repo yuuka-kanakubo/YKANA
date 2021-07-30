@@ -220,6 +220,22 @@ namespace constants{
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
+#elif defined MEANPTPID
+	const std::string MODE = "MeanptPID";
+	const string default_out_directory_name="MeanptPID";
+	const double x_max = 150.0;
+	const double x_max_HI = 1500.0;
+	const double x_min = 0.0;
+	const double d_x = 5.0;
+	const double d_x_HI = 10.0;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined VERTICES
 	const std::string MODE = "vertices";
 	const string default_out_directory_name="vertices";

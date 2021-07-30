@@ -203,6 +203,20 @@ class Analysis{
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 ) Nch++;
 
 
+						}else if(constants::MODE.find("MeanptPID")!=string::npos){
+							if(ID==constants::id_proton && std::fabs(eta)<0.5) { 
+								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
+
+								Container::ParticleInfo part_in;
+								part_in.pt=pt;
+								part_1ev.push_back(part_in);
+
+								}
+
+							}
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && std::fabs(eta)<0.3 ) Nch++;
+
+
 						}else if(constants::MODE.find("Rt_spectra")!=string::npos){
 
 							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::etaRange_Rt && pt>0.15){
@@ -1410,13 +1424,16 @@ class Analysis{
 					if(x_val<constants::x_min || x_val>this->x_max) return;
 				}
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
+				//For mean pt PID, assign 1 bin for each centrality.
+				//--------------------------------------------------
+				if(constants::MODE.find("MeanptPID")!=string::npos) nx=0;
 
 
 				//Count particle by particle.
 				//----------------------------
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					double y_val=constants::dummy;
-					if(constants::MODE.find("meanpt")!=string::npos){
+					if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("MeanptPID")!=string::npos){
 						y_val = EVENT.part[j].pt;
 					}else if(constants::MODE.find("meanmt")!=string::npos){
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
