@@ -1,6 +1,5 @@
-
-set(
-    CMAKE_RUNTIME_OUTPUT_DIRECTORY
-    ${CMAKE_HOME_DIRECTORY}
-   )
-add_executable(YKSTAT main.cpp)
+# Source files for library
+add_library(YKSTAT_LIB STATIC
+	          ReadIn.cpp Fill.cpp Stat.cpp Write.cpp
+	   )
+target_include_directories(YKSTAT_LIB PUBLIC ${PROJECT_SOURCE_DIR}/include)
