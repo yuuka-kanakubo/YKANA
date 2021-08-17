@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR="../DCCI/data/DCCI_PP_MB"
+DIR="../DCCI/data/DCCI_PP13TEV_MB"
 #DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 #DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
 #DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
@@ -8,8 +8,8 @@ DIR="../DCCI/data/DCCI_PP_MB"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="DCCI_PP_RIDGE_CentCut8_PT0to2GEV"
-n=300000
+outputdir="DCCI_PP13TEV_CUMULANTMULTI_C24_Ntrk_CMS"
+n=350000
 
 
 #Do not modify this.
@@ -52,7 +52,6 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --INEL_lg_0 \
- --2PCout \
- --CentralityCut 8 \
+ --4particle \
+ --setNcoeff 2 \
  > ${log_dname}${log_fname}.log  2>&1  &
