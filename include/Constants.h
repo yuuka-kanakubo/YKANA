@@ -16,9 +16,8 @@ inline	double twopc2Dptmax=10000.0;
 inline	double twopc2DetaRange=4.0;
 inline	double twopc_tagged_leadingptmin=3.5;
 inline	const double minpt_Rt=5.0;
-inline        const double maxPhi_RtTrans=(2.0/3.0)*M_PI;
-inline        const double minPhi_RtTrans=(1.0/3.0)*M_PI;
-inline	const double etaRange_cumulantmulti=2.4;
+inline  const double maxPhi_RtTrans=(2.0/3.0)*M_PI;
+inline  const double minPhi_RtTrans=(1.0/3.0)*M_PI;
 inline	const double etaRange_Rt=0.8;
 inline	const double etaRangeMultiplicity=0.5;
 inline	const double etaA_3sub = -0.4;
@@ -27,7 +26,13 @@ inline	const double DeltaEtaFULL=4.8;
 inline	const double DeltaEtaNS=1.5;
 inline	const double DeltaPhiOUT=2.0;
 inline	const double DeltaPhiNS=0.85;
-inline	const double etaGap=0.0;
+inline	const double etaGap=1.4;
+inline const double ptmin_cumulantmulti=0.2;
+inline const double ptmax_cumulantmulti=3.0;
+inline const double ptmin_cumulantmulti_Nch=0.2;
+inline const double ptmax_cumulantmulti_Nch=3.0;
+inline	const double etaRange_cumulantmulti=0.8;
+inline const double etaRange_cumulantmulti_Nch=0.8;
 
 
 #ifdef DNDETA_PROTON

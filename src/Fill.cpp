@@ -603,9 +603,9 @@ Fill::~Fill(){};
 
 			int Fill::get_cell_index(const double x_val_){
 				int ncell = (int)((x_val_/this->infohist->d_x)+(fabs(constants::x_min)/this->infohist->d_x));
-				if(constants::MODE.find("cumulant_multi")!=string::npos){
-					if(x_val_>constants::maxNchPP) ncell=6;
-				}
+				//if(constants::MODE.find("cumulant_multi")!=string::npos){
+					//if(x_val_>constants::maxNchPP) ncell=6;
+				//}
 				return  ncell;
 			}
 
@@ -664,6 +664,7 @@ Fill::~Fill(){};
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
+
 
 				//Count particle by particle.
 				//----------------------------
@@ -956,10 +957,10 @@ Fill::~Fill(){};
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
-					if(EVENT.part[j].eta<-0.0){
+					if(EVENT.part[j].eta<-(constants::etaGap/2.0)){
 						Qvec_tot_A += Qvec;
 						hit_A++;
-					}else if(EVENT.part[j].eta>0.0){
+					}else if(EVENT.part[j].eta>(constants::etaGap/2.0)){
 						Qvec_tot_B += Qvec;
 						hit_B++;
 					}

@@ -8,8 +8,8 @@ DIR="../DCCI/data/DCCI_PP13TEV_MB"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="DCCI_PP13TEV_CUMULANTMULTI_C24_Ntrk_CMS"
-n=350000
+outputdir="DCCI_PP13TEV_CUMULANTMULTI_v22_Nch_ALICE_650K"
+n=650000
 
 
 #Do not modify this.
@@ -52,6 +52,6 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --4particle \
+ --twosub  \
  --setNcoeff 2 \
  > ${log_dname}${log_fname}.log  2>&1  &
