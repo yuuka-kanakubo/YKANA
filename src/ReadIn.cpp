@@ -257,7 +257,7 @@ ReadIn::~ReadIn(){};
 									part_1ev.push_back(part_in);
 								}
 							}
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<1.0 && pt<3.0 ) Nch++;
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::twopc2DetaRange_N && pt>constants::twopc2Dptmin_N && pt<constants::twopc2Dptmax_N ) Nch++;
 
 
 						}else if(constants::MODE.find("twopc1D")!=string::npos || constants::MODE.find("twopcInteg")!=string::npos){
@@ -274,7 +274,7 @@ ReadIn::~ReadIn(){};
 									part_1ev.push_back(part_in);
 								}
 							}
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<0.5) Nch++;
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::twopc1DetaRange_N && pt>constants::twopc1Dptmin_N && pt<constants::twopc1Dptmax_N ) Nch++;
 
 
 						}else{

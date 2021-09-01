@@ -458,6 +458,8 @@ Fill::~Fill(){};
 			void Fill::fill_twopc1D(shared_ptr<Container>& ct){
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
+				double N=EVENT.Nch();
+				if(N<constants::twopc1D_Nmin || N>constants::twopc1D_Nmax) return;
 
 				//Count particle by particle.
 				//----------------------------
