@@ -8,6 +8,8 @@
 #include "Constants.h"
 #include "EbyeInfo.h"
 
+using namespace std;
+
 class Util_func{
 
  private:

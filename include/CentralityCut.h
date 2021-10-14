@@ -28,6 +28,12 @@ public:
 					options.name_cent.push_back(constants::name_cent_pp[i]);
 				}
 
+			}else if(options.get_collision_type()==8){
+				for(int i=0; i<10; ++i){ 
+					options.val_cent.push_back(constants::val_cent_original_narrow[i]); 
+					options.name_cent.push_back(constants::name_cent_original_narrow[i]);
+				}
+
 			}else if(options.get_collision_type()==9){
 				for(int i=0; i<4; ++i){ 
 					options.val_cent.push_back(constants::val_cent_original[i]); 
