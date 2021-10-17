@@ -8,14 +8,14 @@ using std::string;
 using std::vector;
 
 namespace constants{
-inline	double twopc1Dptmin=1.0;
-inline	double twopc1Dptmax=3.0;
+inline	double twopc1Dptmin=0.0;
+inline	double twopc1Dptmax=2.0;
 inline	double twopc1DetaRange=2.4;
 inline	double twopc1Dptmin_N=0.4;
 inline	double twopc1Dptmax_N=1000.0;
 inline	double twopc1DetaRange_N=2.4;
 inline  double twopc1D_Nmax=1000.;
-inline  double twopc1D_Nmin=125.;
+inline  double twopc1D_Nmin=100.;
 inline	double twopc2Dptmin=1.0;
 inline	double twopc2Dptmax=3.0;
 inline	double twopc2DetaRange=2.4;

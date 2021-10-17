@@ -464,6 +464,7 @@ Fill::~Fill(){};
 				//Count particle by particle.
 				//----------------------------
 				int NumPair=0;
+				int NumTrig=0;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 
 					for(int j=0; j<(int)EVENT.part.size(); ++j){
@@ -486,11 +487,13 @@ Fill::~Fill(){};
 						NumPair++;
 
 					}
+					NumTrig++;
 				}
 				//---------------
 
 				ct->SumWeight+=EVENT.weight();
 				ct->SumPair+=((double)NumPair)*EVENT.weight();
+				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 				return;
 			}
 

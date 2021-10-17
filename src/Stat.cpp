@@ -65,7 +65,8 @@ Stat::~Stat(){};
 							exit(1);
 						}
 					}else{
-						ct->FinalHist[i]=ct->Hist[i]/ct->SumPair;
+						//ct->FinalHist[i]=ct->Hist[i]/ct->SumPair;
+						ct->FinalHist[i]=ct->Hist[i]/ct->SumTrig;
 						ct->FinalHist[i]/=this->infohist->d_x;
 					}
 					ct->Hist_x[i]/=ct->Hist_weight[i];

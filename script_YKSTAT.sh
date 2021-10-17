@@ -8,8 +8,8 @@ DIR="../DCCI/data/DCCI_PP13TEV_MB"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="DCCI_PP13TEV_RIDGE_CMS_125Ntrk1000_650K"
-n=650000
+outputdir="DCCI_PP13TEV_RIDGE_CMS_100Ntrk1000_650K_0to2GeV"
+n=65000
 
 
 #Do not modify this.
