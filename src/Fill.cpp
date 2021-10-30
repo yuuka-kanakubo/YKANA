@@ -686,10 +686,11 @@ Fill::~Fill(){};
 				}
 
 				double totN = (double)EVENT.part.size();
-				double corr4 = real(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
+				double corr4_num = real(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
 						- Qvec_tot * conj(Qvec_tot)*(4.0*totN-8.0)
 						-conj(Qvec2_tot)* pow(Qvec_tot,2) - Qvec2_tot* conj(pow(Qvec_tot,2)) 
-						+  Qvec2_tot*conj(Qvec2_tot) - 6.0*totN +2.0*pow(totN,2))/(pow(totN,4)-6.0*pow(totN,3)+11.0*pow(totN,2)-6.0*totN);
+						+  Qvec2_tot*conj(Qvec2_tot) - 6.0*totN +2.0*pow(totN,2));
+				double corr4_denom = pow(totN,4)-6.0*pow(totN,3)+11.0*pow(totN,2)-6.0*totN;
 
 				double corr4_img = imag(Qvec_tot*Qvec_tot*conj(Qvec_tot)*conj(Qvec_tot) 
 						- Qvec_tot * conj(Qvec_tot)*(4.0*totN-8.0)
@@ -699,15 +700,20 @@ Fill::~Fill(){};
 				//Obtain 2particle correlation
 				//-------------------------------
 				double squared_Qvec = real(Qvec_tot * conj(Qvec_tot));
-				double corr2 = (squared_Qvec-totN)/(totN*(totN-1.0));
+				double corr2_num = squared_Qvec-totN;
+				double corr2_denom = totN*(totN-1.0);
 
 
-				ct->Hist[nx]+=corr4*EVENT.weight();
-				ct->Hist_sub[nx]+=corr2*EVENT.weight();
+				ct->Hist[nx]+=corr4_num*EVENT.weight();
+				ct->Hist2[nx]+=corr4_denom*EVENT.weight();
+				ct->Hist_sub[nx]+=corr2_num*EVENT.weight();
+				ct->Hist2_sub[nx]+=corr2_denom*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();
-				ct->HistHist_sub[nx]+=corr2*corr2*EVENT.weight();
+				ct->HistHist[nx]+=corr4_num*corr4_num*EVENT.weight();
+				ct->HistHist2[nx]+=corr4_denom*corr4_denom*EVENT.weight();
+				ct->HistHist_sub[nx]+=corr2_num*corr2_num*EVENT.weight();
+				ct->HistHist2_sub[nx]+=corr2_denom*corr2_denom*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
 				ct->Hist_img_Qvec[nx]+=corr4_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;
@@ -803,11 +809,14 @@ Fill::~Fill(){};
 					double squared_Qvec_img = imag(Qvec_tot[nx] * conj(Qvec_tot[nx]));
 					double totN = hit[nx];
 					if(totN<2) continue;
-					double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
+					double corr_num = squared_Qvec-totN;
+					double corr_denom = totN*(totN-1.0);
 
-					ct->Hist[nx]+=corr*EVENT.weight();
+					ct->Hist[nx]+=corr_num*EVENT.weight();
+					ct->Hist2[nx]+=corr_denom*EVENT.weight();
 					ct->HistHit[nx]++;
-					ct->HistHist[nx]+=corr*corr*EVENT.weight();
+					ct->HistHist[nx]+=corr_num*corr_num*EVENT.weight();
+					ct->HistHist2[nx]+=corr_denom*corr_denom*EVENT.weight();
 					ct->Hist_weight[nx]+=EVENT.weight();
 					ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 
@@ -859,11 +868,14 @@ Fill::~Fill(){};
 					double squared_Qvec_img = imag(Qvec_tot[nx] * conj(Qvec_tot[nx]));
 					double totN = hit[nx];
 					if(totN<2) continue;
-					double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
+					double corr_num = squared_Qvec-totN;
+					double corr_denom = totN*(totN-1.0);
 
-					ct->Hist[nx]+=corr*EVENT.weight();
+					ct->Hist[nx]+=corr_num*EVENT.weight();
+					ct->Hist2[nx]+=corr_denom*EVENT.weight();
 					ct->HistHit[nx]++;
-					ct->HistHist[nx]+=corr*corr*EVENT.weight();
+					ct->HistHist[nx]+=corr_num*corr_num*EVENT.weight();
+					ct->HistHist2[nx]+=corr_denom*corr_denom*EVENT.weight();
 					ct->Hist_weight[nx]+=EVENT.weight();
 					ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 
@@ -926,11 +938,14 @@ Fill::~Fill(){};
 					double squared_Qvec = real(Qvec_tot_A[nx] * conj(Qvec_tot_B[nx]));
 					double squared_Qvec_img = imag(Qvec_tot_A[nx] * conj(Qvec_tot_B[nx]));
 					if(hit_A[nx]==0.0 || hit_B[nx]==0.0) continue;
-					double corr = (squared_Qvec)/(hit_A[nx]*hit_B[nx]);
+					double corr_num = squared_Qvec;
+					double corr_denom = hit_A[nx]*hit_B[nx];
 
-					ct->Hist[nx]+=corr*EVENT.weight();
+					ct->Hist[nx]+=corr_num*EVENT.weight();
+					ct->Hist2[nx]+=corr_denom*EVENT.weight();
 					ct->HistHit[nx]++;
-					ct->HistHist[nx]+=corr*corr*EVENT.weight();
+					ct->HistHist[nx]+=corr_num*corr_num*EVENT.weight();
+					ct->HistHist2[nx]+=corr_denom*corr_denom*EVENT.weight();
 					ct->Hist_weight[nx]+=EVENT.weight();
 					ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 
@@ -978,12 +993,15 @@ Fill::~Fill(){};
 
 				if(hit_A==0.0 || hit_B==0.0) return;
 
-				double corr = (squared_Qvec)/(hit_A*hit_B);
+				double corr_num = squared_Qvec;
+				double corr_denom = hit_A*hit_B;
 
-				ct->Hist[nx]+=corr*EVENT.weight();
+				ct->Hist[nx]+=corr_num*EVENT.weight();
+				ct->Hist2[nx]+=corr_denom*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr*corr*EVENT.weight();
+				ct->HistHist[nx]+=corr_num*corr_num*EVENT.weight();
+				ct->HistHist2[nx]+=corr_denom*corr_denom*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
 				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;
@@ -1033,20 +1051,26 @@ Fill::~Fill(){};
 
 				if(hit_A<=1.0 || hit_B<=1.0) return;
 
-				double corr4 = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*(hit_B-1));
+				double corr4_num = squared_Qvec;
+				double corr4_denom = hit_A*(hit_A-1)*hit_B*(hit_B-1);
 
 				//Obtain 2particle correlation
 				//------------------------------
 				double squared_Qvec_2part = real(Qvec_tot_A * conj(Qvec_tot_B));
-				double corr2 = (squared_Qvec_2part)/(hit_A*hit_B);
+				double corr2_num = squared_Qvec_2part;
+				double corr2_denom = hit_A*hit_B;
 
 
-				ct->Hist[nx]+=corr4*EVENT.weight();
-				ct->Hist_sub[nx]+=corr2*EVENT.weight();
+				ct->Hist[nx]+=corr4_num*EVENT.weight();
+				ct->Hist_sub[nx]+=corr2_num*EVENT.weight();
+				ct->Hist2[nx]+=corr4_denom*EVENT.weight();
+				ct->Hist2_sub[nx]+=corr2_denom*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();
-				ct->HistHist_sub[nx]+=corr2*corr2*EVENT.weight();
+				ct->HistHist[nx]+=corr4_num*corr4_num*EVENT.weight();
+				ct->HistHist_sub[nx]+=corr2_num*corr2_num*EVENT.weight();
+				ct->HistHist2[nx]+=corr4_denom*corr4_denom*EVENT.weight();
+				ct->HistHist2_sub[nx]+=corr2_denom*corr2_denom*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
 				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;
@@ -1105,28 +1129,37 @@ Fill::~Fill(){};
 
 				if(hit_A<=1.0 || hit_B<=0.0|| hit_C<=0.0) return;
 
-				double corr4 = (squared_Qvec)/(hit_A*(hit_A-1)*hit_B*hit_C);
+				double corr4_num = squared_Qvec;
+				double corr4_denom = hit_A*(hit_A-1)*hit_B*hit_C;
 
 				//Obtain 2particle correlation btw A and B.
 				//----------------------------------------
 				double squared_Qvec_2partAB = real(Qvec_tot_A * conj(Qvec_tot_B));
-				double corr2_AB = (squared_Qvec_2partAB)/(hit_A*hit_B);
+				double corr2_AB_num = squared_Qvec_2partAB;
+				double corr2_AB_denom = hit_A*hit_B;
 
 
 				//Obtain 2particle correlation btw A and C.
 				//----------------------------------------
 				double squared_Qvec_2partAC = real(Qvec_tot_A * conj(Qvec_tot_C));
-				double corr2_AC = (squared_Qvec_2partAC)/(hit_A*hit_C);
+				double corr2_AC_num = squared_Qvec_2partAC;
+				double corr2_AC_denom = hit_A*hit_C;
 
 
-				ct->Hist[nx]+=corr4*EVENT.weight();
-				ct->Hist_sub[nx]+=corr2_AB*EVENT.weight();
-				ct->Hist_subsub[nx]+=corr2_AC*EVENT.weight();
+				ct->Hist[nx]+=corr4_num*EVENT.weight();
+				ct->Hist2[nx]+=corr4_denom*EVENT.weight();
+				ct->Hist_sub[nx]+=corr2_AB_num*EVENT.weight();
+				ct->Hist2_sub[nx]+=corr2_AB_denom*EVENT.weight();
+				ct->Hist_subsub[nx]+=corr2_AC_num*EVENT.weight();
+				ct->Hist2_subsub[nx]+=corr2_AC_denom*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr4*corr4*EVENT.weight();
-				ct->HistHist_sub[nx]+=corr2_AB*corr2_AB*EVENT.weight();
-				ct->HistHist_subsub[nx]+=corr2_AC*corr2_AC*EVENT.weight();
+				ct->HistHist[nx]+=corr4_num*corr4_num*EVENT.weight();
+				ct->HistHist2[nx]+=corr4_denom*corr4_denom*EVENT.weight();
+				ct->HistHist_sub[nx]+=corr2_AB_num*corr2_AB_num*EVENT.weight();
+				ct->HistHist2_sub[nx]+=corr2_AB_denom*corr2_AB_denom*EVENT.weight();
+				ct->HistHist_subsub[nx]+=corr2_AC_num*corr2_AC_num*EVENT.weight();
+				ct->HistHist2_subsub[nx]+=corr2_AC_denom*corr2_AC_denom*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
 				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;

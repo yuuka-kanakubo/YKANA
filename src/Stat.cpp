@@ -284,7 +284,7 @@ Stat::~Stat(){};
 
 			void Stat::stat_flow(shared_ptr<Container>& ct){
 
-				StatCumulant stc;
+				auto stc=make_shared<StatCumulant>();
 
 				//take average    
 				//-------------------------------------
@@ -316,8 +316,24 @@ Stat::~Stat(){};
 					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
 
 					//Need to add for higher correlation.
-					stc.qvec2corr=ct->Hist[i];
-					stc.numpair2corr=ct->Hist2[i];
+					if(!options.get_flag__4particle()){
+						stc->qvec2corr[i]=ct->Hist[i];
+						stc->numpair2corr[i]=ct->Hist2[i];
+					}else{
+						if(!options.get_flag_3subevent()){
+							stc->qvec2corr[i]=ct->Hist_sub[i];
+							stc->numpair2corr[i]=ct->Hist2_sub[i];
+							stc->qvec4corr[i]=ct->Hist[i];
+							stc->numpair4corr[i]=ct->Hist2[i];
+						}else{
+							stc->qvec2ABcorr[i]=ct->Hist_sub[i];
+							stc->numpair2ABcorr[i]=ct->Hist2_sub[i];
+							stc->qvec2ACcorr[i]=ct->Hist_subsub[i];
+							stc->numpair2ACcorr[i]=ct->Hist2_subsub[i];
+							stc->qvec4corr[i]=ct->Hist[i];
+							stc->numpair4corr[i]=ct->Hist2[i];
+						}
+					}
 
 
 					// devide by cell width 
@@ -348,18 +364,22 @@ Stat::~Stat(){};
 							//Numerator. Q*Q + delta Q*Q
 							//-----------------------------
 							double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-							stc.qvec2corr_err=sqrt(var/ct->HistHit[i]);
+							stc->qvec2corr_err[i]=sqrt(var/ct->HistHit[i]);
 							//Denominator. Npair + delta Npair
 							//-----------------------------
 							double var2=ct->HistHist2[i]-pow(ct->Hist2[i],2.0);
-							stc.numpair2corr_err=sqrt(var2/ct->HistHit[i]);
+							stc->numpair2corr_err[i]=sqrt(var2/ct->HistHit[i]);
 
 							//Obtain <<2>> + delta <<2>>!
 							//----------------------------
-							ct->FinalHist[i]=stc.qvec2corr/stc.numpair2corr;
-							ct->HistErr[i]=(stc.qvec2corr/stc.numpair2corr)
-								*sqrt(pow(stc.qvec2corr_err/stc.qvec2corr, 2.0)
-										+pow(stc.numpair2corr_err/stc.numpair2corr, 2.0));
+							ct->FinalHist[i]=stc->qvec2corr[i]/stc->numpair2corr[i];
+							ct->HistErr[i]=(stc->qvec2corr[i]/stc->numpair2corr[i])
+								*sqrt(pow(stc->qvec2corr_err[i]/stc->qvec2corr[i], 2.0)
+										+pow(stc->numpair2corr_err[i]/stc->numpair2corr[i], 2.0));
+							//Store info
+							//-------------
+							stc->Corr2[i]=ct->FinalHist[i];
+							stc->Corr2Err[i]=ct->HistErr[i];
 						}
 
 
@@ -369,51 +389,108 @@ Stat::~Stat(){};
 						if(!options.get_flag_3subevent()){
 
 							//c2{4} (standard., 2subevent)
-							//---------
+							//
+							//1. Obtain <<2>>=Q*Q/Npair, <<4>>=Q*Q/Npair and their errors.
+							//2. Obtain C2{4} and its error using 1.
+							//==================================================================
 							for(int i=0; i<ct->max_nx+1; ++i){
-								//Get c2{4} = <<4>>-2*<<2>>^2
+								//1. Get <<4>> and <<2>>
 								//------------------------
-								double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
+								stc->Corr4[i]=stc->qvec4corr[i]/stc->numpair4corr[i];
+								stc->Corr2[i]=stc->qvec2corr[i]/stc->numpair2corr[i];
 
-								//Prepare standard error of <<2>> and <<4>>.
-								//----------------------------------------
+                                                                //Prepare standard error of Q*Q and Npair of each <2> and <4>
 								double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
-								double std2part =sqrt(var2part/ct->HistHit[i]);
+								stc->qvec2corr_err[i]=sqrt(var2part/ct->HistHit[i]);
+								double var2part_2=ct->HistHist2_sub[i]-pow(ct->Hist2_sub[i],2.0);
+								stc->numpair2corr_err[i]=sqrt(var2part_2/ct->HistHit[i]);
 								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-								double std4part =sqrt(var4part/ct->HistHit[i]);
+								stc->qvec4corr_err[i]=sqrt(var4part/ct->HistHit[i]);
+								double var4part_2=ct->HistHist2[i]-pow(ct->Hist2[i],2.0);
+								stc->numpair4corr_err[i]=sqrt(var4part_2/ct->HistHit[i]);
 
-								//Get error  delta c2{4}
-								//-------------------------
-								double err = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
-								ct->HistErr[i]=err;
+								//Obtain <<2>> + delta <<2>>, <<4>> + delta <<4>>!
+								stc->Corr2Err[i]=(stc->qvec2corr[i]/stc->numpair2corr[i])
+									*sqrt(pow(stc->qvec2corr_err[i]/stc->qvec2corr[i], 2.0)
+											+pow(stc->numpair2corr_err[i]/stc->numpair2corr[i], 2.0));
+								stc->Corr4Err[i]=(stc->qvec4corr[i]/stc->numpair4corr[i])
+									*sqrt(pow(stc->qvec4corr_err[i]/stc->qvec4corr[i], 2.0)
+											+pow(stc->numpair4corr_err[i]/stc->numpair4corr[i], 2.0));
+
+								//2. Get c2{4} + delta c2{4}
+								//----------------------------
+								double c24 = stc->Corr4[i]-2.0*stc->Corr2[i]*stc->Corr2[i];
+								double c24_err = sqrt(stc->Corr4Err[i]*stc->Corr4Err[i]
+										-8.0*stc->Corr2[i]*stc->Corr2Err[i]*stc->Corr4Err[i]
+										+16.0*stc->Corr2[i]*stc->Corr2[i]*stc->Corr2Err[i]*stc->Corr2Err[i]);
 								ct->FinalHist[i]=c24;
+								ct->HistErr[i]=c24_err;
+
+								//Store info
+								//-----------
+								stc->Cumu4[i]=ct->FinalHist[i];
+								stc->Cumu4Err[i]=ct->HistErr[i];
 							}
 
 						}else{
 
 							//c2{4} (3subevent)
-							//---------
+							//
+							//1. Obtain <<2>>a|b=Q*Q/Npair, <<2>>a|c=Q*Q/Npair, <<4>>a|b,a|c=Q*Q/Npair and their errors.
+							//2. Obtain c2{4} and its error using 1.
+							//==================================================================
 							for(int i=0; i<ct->max_nx+1; ++i){
-								//Get c2{4} = <<4>>aa|bc - 2 * <<2>>a|b * <<2>>a|c
-								//----------------------------------------------------
-								double c24=ct->Hist[i] - 2.0 * ct->Hist_sub[i]*ct->Hist_subsub[i];
+								//1. <<2>>a|b+delta<<2>>a|b, <<2>>a|c+delta<<2>>a|c, <<4>>+delta<<4>> 
+								//-----------------------------------------------------------------------------
+								stc->Corr4[i]=stc->qvec4corr[i]/stc->numpair4corr[i];
+								stc->Corr2AB[i]=stc->qvec2ABcorr[i]/stc->numpair2ABcorr[i];
+								stc->Corr2AC[i]=stc->qvec2ACcorr[i]/stc->numpair2ACcorr[i];
 
-								//Prepare standard error of <<2>>a|b, <<2>>a|c, and <<4>>aa|bb.
-								//----------------------------------------
-								double var2partAB=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
-								double std2partAB =sqrt(var2partAB/ct->HistHit[i]);
-								double var2partAC=ct->HistHist_subsub[i]-pow(ct->Hist_subsub[i],2.0);
-								double std2partAC =sqrt(var2partAC/ct->HistHit[i]);
+                                                                //Prepare standard error of Q*Q and Npair of each <2>, <2> and <4>
+								double var2ABpart=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
+								stc->qvec2ABcorr_err[i]=sqrt(var2ABpart/ct->HistHit[i]);
+								double var2ABpart_2=ct->HistHist2_sub[i]-pow(ct->Hist2_sub[i],2.0);
+								stc->numpair2ABcorr_err[i]=sqrt(var2ABpart_2/ct->HistHit[i]);
+
+								double var2ACpart=ct->HistHist_subsub[i]-pow(ct->Hist_subsub[i],2.0);
+								stc->qvec2ACcorr_err[i]=sqrt(var2ACpart/ct->HistHit[i]);
+								double var2ACpart_2=ct->HistHist2_subsub[i]-pow(ct->Hist2_subsub[i],2.0);
+								stc->numpair2ACcorr_err[i]=sqrt(var2ACpart_2/ct->HistHit[i]);
+
 								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-								double std4part =sqrt(var4part/ct->HistHit[i]);
+								stc->qvec4corr_err[i]=sqrt(var4part/ct->HistHit[i]);
+								double var4part_2=ct->HistHist2[i]-pow(ct->Hist2[i],2.0);
+								stc->numpair4corr_err[i]=sqrt(var4part_2/ct->HistHit[i]);
 
-								//Get error  delta c2{4}
-								//-------------------------
-								double err = sqrt(std4part*std4part 
-										+ 4.0*pow(ct->Hist_subsub[i],2)*pow(std2partAB,2)
-										+ 4.0*pow(ct->Hist_sub[i],2)*pow(std2partAC,2));
-								ct->HistErr[i]=err;
+								//Obtain <<2>> + delta <<2>>, <<4>> + delta <<4>>!
+								stc->Corr2ABErr[i]=(stc->qvec2ABcorr[i]/stc->numpair2ABcorr[i])
+									*sqrt(pow(stc->qvec2ABcorr_err[i]/stc->qvec2ABcorr[i], 2.0)
+											+pow(stc->numpair2ABcorr_err[i]/stc->numpair2ABcorr[i], 2.0));
+								stc->Corr2ACErr[i]=(stc->qvec2ACcorr[i]/stc->numpair2ACcorr[i])
+									*sqrt(pow(stc->qvec2ACcorr_err[i]/stc->qvec2ACcorr[i], 2.0)
+											+pow(stc->numpair2ACcorr_err[i]/stc->numpair2ACcorr[i], 2.0));
+								stc->Corr4Err[i]=(stc->qvec4corr[i]/stc->numpair4corr[i])
+									*sqrt(pow(stc->qvec4corr_err[i]/stc->qvec4corr[i], 2.0)
+											+pow(stc->numpair4corr_err[i]/stc->numpair4corr[i], 2.0));
+
+
+								//2. Get c2{4} + delta c2{4}
+								//----------------------------
+								double c24 = stc->Corr4[i]-2.0*stc->Corr2AB[i]*stc->Corr2AC[i];
+								double c24_err = sqrt(stc->Corr4Err[i]*stc->Corr4Err[i]
+										+4.0*pow(stc->Corr2AB[i],2.0)*pow(stc->Corr2ACErr[i],2.0)
+										+4.0*pow(stc->Corr2AC[i],2.0)*pow(stc->Corr2ABErr[i],2.0)
+										-4.0*stc->Corr4Err[i]*stc->Corr2ABErr[i]*stc->Corr2AC[i]
+										-4.0*stc->Corr4Err[i]*stc->Corr2ACErr[i]*stc->Corr2AB[i]
+										+8.0*stc->Corr2ABErr[i]*stc->Corr2ACErr[i]*stc->Corr2AB[i]*stc->Corr2AC[i]);
 								ct->FinalHist[i]=c24;
+								ct->HistErr[i]=c24_err;
+
+								//Store info
+								//-----------
+								stc->Cumu4[i]=ct->FinalHist[i];
+								stc->Cumu4Err[i]=ct->HistErr[i];
+
 							}
 
 
@@ -433,19 +510,19 @@ Stat::~Stat(){};
 
 						for(int i=0; i<ct->max_nx+1; ++i){
 							//Obtain vn{2} = sqrt(cn{2})
+							//*** Corr2 = Cumu2***
 							//--------------------------- 
-							double v22 =sqrt(ct->Hist[i]);
+							double v22 =sqrt(stc->Corr2[i]);
 
 							//Prepare standard error of <<2>>.
 							//----------------------------------------
-							double var2part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-							double std2part =sqrt(var2part/ct->HistHit[i]);
+							double std2part=stc->Corr2Err[i];
 
 							//Get error  delta v2{2}
 							//-------------------------
 							double err=(1.0/2.0)*(std2part/sqrt(v22));
-							ct->HistErr_vn[i]=err;
 							ct->FinalHist_vn[i]=v22;
+							ct->HistErr_vn[i]=err;
 						}
 
 
@@ -453,78 +530,17 @@ Stat::~Stat(){};
 
 					}else{
 
-
-						if(!options.get_flag_3subevent()){
-
-							//v2{4} (standard., 2-subevent)
+							//v2{4} (standard., 2-subevent, 3-subevent)
 							//---------
 							for(int i=0; i<ct->max_nx+1; ++i){
-								//Get c2{4} = <<4>>-2*<<2>>
-								//------------------------
-								double c24=ct->Hist[i] - 2.0 * pow(ct->Hist_sub[i],2);
-
-								//Prepare standard error of <<2>> and <<4>>.
-								//----------------------------------------
-								double var2part=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
-								double std2part =sqrt(var2part/ct->HistHit[i]);
-								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-								double std4part =sqrt(var4part/ct->HistHit[i]);
-
-								//Get error  delta c2{4}
-								//-------------------------
-								double errc24 = sqrt(std4part*std4part + 16.0*ct->Hist_sub[i]*ct->Hist_sub[i]*std2part*std2part);
-
 								//Get v2{4} = (-c2{4})**(1/4)
 								//---------------------------
-								double v24 = pow(-c24, 1.0/4.0);
-
-								//Get error delta v2{4}.
-								//----------------------------
-								double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
+								double v24 = pow(-1.0*stc->Cumu4[i], 1.0/4.0);
+								double err =  (-1.0/4.0)*pow(-1.0*stc->Cumu4[i], -3.0/4.0)*stc->Cumu4Err[i];
 								ct->FinalHist_vn[i]=v24;
-								ct->HistErr_vn[i]=err;
+								ct->FinalHist_vn[i]=err;
 							}
 
-						}else{
-
-
-							//v2{4} (3subevent)
-							//---------
-							for(int i=0; i<ct->max_nx+1; ++i){
-
-								//Get c2{4} = <<4>>aa|bc - 2 * <<2>>a|b * <<2>>a|c
-								//----------------------------------------------------
-								double c24=ct->Hist[i] - 2.0 * ct->Hist_sub[i]*ct->Hist_subsub[i];
-
-								//Prepare standard error of <<2>>a|b, <<2>>a|c, and <<4>>aa|bb.
-								//----------------------------------------
-								double var2partAB=ct->HistHist_sub[i]-pow(ct->Hist_sub[i],2.0);
-								double std2partAB =sqrt(var2partAB/ct->HistHit[i]);
-								double var2partAC=ct->HistHist_subsub[i]-pow(ct->Hist_subsub[i],2.0);
-								double std2partAC =sqrt(var2partAC/ct->HistHit[i]);
-								double var4part=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-								double std4part =sqrt(var4part/ct->HistHit[i]);
-
-								//Get error  delta c2{4}
-								//-------------------------
-								double errc24 = sqrt(std4part*std4part 
-										+ 4.0*pow(ct->Hist_subsub[i],2)*pow(std2partAB,2)
-										+ 4.0*pow(ct->Hist_sub[i],2)*pow(std2partAC,2));
-
-								//Get v2{4} = (-c2{4})**(1/4)
-								//---------------------------
-								double v24 = pow(-c24, 1.0/4.0);
-
-								//Get error delta v2{4}.
-								//----------------------------
-								double err =  (1.0/4.0)*errc24*pow(c24, -3.0/4.0);
-								ct->FinalHist_vn[i]=v24;
-								ct->HistErr_vn[i]=err;
-							}
-
-
-
-						}
 					}
 
 

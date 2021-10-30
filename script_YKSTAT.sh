@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
+DIR="../DCCI/data/DCCI_PBPB_MB"
 #DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 #DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
 #DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
@@ -8,8 +8,8 @@ DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="V22ETA_DCCI_PBPB2760GeV_transSmear0.6_sigma0.3_pT01.0_20K"
-n=20000
+outputdir="DCCI_PBPB_MB_12.5K_CUMULANTMULTI_WOCOL_CORONA"
+n=12500
 
 
 #Do not modify this.
