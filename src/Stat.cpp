@@ -284,12 +284,20 @@ Stat::~Stat(){};
 
 			void Stat::stat_flow(shared_ptr<Container>& ct){
 
+				StatCumulant stc;
+
 				//take average    
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
+					//Take average of numerator and denominator for each first.
+					//Hist2 is dealing with denominator.
+					//==========================================================
 					ct->Hist[i]/=ct->Hist_weight[i];
 					ct->Hist_sub[i]/=ct->Hist_weight[i];
 					ct->Hist_subsub[i]/=ct->Hist_weight[i];
+					ct->Hist2[i]/=ct->Hist_weight[i];
+					ct->Hist2_sub[i]/=ct->Hist_weight[i];
+					ct->Hist2_subsub[i]/=ct->Hist_weight[i];
 					if(constants::MODE.find("cumulant_eta")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos){
 						//When the xaxis is info of 1 particle.
 						//-----------------------------------
@@ -302,7 +310,15 @@ Stat::~Stat(){};
 					ct->HistHist[i]/=ct->Hist_weight[i];
 					ct->HistHist_sub[i]/=ct->Hist_weight[i];
 					ct->HistHist_subsub[i]/=ct->Hist_weight[i];
+					ct->HistHist2[i]/=ct->Hist_weight[i];
+					ct->HistHist2_sub[i]/=ct->Hist_weight[i];
+					ct->HistHist2_subsub[i]/=ct->Hist_weight[i];
 					ct->Hist_img_Qvec[i]/=ct->Hist_weight[i];
+
+					//Need to add for higher correlation.
+					stc.qvec2corr=ct->Hist[i];
+					stc.numpair2corr=ct->Hist2[i];
+
 
 					// devide by cell width 
 					//-------------------------------------
@@ -324,10 +340,26 @@ Stat::~Stat(){};
 						//Get standard error
 						//c2{2} = <<2>>, so no need to worry about error propagation.
 						//-------------------------------------
+						//
+						//1. Obtain error of num and denom.
+						//2. Calcualte error of <<2>> from 1.
+						//=========================================
 						for(int i=0; i<ct->max_nx+1; ++i){
+							//Numerator. Q*Q + delta Q*Q
+							//-----------------------------
 							double var=ct->HistHist[i]-pow(ct->Hist[i],2.0);
-							ct->HistErr[i]=sqrt(var/ct->HistHit[i]);
-							ct->FinalHist[i]=ct->Hist[i];
+							stc.qvec2corr_err=sqrt(var/ct->HistHit[i]);
+							//Denominator. Npair + delta Npair
+							//-----------------------------
+							double var2=ct->HistHist2[i]-pow(ct->Hist2[i],2.0);
+							stc.numpair2corr_err=sqrt(var2/ct->HistHit[i]);
+
+							//Obtain <<2>> + delta <<2>>!
+							//----------------------------
+							ct->FinalHist[i]=stc.qvec2corr/stc.numpair2corr;
+							ct->HistErr[i]=(stc.qvec2corr/stc.numpair2corr)
+								*sqrt(pow(stc.qvec2corr_err/stc.qvec2corr, 2.0)
+										+pow(stc.numpair2corr_err/stc.numpair2corr, 2.0));
 						}
 
 

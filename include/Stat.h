@@ -24,5 +24,32 @@ Stat(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHis
 			void stat_jets(shared_ptr<Container>& ct);
 			void stat_flow(shared_ptr<Container>& ct);
 
+class StatCumulant{
+
+public:
+ 
+ StatCumulant():
+	 qvec2corr(0.0),
+	 numpair2corr(0.0),
+	 qvec4corr(0.0),
+	 numpair4corr(0.0),
+	 qvec2corr_err(0.0),
+	 numpair2corr_err(0.0),
+	 qvec4corr_err(0.0),
+	 numpair4corr_err(0.0)
+	{};
+
+ double qvec2corr;
+ double numpair2corr;
+ double qvec4corr;
+ double numpair4corr;
+ double qvec2corr_err;
+ double numpair2corr_err;
+ double qvec4corr_err;
+ double numpair4corr_err;
+
+};
+
+
 };
 #endif

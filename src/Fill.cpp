@@ -743,12 +743,15 @@ Fill::~Fill(){};
 				double squared_Qvec = real(Qvec_tot * conj(Qvec_tot));
 				double squared_Qvec_img = imag(Qvec_tot * conj(Qvec_tot));
 				double totN = (double)EVENT.part.size();
-				double corr = (squared_Qvec-totN)/(totN*(totN-1.0));
+				double corr_num = squared_Qvec-totN;
+				double corr_denom = totN*(totN-1.0);
 
-				ct->Hist[nx]+=corr*EVENT.weight();
+				ct->Hist[nx]+=corr_num*EVENT.weight();
+				ct->Hist2[nx]+=corr_denom*EVENT.weight();
 				ct->Hist_x[nx]+=x_val*EVENT.weight();
 				ct->HistHit[nx]++;
-				ct->HistHist[nx]+=corr*corr*EVENT.weight();
+				ct->HistHist[nx]+=corr_num*corr_num*EVENT.weight();
+				ct->HistHist2[nx]+=corr_denom*corr_denom*EVENT.weight();
 				ct->Hist_weight[nx]+=EVENT.weight();
 				ct->Hist_img_Qvec[nx]+=squared_Qvec_img*EVENT.weight();
 				if(ct->max_nx<nx) ct->max_nx=nx;

@@ -171,12 +171,18 @@ cout << "Calling Container." << endl;
 	double Hist[constants::x_cell_capa]={};
 	double Hist_sub[constants::x_cell_capa]={};
 	double Hist_subsub[constants::x_cell_capa]={};
+	double Hist2[constants::x_cell_capa]={};
+	double Hist2_sub[constants::x_cell_capa]={};
+	double Hist2_subsub[constants::x_cell_capa]={};
 	double Hist_x[constants::x_cell_capa]={};
 	double Hist_1ev[constants::x_cell_capa]={};
 	double Hist_weight[constants::x_cell_capa]={};
 	double HistHist[constants::x_cell_capa]={};
 	double HistHist_sub[constants::x_cell_capa]={};
 	double HistHist_subsub[constants::x_cell_capa]={};
+	double HistHist2[constants::x_cell_capa]={};
+	double HistHist2_sub[constants::x_cell_capa]={};
+	double HistHist2_subsub[constants::x_cell_capa]={};
 
 	//For write out
 	//---------------

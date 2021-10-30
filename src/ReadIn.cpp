@@ -232,7 +232,7 @@ ReadIn::~ReadIn(){};
 
 						}else if(constants::MODE.find("cumulant_eta")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon )){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && constants::ptmin_cumulanteta < pt && pt<constants::ptmax_cumulanteta ){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.pt=pt;
