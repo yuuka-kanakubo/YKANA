@@ -8,7 +8,7 @@ DIR="../DCCI/data/DCCI_PBPB_MB"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="DCCI_PBPB_MB_12.5K_CUMULANTMULTI_WOCOL_CORONA"
+outputdir="DCCI_PBPB_MB_12.5K_C24_WOCOL_CORE"
 n=12500
 
 
@@ -52,6 +52,7 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
+ --only_core \
+ --4particle \
  --HI \
- --only_corona \
  > ${log_dname}${log_fname}.log  2>&1  &

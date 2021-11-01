@@ -538,7 +538,7 @@ Stat::~Stat(){};
 								double v24 = pow(-1.0*stc->Cumu4[i], 1.0/4.0);
 								double err =  (-1.0/4.0)*pow(-1.0*stc->Cumu4[i], -3.0/4.0)*stc->Cumu4Err[i];
 								ct->FinalHist_vn[i]=v24;
-								ct->FinalHist_vn[i]=err;
+								ct->HistErr_vn[i]=err;
 							}
 
 					}
