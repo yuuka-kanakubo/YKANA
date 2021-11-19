@@ -1,15 +1,15 @@
 #!/bin/sh
 
-DIR="../DCCI/data/DCCI_PBPB_MB"
+DIR="../DCCI/data/PP7TEV_transSmear0.6_sigma0.3_pT01.9"
 #DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
 #DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
 #DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
 #DIR="../pythia8244/highpt_mode_pythia/data/20210602PP7TEV_HIGHPT_100KxnBin"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
+EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="DCCI_PBPB_MB_12.5K_C24_WOCOL_CORE"
-n=12500
+outputdir="C24_CMS_DCCI_PP7TeV_transSmear0.6_sigma0.3_pT01.0_500K"
+n=500000
 
 
 #Do not modify this.
@@ -52,7 +52,6 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --only_core \
+ --INEL_lg_0 \
  --4particle \
- --HI \
  > ${log_dname}${log_fname}.log  2>&1  &

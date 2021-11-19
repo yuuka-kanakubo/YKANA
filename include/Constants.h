@@ -35,14 +35,14 @@ inline	const double DeltaEtaNS=2.0;
 inline	const double DeltaPhiOUT=2.0;
 inline	const double DeltaPhiNS=0.85;
 inline	const double etaGap=1.4;
-inline const double ptmin_cumulantmulti=0.2;
+inline const double ptmin_cumulantmulti=0.3;
 inline const double ptmax_cumulantmulti=3.0;
 inline const double ptmin_cumulanteta=0.0;
 inline const double ptmax_cumulanteta=3.0;
-inline const double ptmin_cumulantmulti_Nch=0.2;
-inline const double ptmax_cumulantmulti_Nch=3.0;
-inline	const double etaRange_cumulantmulti=0.8;
-inline const double etaRange_cumulantmulti_Nch=0.8;
+inline const double ptmin_cumulantmulti_Nch=0.4;
+inline const double ptmax_cumulantmulti_Nch=100.0;
+inline	const double etaRange_cumulantmulti=2.4;
+inline const double etaRange_cumulantmulti_Nch=2.4;
 
 
 #ifdef DNDETA_PROTON
