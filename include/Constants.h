@@ -35,14 +35,14 @@ inline	const double DeltaEtaNS=2.0;
 inline	const double DeltaPhiOUT=2.0;
 inline	const double DeltaPhiNS=0.85;
 inline	const double etaGap=1.4;
-inline const double ptmin_cumulantmulti=0.3;
+inline const double ptmin_cumulantmulti=0.2;
 inline const double ptmax_cumulantmulti=3.0;
 inline const double ptmin_cumulanteta=0.0;
 inline const double ptmax_cumulanteta=3.0;
-inline const double ptmin_cumulantmulti_Nch=0.4;
-inline const double ptmax_cumulantmulti_Nch=100.0;
-inline	const double etaRange_cumulantmulti=2.4;
-inline const double etaRange_cumulantmulti_Nch=2.4;
+inline const double ptmin_cumulantmulti_Nch=0.2;
+inline const double ptmax_cumulantmulti_Nch=3.0;
+inline	const double etaRange_cumulantmulti=0.8;
+inline const double etaRange_cumulantmulti_Nch=0.8;
 
 
 #ifdef DNDETA_PROTON
@@ -97,7 +97,7 @@ inline const double etaRange_cumulantmulti_Nch=2.4;
 	const double x_max = 150.0;
 	const double x_max_HI = 1500.0;
 	const double x_min = 0.0;
-	const double d_x = 10.0;
+	const double d_x = 20.0;
 	const double d_x_HI = 50.0;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";

@@ -13,7 +13,13 @@
 using namespace std;
 
 
-Fill::Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in):ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in){};
+Fill::Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in):ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in){
+
+	if(options.get_xaxis_type()==3){
+		this->SetCustomBin();
+	}
+
+};
 Fill::~Fill(){};
 
 			void Fill::fill_jets(shared_ptr<Container>& ct){
@@ -587,6 +593,28 @@ Fill::~Fill(){};
 			}
 
 
+
+int Fill::get_cell_index_cstm(const double val){
+
+	if(val<xMin_cstm[0] && fabs(xMin_cstm[0])<constants::SMALL){
+		return 0;
+	}
+	if(val>=xMax_cstm[(int)xMax_cstm.size()-1]){
+		return -1;
+	}
+	for(int i=0; i<(int)xMin_cstm.size(); i++){
+		if(val>=xMin_cstm[i] && val<xMax_cstm[i]) {
+			if(fabs(xMin_cstm[0])<constants::SMALL) return i+1;//#0 is 0.0-xMin[0]
+			else return i;
+		}
+	} 
+
+	cout << __FILE__ << " line " << __LINE__ << " Something is wrong " << endl;
+	exit(1);
+
+}
+
+
 			bool Fill::fix_ax(const int id, int &nx, double m){
 
 					//Current 
@@ -608,6 +636,10 @@ Fill::~Fill(){};
 
 			int Fill::get_cell_index(const double x_val_){
 				int ncell = (int)((x_val_/this->infohist->d_x)+(fabs(constants::x_min)/this->infohist->d_x));
+
+				if(options.get_xaxis_type()==3){
+					return this->get_cell_index_cstm(x_val_);
+				}
 				//if(constants::MODE.find("cumulant_multi")!=string::npos){
 					//if(x_val_>constants::maxNchPP) ncell=6;
 				//}

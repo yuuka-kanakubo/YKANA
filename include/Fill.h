@@ -17,13 +17,19 @@ private:
 		Settings::Options options;
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
+		vector<double> xMin_cstm, xMax_cstm;
 
 			bool fix_ax(const int id, int &nx, double m);
 			int get_cell_index(const double x_val_);
 			int get_cell_index_logplot(const double x_val_);
 			double getDeltaPhi(const double phi1, const double phi2);
 			double getDeltaPhi_twopc1D(const double phi1, const double phi2);
-	
+			void SetCustomBin(){
+                              this->xMax_cstm=options.xMax_cstm;
+                              this->xMin_cstm=options.xMin_cstm;
+			}
+			int get_cell_index_cstm(const double val);
+
 
 public:
 

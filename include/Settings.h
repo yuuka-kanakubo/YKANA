@@ -34,6 +34,7 @@ class Settings{
 				//-------------------------
 				vector<double> val_cent;
 				vector<string> name_cent;
+				vector<double> xMin_cstm, xMax_cstm;
 				double dlty;
 				double Ncoeff;
 
@@ -86,7 +87,25 @@ class Settings{
 				double long_range_hist_pm;
 				double multip_cut_more_than;
 				double multip_cut_less_than;
+				string axis3_inputf;
 
+				void GetBinSettings(){
+
+					ifstream in;
+					in.open(axis3_inputf.c_str(),ios::in);
+					if(!in) {
+						cout << __FILE__ << " line:"<< __LINE__ << " WARNING:o unable to open file. " << endl;
+						exit(1);
+					}
+					string templine;
+					while(getline(in,templine)) {
+						istringstream ist(templine);
+						double xmin, xmax;
+						ist >> xmin >> xmax;
+						this->xMin_cstm.push_back(xmin);
+						this->xMax_cstm.push_back(xmax);
+					}
+				}
 
 
 
@@ -107,6 +126,7 @@ class Settings{
 				void set_rapidity_shift_hist(){rapidity_shift=true;};
 				void set_flag_high_pt_mode(){high_pt_mode=true; cout << ":o HIGH PT MODE is called. Currently PP7TeV events are assumed. Please change a settings if you are analyzing different energy or system." << endl;};
 				void set_flag_zerofill(){zerofill=true;};
+				void set_axis3_input(const string path){axis3_inputf=path;  this->GetBinSettings();}
 				void set_xaxis_type(const int i){this->axis_type=i;}
 				void set_INEL_lg_0(){cut_INEL_lg_0=true;};
 				void set_trig_3outof3(){trig_3outof3=true;};
@@ -311,6 +331,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1
 				else if(!strcmp(argv[i],"--parton")){options.set_parton_level_hist();}
 				else if(!strcmp(argv[i],"--nozeros")){options.set_flag_zerofill();}
+				else if(!strcmp(argv[i],"--xaxis3_input")){options.set_axis3_input(argv[i+1]);}
 				//else if(!strcmp(argv[i],"--range")){options.set_xmax(atof(argv[i+1]));}///FOR x RANGE.
 				else if(!strcmp(argv[i],"--yshift")){options.dlty = atof(argv[i+1]); options.set_rapidity_shift_hist();} ///FOR rapidity shift.
 				else if(!strcmp(argv[i],"--xaxis")){options.set_xaxis_type(atoi(argv[i+1]));}//For output xaxis
