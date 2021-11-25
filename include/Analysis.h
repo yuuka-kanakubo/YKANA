@@ -36,8 +36,8 @@ class Analysis{
 		shared_ptr<Stat> stat;
 		shared_ptr<Write> write;
 
-		Settings::Options options;
-		LogSettings log;
+		Settings::Options& options;
+		LogSettings& log;
 
 
 		//Maximum value for histgram
@@ -46,7 +46,8 @@ class Analysis{
 
 	public:
 
-		Analysis(const Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in){
+		Analysis(Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in){
+			cout << "log " << log.get_BinSettings_size() << endl;
 			infohist = make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
 			ms = make_shared<Message>();
 			uf = make_shared<Util_func>();
@@ -237,7 +238,7 @@ class Analysis{
 					}else {
 						if(!write->write(generated_directory_name, ct)) return 1;
 					}
-					log.archive_settings(generated_directory_name);
+					if(!log.archive_settings(generated_directory_name)) return 1;
 
 				}//Centrality loop
 

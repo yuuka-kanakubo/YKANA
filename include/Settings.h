@@ -37,6 +37,7 @@ class Settings{
 				vector<double> xMin_cstm, xMax_cstm;
 				double dlty;
 				double Ncoeff;
+				string axis3_inputf;
 
 			private:
 
@@ -87,9 +88,10 @@ class Settings{
 				double long_range_hist_pm;
 				double multip_cut_more_than;
 				double multip_cut_less_than;
-				string axis3_inputf;
 
 				void GetBinSettings(){
+
+					cout << "Getting Bin Settings..." << endl;
 
 					ifstream in;
 					in.open(axis3_inputf.c_str(),ios::in);
@@ -297,7 +299,7 @@ class Settings{
 			{};
 
 		};
-		//------------------------------------------------------------------------
+		//<--- Class Options
 
 
 		Options options;
@@ -308,7 +310,10 @@ class Settings{
 			ms = std::make_shared<Message>();
 			init(argc, argv);
 			consistency_check();
-
+			if(options.get_xaxis_type()==3){
+				this->log.set_centrality_cut(this->options.get_flag_CentralityCut());
+				this->log.save_BinSettings(this->options.axis3_inputf);
+			}
 		};
 		~Settings(){};
 

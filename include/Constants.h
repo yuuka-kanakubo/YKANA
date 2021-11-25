@@ -41,7 +41,7 @@ inline const double ptmin_cumulanteta=0.0;
 inline const double ptmax_cumulanteta=3.0;
 inline const double ptmin_cumulantmulti_Nch=0.2;
 inline const double ptmax_cumulantmulti_Nch=3.0;
-inline	const double etaRange_cumulantmulti=0.8;
+inline	const double etaRange_cumulantmulti=2.0;
 inline const double etaRange_cumulantmulti_Nch=0.8;
 
 

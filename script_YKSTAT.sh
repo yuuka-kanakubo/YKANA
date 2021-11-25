@@ -8,7 +8,7 @@ DIR="../DCCI/data/PP13TEV_transSmear0.6_sigma0.3_pT01.9"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="C24_ALICE_DCCI_PP13TeV_transSmear0.6_sigma0.3_pT01.0_950K_axis3"
+outputdir="C24_cstmrange_PP13TeV_transSmear0.6_sigma0.3_pT01.0_950K_axis3_deltaEta2.0"
 n=950000
 
 
