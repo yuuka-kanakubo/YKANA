@@ -825,8 +825,8 @@ int Fill::get_cell_index_cstm(const double val){
 					Qvec_tot[nx] += Qvec;
 					//      cout << "Qvec " << Qvec << endl;
 					hit[nx]++;
-					ct->Hist_x[nx]+=x_val;
-					ct->HistPartHit[nx]++;
+					ct->Hist_x[nx]+=x_val*EVENT.weight();
+					ct->HistPartHit[nx]+=EVENT.weight();
 
 					if(ct->max_nx<nx) ct->max_nx=nx;
 
@@ -877,15 +877,15 @@ int Fill::get_cell_index_cstm(const double val){
 					//---------------
 					double x_val=EVENT.part[j].pt;
 					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
-					int nx=(int)((x_val/this->infohist->d_x)+(fabs(constants::x_min)/this->infohist->d_x));
+					int nx= this->get_cell_index(x_val);
 
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
 					Qvec_tot[nx] += Qvec;
 					//      cout << "Qvec " << Qvec << endl;
 					hit[nx]++;
-					ct->Hist_x[nx]+=x_val;
-					ct->HistPartHit[nx]++;
+					ct->Hist_x[nx]+=x_val*EVENT.weight();
+					ct->HistPartHit[nx]+=EVENT.weight();
 
 					if(ct->max_nx<nx) ct->max_nx=nx;
 
@@ -926,7 +926,6 @@ int Fill::get_cell_index_cstm(const double val){
 
 				if((int)EVENT.part.size()<2) return;
 
-
 				//Count particle by particle.
 				//----------------------------
 				std::complex<double> Qvec_tot_A[constants::x_cell_capa]={};
@@ -946,19 +945,21 @@ int Fill::get_cell_index_cstm(const double val){
 					//---------------
 					double x_val=EVENT.part[j].pt;
 					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
-					int nx=(int)((x_val/this->infohist->d_x)+(fabs(constants::x_min)/this->infohist->d_x));
+					int nx= this->get_cell_index(x_val);
 
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
-					if(EVENT.part[j].eta<-0.0){
+					if(EVENT.part[j].eta<-(constants::etaGap/2.0)){
 						Qvec_tot_A[nx] += Qvec;
 						hit_A[nx]++;
-					}else if(EVENT.part[j].eta>0.0){
+					}else if(EVENT.part[j].eta>(constants::etaGap/2.0)){
 						Qvec_tot_B[nx] += Qvec;
 						hit_B[nx]++;
 					}
 
 					if(ct->max_nx<nx) ct->max_nx=nx;
+					ct->Hist_x[nx]+=x_val*EVENT.weight();
+					ct->HistPartHit[nx]+=EVENT.weight();
 
 				}
 
