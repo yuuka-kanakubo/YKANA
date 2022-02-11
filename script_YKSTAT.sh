@@ -8,7 +8,7 @@ DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="V2PT_PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0_105K_WOCOL_CORONA"
+outputdir="V2PT_PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0_105K_NOGAP_maxPT3.0_WOCOL_CORONA"
 n=105000
 
 
@@ -52,9 +52,8 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --only_corona \
  --HI \
- --twosub  \
+ --only_corona \
  --xaxis 3 \
  --xaxis3_input input/BinSettings_V2PT_PBPB.txt \
  --CentralityCut 2 \

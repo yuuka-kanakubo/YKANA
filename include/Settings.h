@@ -50,6 +50,8 @@ class Settings{
 				std::string f_name_CentCut;
 				std::string ext_name_CentCut;
 				int nfile;
+				int beginfile;
+				bool specify_startingfile;
 
 				//Centrality Cut
 				bool CentralityCut;
@@ -119,6 +121,8 @@ class Settings{
 				void set_f_name(std::string name){this->f_name=name;}
 				void set_ext_name(std::string name){this->ext_name=name;}
 				void set_nfile(int n){this->nfile=n;}
+				void set_beginfile(int n){this->beginfile=n;}
+				void set_flag_specify_startingfile(){this->specify_startingfile=true;}
 				void set_dir_name_CentCut(std::string name){this->dir_name_CentCut=name;}
 				void set_f_name_CentCut(std::string name){this->f_name_CentCut=name;}
 				void set_ext_name_CentCut(std::string name){this->ext_name_CentCut=name;}
@@ -201,6 +205,8 @@ class Settings{
 				std::string get_ext_name_CentCut()const{return this->ext_name_CentCut;}
 				std::string get_out_directory_name()const{return this->out_directory_name;}
 				int get_nfile()const{return this->nfile;}
+				int get_beginfile()const{return this->beginfile;}
+				bool get_flag_specify_startingfile()const{return this->specify_startingfile;}
 				int get_xaxis_type()const{return axis_type;};
 				bool get_hist_parton_level()const{return parton_level;};
 				bool get_hist_rapidity_shift()const{return rapidity_shift;};
@@ -259,6 +265,8 @@ class Settings{
 					f_name_CentCut("xxx"),
 					ext_name_CentCut("xxx"),
 					nfile(1),
+					beginfile(0),
+					specify_startingfile(false),
 					CentralityCut(false),
 					Specify_dir_for_CentralityCut(false),
 					Specify_f_for_CentralityCut(false),
@@ -328,6 +336,8 @@ class Settings{
 				else if(!strcmp(argv[i],"-f")){options.set_f_name ( argv[i+1]);}
 				else if(!strcmp(argv[i],"-ext")){options.set_ext_name ( argv[i+1]);}
 				else if(!strcmp(argv[i],"-n")){options.set_nfile (atoi(argv[i+1]));}
+				else if(!strcmp(argv[i],"-from")){options.set_beginfile (atoi(argv[i+1])); options.set_flag_specify_startingfile();}
+				else if(!strcmp(argv[i],"-to")){options.set_nfile (atoi(argv[i+1])); options.set_flag_specify_startingfile();}
 				else if(!strcmp(argv[i],"-outdir")){options.set_out_directory_name(argv[i+1]);}
 				else if(!strcmp(argv[i],"--multip_cut_more_than")){options.set_flag_multiplicity_cut_more_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--multip_cut_less_than")){options.set_flag_multiplicity_cut_less_than(atof(argv[i+1]));}
@@ -391,6 +401,11 @@ void consistency_check(){
 	if(constants::MODE.find("twopcInteg")!=string::npos){
 		options.set_flag_tagged();
 		cout << ":) Mode TWOPCINTEG is called. Option --tagged is forced to be used. " << endl;
+	}
+
+        if(options.get_flag_specify_startingfile() && (options.get_nfile()<options.get_beginfile())){
+		cout << ":( ERROR. Specify reading file number with -from and -to. -from " << options.get_beginfile() << " -to " << options.get_nfile() << endl;
+		exit(1);
 	}
 
 }

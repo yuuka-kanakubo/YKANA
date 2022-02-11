@@ -97,7 +97,7 @@ class Analysis{
 					auto ct = make_shared<Container>();
 
 					//Event Loop
-					for(int i=0; i<options.get_nfile(); ++i){
+					for(int i=options.get_beginfile(); i<options.get_nfile(); ++i){
 						if(!(i%1000)) ms->read(i);
 						ct->CountEv++;
 						std::stringstream ss;

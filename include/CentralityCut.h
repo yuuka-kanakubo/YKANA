@@ -68,7 +68,7 @@ void read_events(){
 		rap_shift=(options.get_flag_pPb_cm_calculation())? constants::pPb_rap_shift_from_lab_to_cm:options.dlty;
 	}
 
-    for(int i=0;i<options.get_nfile();i++) {
+    for(int i=options.get_beginfile();i<options.get_nfile();i++) {
 
 	    if(i%1000==0) cout << ":) Reading " << i << "files." << endl; 
 	    ostringstream oss;
