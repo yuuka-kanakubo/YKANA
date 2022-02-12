@@ -15,22 +15,20 @@
 #include "LogSettings.h"
 #include "Settings.h"
 #include "CentralityCut.h"
-#include "ReadIn.h"
+#include "ReadInTimeLapse.h"
 
 using namespace std;
 
-ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in){};
-ReadIn::~ReadIn(){};
+ReadInTimeLapse::ReadInTimeLapse(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in){};
+ReadInTimeLapse::~ReadInTimeLapse(){};
 
-		bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
+		bool ReadInTimeLapse::read(const std::string& fname, shared_ptr<Container>& ct){
 
 			ifstream in;
 			in.open(fname.c_str(),ios::in);
 			if(!in){ ms->open(fname); return false;}
 
 			//Variables.
-			//part_1ev is a vector containing particle lists
-			//info_1ev stores info of one single event.
 			//-----------
 			Container::EventInfo info_1ev;
 			vector<Container::ParticleInfo> part_1ev;
@@ -295,8 +293,6 @@ ReadIn::~ReadIn(){};
 				}
 
 				//Store
-				//part_1ev is a vector containing particle lists
-				//info_1ev stores info of one single event.
 				//-------
 				info_1ev.weight(weight);
 				info_1ev.Nch(Nch);
@@ -307,148 +303,3 @@ ReadIn::~ReadIn(){};
 				return true;
 			}
 
-
-
-			
-				bool ReadIn::read_jetinfo(const std::string& fname, shared_ptr<Container>& ct){
-
-					ifstream in;
-					in.open(fname.c_str(),ios::in);
-					if(!in){ ms->open(fname); return false;}
-			
-					Container::EventInfo info_1ev;
-					vector <Container::ParticleInfo> Jets, Gamma;
-					{
-						std::string templine;
-						while(getline(in,templine)) {
-							if(templine.find('G')!=std::string::npos) {
-								istringstream is(templine);
-								double e,px,py,pz;
-								int num;
-								is >> num >> e >> px >> py >> pz;
-								Container::ParticleInfo info;
-								info.e=e;
-								info.px=px;
-								info.py=py;
-								info.pz=pz;
-								info.pt=sqrt(px*px + py*py);
-								info.phi=atan2(py, px);
-								Gamma.push_back(info);
-							}else if(templine.find('P')!=std::string::npos){
-							}else if(templine.find('#')!=std::string::npos){
-							}else{
-								istringstream is(templine);
-								double e,px,py,pz;
-								int num;
-								is >> num >> e >> px >> py >> pz;
-								Container::ParticleInfo info;
-								info.e=e;
-								info.px=px;
-								info.py=py;
-								info.pz=pz;
-								info.pt=sqrt(px*px + py*py);
-								info.phi=atan2(py, px);
-								Jets.push_back(info);
-							}
-						}
-						in.close();
-					}
-			
-			
-					if((int)Jets.size()<2){ 
-						vector<Container::ParticleInfo>().swap(Jets);
-						vector<Container::ParticleInfo>().swap(Gamma);
-						return false;
-					}
-					for(int i =0; i<1; i++){
-						if((Jets[i].pt+Jets[i+1].pt)<=0.0) {
-							vector<Container::ParticleInfo>().swap(Jets);
-							vector<Container::ParticleInfo>().swap(Gamma);
-							return false;
-						}
-						info_1ev.Aj(fabs((Jets[i].pt-Jets[i+1].pt)/(Jets[i].pt+Jets[i+1].pt)));
-					}
-			
-					ct->EVENTINFO=info_1ev;
-
-					vector<Container::ParticleInfo>().swap(Jets);
-					vector<Container::ParticleInfo>().swap(Gamma);
-					return true;
-				}
-
-
-
-bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, const double weight){
-
-
-//- at first event, get line num of the point to see.
-
-
-//Variables.
-//step_1ev is a vector containing time step info lists
-//info_1ev stores info of one single event.
-//-----------
-	Container::EventInfo info_1ev;
-	vector<Container::StepInfo> step_1ev;
-
-				 //TimeStep
-				 //---------
-				 double tau=constants::TL_tau_00;
-				 for(int step=0; step < constants::LARGEint ; step++){
-					 double dtau =( tau <= constants::TL_tau_switch)? constants::TL_dtau1:constants::TL_dtau2;
-
-					 //Read
-					 //----
-					 ostringstream os;
-					 os << fname << options.get_ext_nameTL() << fixed << setprecision(2) << tau*constants::hbarc << ".txt";
-					 ifstream in;
-					 in.open(os.str().c_str(),ios::in);
-					 if(!in){return false;}
-
-
-
-					 {
-						 std::string templine;
-						 while(getline(in,templine)) {
-							 if(templine.find('#')!=std::string::npos) {
-							 } else if(templine.find('%')!=std::string::npos){
-							 }else{
-								 istringstream is(templine);
-		// 						 double m,e,px,py,pz,x,y,z,t,ft, rap;
-		// 						 is >> data1 >> data2 >> col >> acol >> ID >> m >> e >> px >> py >> pz >> rap >> x >> y >> z >> t >> ft >> TAG;
-
-		// 						 if(the point is close enough){
-
-		// 							 Container::StepInfo step_in;
-		// 							 step_in.ThermoVal=temp;
-		// 							 step_1ev.push_back(step_in);
-								 //}
-							 }
-
-						 }//while
-					 }
-
-					 in.close();
-
-
-					 //Step End
-					 //---------
-					 tau+=dtau;
-					 if(tau*constants::hbarc>100.0) {
-						 cout << ":oWARNING It seems that something is wrong in hydro profile. The time step loop continues to 100fm." << endl;
-						 break;
-					 }
-
-				 }//step
-
-
-				 //Store
-				 //-------
-				 info_1ev.weight(weight);
-				 info_1ev.step=step_1ev;
-				 ct->EVENTINFO=info_1ev;
-				 vector<Container::StepInfo>().swap(step_1ev);
-
-				 return true;
-
-                                   }

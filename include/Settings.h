@@ -44,6 +44,8 @@ class Settings{
 				std::string dir_name;
 				std::string f_name;
 				std::string ext_name;
+				std::string ext_nameTLxy;
+				std::string ext_nameTLxeta;
 				std::string out_directory_name;
 				std::string out_fname;
 				std::string dir_name_CentCut;
@@ -90,6 +92,9 @@ class Settings{
 				double long_range_hist_pm;
 				double multip_cut_more_than;
 				double multip_cut_less_than;
+                                int modeTL;//0:xy, 1:xeta
+                                std::string valTL;
+                                double at_xTL, at_yTL, at_etaTL;
 
 				void GetBinSettings(){
 
@@ -157,6 +162,11 @@ class Settings{
 					mid_rapidity_cut_type=2;
 					cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << endl;
 				}
+				void set_modeTL(const int val){this->modeTL=val;}
+				void set_valTL(const std::string val){this->valTL=val;}
+				void set_at_xTL(const double val){this->at_xTL=val;}
+				void set_at_yTL(const double val){this->at_yTL=val;}
+				void set_at_etaTL(const double val){this->at_etaTL=val;}
 				void set_flag_only_core(){only_core=true;}
 				void set_flag_only_corona(){only_corona=true;}
 				void set_flag_only_core_associates(){only_core_associates=true;}
@@ -200,6 +210,15 @@ class Settings{
 				std::string get_dir_name()const{return this->dir_name;}
 				std::string get_f_name()const{return this->f_name;}
 				std::string get_ext_name()const{return this->ext_name;}
+				std::string get_ext_nameTL()const{
+					if(this->modeTL==0) return this->ext_nameTLxy;
+					else if(this->modeTL==1) return this->ext_nameTLxeta;
+					else{
+
+						cout << ":(ERROR Set proper option with -modeTL. 0: xy-plane, 1: xeta-plane." << endl;
+						exit(1); 
+					}
+				}
 				std::string get_dir_name_CentCut()const{return this->dir_name_CentCut;}
 				std::string get_f_name_CentCut()const{return this->f_name_CentCut;}
 				std::string get_ext_name_CentCut()const{return this->ext_name_CentCut;}
@@ -223,6 +242,11 @@ class Settings{
 				double get_multiplicity_cut_more_than()const{return multip_cut_more_than;};
 				double get_multiplicity_cut_less_than()const{return multip_cut_less_than;};
 				double get_Ncoeff()const{return Ncoeff;}
+				int get_modeTL(){return this->modeTL;}
+				std::string get_valTL(){return this->valTL;}
+				double get_at_xTL(){return this->at_xTL;}
+				double get_at_yTL(){return this->at_yTL;}
+				double get_at_etaTL(){return this->at_etaTL;}
 				bool get_flag_multiplicity_cut()const{return flag_multiplicity_cut;};
 				bool get_flag_INEL_lg_0()const{return cut_INEL_lg_0;};
 				bool get_flag_3outof3_trigger()const{return trig_3outof3;};
@@ -303,8 +327,13 @@ class Settings{
 					collision_type(3),
 					long_range_hist_pm(constants::default_midy_pm),
 					multip_cut_more_than(constants::multip_cut_more_than),
-					multip_cut_less_than(constants::multip_cut_less_than)
-			{};
+					multip_cut_less_than(constants::multip_cut_less_than),
+					modeTL(0),
+					valTL("temp"),
+					at_xTL(0.0),
+					at_yTL(0.0),
+					at_etaTL(0.0)
+					{};
 
 		};
 		//<--- Class Options
@@ -341,6 +370,11 @@ class Settings{
 				else if(!strcmp(argv[i],"-outdir")){options.set_out_directory_name(argv[i+1]);}
 				else if(!strcmp(argv[i],"--multip_cut_more_than")){options.set_flag_multiplicity_cut_more_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--multip_cut_less_than")){options.set_flag_multiplicity_cut_less_than(atof(argv[i+1]));}
+				else if(!strcmp(argv[i],"-modeTL")){options.set_modeTL(atoi(argv[i+1]));}
+				else if(!strcmp(argv[i],"-valTL")){options.set_valTL(argv[i+1]);}
+				else if(!strcmp(argv[i],"-look_at_xTL")){options.set_at_xTL(atof(argv[i+1]));}
+				else if(!strcmp(argv[i],"-look_at_yTL")){options.set_at_yTL(atof(argv[i+1]));}
+				else if(!strcmp(argv[i],"-look_at_etaTL")){options.set_at_etaTL(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--high_pt_mode")){options.set_flag_high_pt_mode();}
 				else if(!strcmp(argv[i],"--pPb_cm")){options.set_flag_pPb_cm_calculation();}
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1

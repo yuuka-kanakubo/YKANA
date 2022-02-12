@@ -111,6 +111,10 @@ class Analysis{
 							if(eBye_CentCut[i].get_V0M_class()!=iCent) continue;
 						}
 
+						//Obtain event info for TimeLapse
+						//-------------------------------
+						double weight_TL=(constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[i].weight:1.0;
+
 
 						if(!options.get_flag_CentralityCut()){
 							if(options.get_flag_INEL_lg_0()){
@@ -152,7 +156,13 @@ class Analysis{
 						if(constants::MODE.find("JET_PRAC")!=std::string::npos){
 							if(!read->read_jetinfo(inputpath, ct)) continue;
 						}else{
-							if(!read->read(inputpath, ct)) continue;
+							if(constants::MODE.find("timelapse")!=std::string::npos){
+								std::stringstream ssTL;
+								ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/" << endl;
+								if(!read->readTimeLapse(ssTL.str(), ct, weight_TL)) continue;
+							}else{
+								if(!read->read(inputpath, ct)) continue;
+							}
 						}
 						if(constants::MODE.find("cumulant_multi")!=std::string::npos){
 							if(options.get_flag_2subevent()){ 

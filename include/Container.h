@@ -31,6 +31,15 @@ class Container{
 
 	};
 
+        class StepInfo{
+
+		public:
+			double temp;
+			double tau;
+
+
+	};
+
 
 	//Info of 1 event.
 	//---------------
@@ -47,9 +56,11 @@ class Container{
 			EventInfo(): weight_(1.0), Nt_(0), Nch_(0), Aj_(1.0){};
 			~EventInfo(){
 				vector<ParticleInfo>().swap(part);
+				vector<StepInfo>().swap(step);
 			};
 
 			vector<ParticleInfo> part;
+			vector<StepInfo> step;
 			void weight(double weight_in){this->weight_=weight_in;}
 			void Nt(int Nt_in){this->Nt_=Nt_in;}
 			void Nch(int Nch_in){this->Nch_=Nch_in;}

@@ -47,6 +47,13 @@ inline const double etaRange_cumulantmulti=0.8;
 inline const double etaRange_cumulantpt=0.8;
 inline const double etaRange_cumulantmulti_Nch=0.8;
 
+inline const double hbarc = 0.197327 ;// natural unit in [GeV*fm]=1
+inline const double TL_tau_00 = 0.10/hbarc;//GeV^-1
+inline const double TL_tau_0 = 0.30/hbarc;//GeV^-1
+inline const double TL_tau_switch = 0.30/hbarc;//GeV^-1
+inline const double TL_dtau1=0.01/hbarc;
+inline const double TL_dtau2=0.3/hbarc;
+
 
 #ifdef DNDETA_PROTON
 	const std::string MODE = "dndeta_proton";
@@ -254,6 +261,22 @@ inline const double etaRange_cumulantmulti_Nch=0.8;
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
+#elif defined TIMELAPSE 
+	const std::string MODE = "timelapse";
+	const string default_out_directory_name="timelapse";
+	const double x_max = 150.0;
+	const double x_max_HI = 1500.0;
+	const double x_min = 0.0;
+	const double d_x = 5.0;
+	const double d_x_HI = 10.0;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #elif defined VERTICES
 	const std::string MODE = "vertices";
 	const string default_out_directory_name="vertices";
@@ -349,6 +372,7 @@ inline	const double pPb_mid_rapidity__bkw=0.0;
 inline	const double pPb_rap_shift_from_lab_to_cm=0.465;
 inline	const double default_midy_pm = 0.5;
 inline	const double LARGE=1.0e+16;
+inline	const int LARGEint=10000;
 inline	const double SMALL=1.0e-5;
 inline	const double multip_cut_more_than=-LARGE;
 inline	const double multip_cut_less_than=LARGE;
