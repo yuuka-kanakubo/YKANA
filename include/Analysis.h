@@ -211,6 +211,8 @@ class Analysis{
 							fill->fill_Rt(ct);
 						}else if(constants::MODE.find("Rt_yield")!=string::npos){
 							fill->fill_RtYield(ct);
+						}else if(constants::MODE.find("timelapse")!=string::npos){
+							fill->fill_TimeLapse(ct);
 						}else{
 							fill->fill(ct);
 						}

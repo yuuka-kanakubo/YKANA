@@ -19,7 +19,7 @@
 
 using namespace std;
 
-ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0){};
+ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0), nline(-1){};
 ReadIn::~ReadIn(){};
 
 bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
@@ -382,9 +382,8 @@ bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, 
 
 
 	//- at first event, get line num of the point to see.
-	int nline=-1;
 	if (ncall_readTimeLapse==0)
-		this->get_nline_to_see(nline, fname);
+		if(!this->get_nline_to_see(nline, fname)) return false;
 	if(nline<0){cout << ":(ERROR " << __FILE__ << __LINE__ << endl; exit(1);}
 
 
@@ -400,22 +399,30 @@ bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, 
 	double tau=constants::TL_tau_00;
 	for(int step=0; step < constants::LARGEint ; step++){
 		double dtau =(tau<= constants::TL_tau_switch)? constants::TL_dtau1:constants::TL_dtau2;
-		tau+=dtau;
+		if(tau*constants::hbarc>constants::TL_tau_switchFM-constants::TL_dtau1FM && tau*constants::hbarc<=constants::TL_tau_switchFM)dtau=constants::TL_dtau2;
 
-
-		//Read
-		//----
+		//The following line is for the DCCI with bug in File_fluid_manager setting tau00 as 0.01.
+		//--------------------------------
+		if(step==0) tau=0.0;
+		if(step==1) tau=constants::TL_tau_00+dtau;
 		ostringstream os;
 		os << fname << options.get_ext_nameTL() << fixed << setprecision(2) << tau*constants::hbarc << ".txt";
 		ifstream in;
 		in.open(os.str().c_str(),ios::in);
-		if(!in){return false;}
+		if(!in){
+					Container::StepInfo step_oneline;
+					step_oneline.tau=tau*constants::hbarc;
+					step_oneline.nstep=step;
+//cout << "no info " << step_oneline.tau << "  " << os.str() << endl;
+					step_1ev.push_back(step_oneline);
+		}
 
 		std::string templine;
 		int nline_current=0;
 		while(getline(in,templine)) {
 			if(templine.find('#')!=std::string::npos) {
 			} else if(templine.find('%')!=std::string::npos){
+			} else if(templine.empty()){
 			}else{
 				if(nline_current==nline){
 					istringstream is(templine);
@@ -423,7 +430,8 @@ bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, 
 					if(options.get_modeTL()==0) this->get_oneline_xy(is, step_oneline);
 					else if(options.get_modeTL()==1)this->get_oneline_xeta(is, step_oneline);
 					else{cout << ":( ERROR Something wrong. " << __FILE__ << __LINE__ << endl; exit(1);}
-					cout << "get " << step_oneline.tau << "  " << step_oneline.x << "  " << step_oneline.eta << "  " << step_oneline.temp << endl;
+					step_oneline.nstep=step;
+					//cout << "get " << step_oneline.tau << "  " << step_oneline.x << "  " << step_oneline.eta << "  " << step_oneline.temp << endl;
 					step_1ev.push_back(step_oneline);
 				}
 			}
@@ -431,10 +439,13 @@ bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, 
 		}//while
 
 		in.close();
-
-		//Step End
-		//---------
+		//Step
+		//----
 		tau+=dtau;
+
+		if(tau>constants::x_max) {
+			break;
+		}
 		if(tau*constants::hbarc>100.0) {
 			cout << ":oWARNING It seems that something is wrong in hydro profile. The time step loop continues to 100fm." << endl;
 			break;
@@ -475,6 +486,7 @@ bool ReadIn::get_nline_to_see(int &nline, const std::string fname){
 	while(getline(in,templine)) {
 		if(templine.find('#')!=std::string::npos) {
 		} else if(templine.find('%')!=std::string::npos){
+		} else if(templine.empty()){
 		}else{
 			istringstream is(templine);
 			Container::StepInfo step_oneline;
@@ -513,7 +525,7 @@ return true;
 
 
 void ReadIn::get_oneline_xeta(istringstream& is, Container::StepInfo& onestep){
-			is >> onestep.tau //fm 
+			is >> onestep.tau //[GeV^-1]
 				>> onestep.x //fm
 				>> onestep.eta //[1]
 				>> onestep.e //[GeV^4]
@@ -538,6 +550,7 @@ void ReadIn::get_oneline_xeta(istringstream& is, Container::StepInfo& onestep){
 				>> onestep.eBtildedy
 				>> onestep.eEtilde_dot_eBtilde
 				>> onestep.U4;
+			onestep.tau*=constants::hbarc;
 }
 
 void ReadIn::get_oneline_xy(istringstream& is, Container::StepInfo& onestep){
@@ -568,4 +581,5 @@ void ReadIn::get_oneline_xy(istringstream& is, Container::StepInfo& onestep){
 				>> onestep.Uy //25	
 				>> onestep.Ueta; //26	
 
+			onestep.tau*=constants::hbarc;
 }

@@ -46,6 +46,7 @@ Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHis
 			void fill_twopc1D_tagged_1particle(shared_ptr<Container>& ct);
 			void fill_twopc1D(shared_ptr<Container>& ct);
 			void fill(shared_ptr<Container>& ct);
+			void fill_TimeLapse(shared_ptr<Container>& ct);
 			void fill_vn4multi(shared_ptr<Container>& ct);
 			void fill_vnmulti(shared_ptr<Container>& ct);
 			void fill_vneta(shared_ptr<Container>& ct);

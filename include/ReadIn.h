@@ -7,6 +7,14 @@ private:
 		shared_ptr<Message> ms;  
 		Settings::Options options;
 		int ncall_readTimeLapse;
+		int nline;
+
+class print_coodTL{
+
+public:
+	double x_print, y_print, eta_print, tau_print;
+};
+
 
 public:
 

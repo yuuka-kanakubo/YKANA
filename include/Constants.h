@@ -47,11 +47,13 @@ inline const double etaRange_cumulantmulti=0.8;
 inline const double etaRange_cumulantpt=0.8;
 inline const double etaRange_cumulantmulti_Nch=0.8;
 
-inline const double hbarc = 0.197327 ;// natural unit in [GeV*fm]=1
+inline const double hbarc = 0.197327;// natural unit in [GeV*fm]=1
 inline const double TL_tau_00 = 0.10/hbarc;//GeV^-1
 inline const double TL_tau_0 = 0.30/hbarc;//GeV^-1
 inline const double TL_tau_switch = 0.30/hbarc;//GeV^-1
+inline const double TL_tau_switchFM=0.30;//fm
 inline const double TL_dtau1=0.01/hbarc;
+inline const double TL_dtau1FM=0.010;
 inline const double TL_dtau2=0.3/hbarc;
 inline const std::string ext_nameTLxy="hydro_profiles_eta_at0__tau_";
 inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
@@ -266,11 +268,11 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 #elif defined TIMELAPSE 
 	const std::string MODE = "timelapse";
 	const string default_out_directory_name="timelapse";
-	const double x_max = 150.0;
-	const double x_max_HI = 1500.0;
+	const double x_max = 15.0/hbarc;
+	const double x_max_HI = 15.0/hbarc;
 	const double x_min = 0.0;
-	const double d_x = 5.0;
-	const double d_x_HI = 10.0;
+	const double d_x = 0.1/hbarc;
+	const double d_x_HI = 0.1/hbarc;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
 	const double y_max = 0.0;

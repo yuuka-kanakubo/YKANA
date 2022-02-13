@@ -34,6 +34,11 @@ class Container{
         class StepInfo{
 
 		public:
+
+			StepInfo():nstep(0), tau(0.0),x(0.0),y(0.0), eta(0.0), e(0.0), temp(0.0){};
+			~StepInfo(){};
+
+			int nstep;
 			double tau;
 			double x;//fm
 			double y;//fm

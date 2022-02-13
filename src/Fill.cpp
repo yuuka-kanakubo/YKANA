@@ -22,7 +22,7 @@ Fill::Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<I
 };
 Fill::~Fill(){};
 
-			void Fill::fill_jets(shared_ptr<Container>& ct){
+void Fill::fill_jets(shared_ptr<Container>& ct){
 
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -1201,6 +1201,37 @@ int Fill::get_cell_index_cstm(const double val){
 
 
 
+			void Fill::fill_TimeLapse(shared_ptr<Container>& ct){
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Step
+				//----------------------------
+				for(int j=0; j<(int)EVENT.step.size(); ++j){
+
+					//Fill temp for each tau.
+					//========================
+
+					//Determine xbin
+					//---------------
+					int nx=EVENT.step[j].nstep;
+					double x_val=EVENT.step[j].tau;
+					double y_val=EVENT.step[j].temp;
+
+					ct->Hist[nx]+=y_val*EVENT.weight();
+					ct->Hist_x[nx]+=x_val*EVENT.weight();
+					ct->HistHit[nx]++;
+					ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
+					ct->Hist_weight[nx]+=EVENT.weight();
+					if(ct->max_nx<nx) ct->max_nx=nx;
+
+					ct->SumWeight+=EVENT.weight();
+
+				}
+
+
+			}
 
 
 
