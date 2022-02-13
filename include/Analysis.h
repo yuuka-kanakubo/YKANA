@@ -113,38 +113,44 @@ class Analysis{
 
 						//Obtain event info for TimeLapse
 						//-------------------------------
-						double weight_TL=(constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[i].weight:1.0;
+						double weight_TL=(options.get_flag_CentralityCut() && constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[i].weight:1.0;
 
 
 						if(!options.get_flag_CentralityCut()){
 							if(options.get_flag_INEL_lg_0()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath);
+								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.multiplicity_INEL_lg_0) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_3outof3_trigger()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath);
+								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.trig_3outof3) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_2outof3_trigger()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath);
+								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.trig_2outof3) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_ATLAS_cut()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath);
+								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.ATLAS_cut) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_VZEROAND_trigger()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath);
+								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.trig_VZEROAND) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else{
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath);
+								weight_TL=Multi.ebye.weight;
 								ebe.print_eByeInfo(i,Multi);
 							}
 						}
@@ -158,7 +164,7 @@ class Analysis{
 						}else{
 							if(constants::MODE.find("timelapse")!=std::string::npos){
 								std::stringstream ssTL;
-								ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/" << endl;
+								ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/";
 								if(!read->readTimeLapse(ssTL.str(), ct, weight_TL)) continue;
 							}else{
 								if(!read->read(inputpath, ct)) continue;

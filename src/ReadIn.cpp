@@ -19,10 +19,10 @@
 
 using namespace std;
 
-ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in){};
+ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0){};
 ReadIn::~ReadIn(){};
 
-		bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
+bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
 
 			ifstream in;
 			in.open(fname.c_str(),ios::in);
@@ -381,74 +381,191 @@ ReadIn::~ReadIn(){};
 bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, const double weight){
 
 
-//- at first event, get line num of the point to see.
+	//- at first event, get line num of the point to see.
+	int nline=-1;
+	if (ncall_readTimeLapse==0)
+		this->get_nline_to_see(nline, fname);
+	if(nline<0){cout << ":(ERROR " << __FILE__ << __LINE__ << endl; exit(1);}
 
 
-//Variables.
-//step_1ev is a vector containing time step info lists
-//info_1ev stores info of one single event.
-//-----------
+	//Variables.
+	//step_1ev is a vector containing time step info lists
+	//info_1ev stores info of one single event.
+	//-----------
 	Container::EventInfo info_1ev;
 	vector<Container::StepInfo> step_1ev;
 
-				 //TimeStep
-				 //---------
-				 double tau=constants::TL_tau_00;
-				 for(int step=0; step < constants::LARGEint ; step++){
-					 double dtau =( tau <= constants::TL_tau_switch)? constants::TL_dtau1:constants::TL_dtau2;
-
-					 //Read
-					 //----
-					 ostringstream os;
-					 os << fname << options.get_ext_nameTL() << fixed << setprecision(2) << tau*constants::hbarc << ".txt";
-					 ifstream in;
-					 in.open(os.str().c_str(),ios::in);
-					 if(!in){return false;}
+	//TimeStep
+	//---------
+	double tau=constants::TL_tau_00;
+	for(int step=0; step < constants::LARGEint ; step++){
+		double dtau =(tau<= constants::TL_tau_switch)? constants::TL_dtau1:constants::TL_dtau2;
+		tau+=dtau;
 
 
+		//Read
+		//----
+		ostringstream os;
+		os << fname << options.get_ext_nameTL() << fixed << setprecision(2) << tau*constants::hbarc << ".txt";
+		ifstream in;
+		in.open(os.str().c_str(),ios::in);
+		if(!in){return false;}
 
-					 {
-						 std::string templine;
-						 while(getline(in,templine)) {
-							 if(templine.find('#')!=std::string::npos) {
-							 } else if(templine.find('%')!=std::string::npos){
-							 }else{
-								 istringstream is(templine);
-		// 						 double m,e,px,py,pz,x,y,z,t,ft, rap;
-		// 						 is >> data1 >> data2 >> col >> acol >> ID >> m >> e >> px >> py >> pz >> rap >> x >> y >> z >> t >> ft >> TAG;
+		std::string templine;
+		int nline_current=0;
+		while(getline(in,templine)) {
+			if(templine.find('#')!=std::string::npos) {
+			} else if(templine.find('%')!=std::string::npos){
+			}else{
+				if(nline_current==nline){
+					istringstream is(templine);
+					Container::StepInfo step_oneline;
+					if(options.get_modeTL()==0) this->get_oneline_xy(is, step_oneline);
+					else if(options.get_modeTL()==1)this->get_oneline_xeta(is, step_oneline);
+					else{cout << ":( ERROR Something wrong. " << __FILE__ << __LINE__ << endl; exit(1);}
+					cout << "get " << step_oneline.tau << "  " << step_oneline.x << "  " << step_oneline.eta << "  " << step_oneline.temp << endl;
+					step_1ev.push_back(step_oneline);
+				}
+			}
+			nline_current++;
+		}//while
 
-		// 						 if(the point is close enough){
+		in.close();
 
-		// 							 Container::StepInfo step_in;
-		// 							 step_in.ThermoVal=temp;
-		// 							 step_1ev.push_back(step_in);
-								 //}
-							 }
+		//Step End
+		//---------
+		tau+=dtau;
+		if(tau*constants::hbarc>100.0) {
+			cout << ":oWARNING It seems that something is wrong in hydro profile. The time step loop continues to 100fm." << endl;
+			break;
+		}
 
-						 }//while
-					 }
-
-					 in.close();
-
-
-					 //Step End
-					 //---------
-					 tau+=dtau;
-					 if(tau*constants::hbarc>100.0) {
-						 cout << ":oWARNING It seems that something is wrong in hydro profile. The time step loop continues to 100fm." << endl;
-						 break;
-					 }
-
-				 }//step
+	}//step
 
 
-				 //Store
-				 //-------
-				 info_1ev.weight(weight);
-				 info_1ev.step=step_1ev;
-				 ct->EVENTINFO=info_1ev;
-				 vector<Container::StepInfo>().swap(step_1ev);
+	//Store
+	//-------
+	info_1ev.weight(weight);
+	info_1ev.step=step_1ev;
+	ct->EVENTINFO=info_1ev;
+	vector<Container::StepInfo>().swap(step_1ev);
 
-				 return true;
+	ncall_readTimeLapse++;
+	return true;
 
-                                   }
+}
+
+bool ReadIn::get_nline_to_see(int &nline, const std::string fname){
+
+
+	double tau=constants::TL_tau_00;
+	tau+=constants::TL_dtau1;
+	ostringstream os;
+	os << fname << options.get_ext_nameTL() << fixed << setprecision(2) << tau*constants::hbarc << ".txt";
+	ifstream in;
+	in.open(os.str().c_str(),ios::in);
+	if(!in){cout << os.str() << endl;return false;}
+	std::string templine;
+	double delta=constants::LARGE;
+	double xTL = options.get_at_xTL();
+	double yTL = options.get_at_yTL();
+	double etaTL = options.get_at_etaTL();
+	double x_current, y_current, eta_current;
+	int nline_=0;
+	while(getline(in,templine)) {
+		if(templine.find('#')!=std::string::npos) {
+		} else if(templine.find('%')!=std::string::npos){
+		}else{
+			istringstream is(templine);
+			Container::StepInfo step_oneline;
+			if(options.get_modeTL()==0)this->get_oneline_xy(is, step_oneline);
+			else if(options.get_modeTL()==1)this->get_oneline_xeta(is, step_oneline);
+			else{cout << ":( ERROR Something wrong. " << __FILE__ << __LINE__ << endl; exit(1);}
+			if(options.get_modeTL()==0){
+				if(delta>(pow(fabs(xTL-step_oneline.x),2)+pow(fabs(yTL-step_oneline.y),2))){
+					x_current=step_oneline.x;
+					y_current=step_oneline.y;
+					nline=nline_;
+					delta=(pow(fabs(xTL-step_oneline.x),2)+pow(fabs(yTL-step_oneline.y),2));
+				}
+				//if(delta_y>fabs(yTL-step_oneline.y)) y_current=step_online.y;
+			}else if(options.get_modeTL()==1){
+				if(delta>(pow(fabs(xTL-step_oneline.x),2)+pow(fabs(etaTL-step_oneline.eta),2))){
+					x_current=step_oneline.x;
+					eta_current=step_oneline.eta;
+					nline=nline_;
+					delta=(pow(fabs(xTL-step_oneline.x),2)+pow(fabs(etaTL-step_oneline.eta),2));
+				}
+			}
+
+		}
+		nline_++;
+	}//while
+
+	cout << "Printing nearest points: x " << x_current << "  y " << y_current << "  eta " << eta_current << endl;
+	cout << "                         ==>  " << nline << endl;
+	cout << "                 inputs: x " << options.get_at_xTL() << "  y " << options.get_at_yTL() << "  eta " << options.get_at_etaTL()<< endl;
+
+	in.close();
+return true;
+
+}
+
+
+void ReadIn::get_oneline_xeta(istringstream& is, Container::StepInfo& onestep){
+			is >> onestep.tau //fm 
+				>> onestep.x //fm
+				>> onestep.eta //[1]
+				>> onestep.e //[GeV^4]
+				>> onestep.temp //[GeV]
+				>> onestep.s //[GeV^3]
+				>> onestep.p //[GeV]
+				>> onestep.n //[GeV^3]
+				>> onestep.n5 
+				>> onestep.mu 
+				>> onestep.mu5
+				>> onestep.vx  //[1]
+				>> onestep.veta  //[1]
+				>> onestep.Ueta
+				>> onestep.Vtilde
+				>> onestep.UABS
+				>> onestep.Ux
+				>> onestep.Uy
+				>> onestep.Ueta
+				>> onestep.eEtildedx
+				>> onestep.eEtildedy
+				>> onestep.eBtildedx
+				>> onestep.eBtildedy
+				>> onestep.eEtilde_dot_eBtilde
+				>> onestep.U4;
+}
+
+void ReadIn::get_oneline_xy(istringstream& is, Container::StepInfo& onestep){
+			is >> onestep.tau //1
+				>> onestep.x //2
+				>> onestep.y //3
+				>> onestep.e //4
+				>> onestep.temp //5
+				>> onestep.s //6
+				>> onestep.p //7
+				>> onestep.n //8
+				>> onestep.n5 //9
+				>> onestep.mu //10
+				>> onestep.mu5 //11
+				>> onestep.Vtilde //12
+				>> onestep.vx //13
+				>> onestep.vy //14
+				>> onestep.veta //15	   
+				>> onestep.U4 //16
+				>> onestep.U_R4 //17
+				>> onestep.U_L4 //18	
+				>> onestep.eEtildedx  //19
+				>> onestep.eEtildedy  //20
+				>> onestep.eBtildedx  //21
+				>> onestep.eBtildedy  //22
+				>> onestep.eEtilde_dot_eBtilde  //23
+				>> onestep.Ux //24
+				>> onestep.Uy //25	
+				>> onestep.Ueta; //26	
+
+}

@@ -1,14 +1,10 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
-#DIR="../pythia8244/default_pythia_mymain/data/20210305_DEFAULT_PP13TEV"
-#DIR="../pythia8244/default_pythia_mymain/data/20210501_DEFAULT_PBPB2760GEV_weakStop_100K_sigma0DecayOn"
-#DIR="../pythia8244/default_pythia_mymain/data/20210426_DEFAULT_PP7TEV_weakStop_1M_sigma0DecayOn"
-#DIR="../pythia8244/highpt_mode_pythia/data/20210602PP7TEV_HIGHPT_100KxnBin"
+DIR="../DCCI/data/20220204_pp13TEV_MB_transSmear0.6_sigma0.3_pT0Ref1.9_1950Kto2000K"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
+EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="V2PT_PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0_105K_NOGAP_maxPT3.0_WOCOL_CORONA"
+outputdir="test"
 n=105000
 
 
@@ -52,9 +48,11 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
+ -from 1950000 \
+ -to 1950001 \
  --HI \
- --only_corona \
- --xaxis 3 \
- --xaxis3_input input/BinSettings_V2PT_PBPB.txt \
- --CentralityCut 2 \
- > ${log_dname}${log_fname}.log  2>&1  &
+ -look_at_xTL 0.0 \
+ -look_at_etaTL 0.0 \
+ -modeTL 1 \
+ -valTL temp \
+ #> ${log_dname}${log_fname}.log  2>&1  &

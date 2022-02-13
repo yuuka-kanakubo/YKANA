@@ -53,6 +53,8 @@ inline const double TL_tau_0 = 0.30/hbarc;//GeV^-1
 inline const double TL_tau_switch = 0.30/hbarc;//GeV^-1
 inline const double TL_dtau1=0.01/hbarc;
 inline const double TL_dtau2=0.3/hbarc;
+inline const std::string ext_nameTLxy="hydro_profiles_eta_at0__tau_";
+inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 
 
 #ifdef DNDETA_PROTON

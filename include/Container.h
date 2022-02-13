@@ -34,9 +34,34 @@ class Container{
         class StepInfo{
 
 		public:
-			double temp;
 			double tau;
-
+			double x;//fm
+			double y;//fm
+			double eta;
+			double e; //[GeV^4]
+			double temp; //[GeV]
+			double s; //[GeV^3]
+			double p; //[GeV]
+			double n; //[GeV^3]
+			double n5; 
+			double mu; 
+			double mu5;
+			double vx;  //[1]
+			double vy;  //[1]
+			double veta;  //[1]
+			double Vtilde;
+			double UABS;
+			double U4;
+			double U_R4;
+			double U_L4;
+			double Ux;
+			double Uy;
+			double Ueta;
+			double eEtildedx;
+			double eEtildedy;
+			double eBtildedx;
+			double eBtildedy;
+			double eEtilde_dot_eBtilde;
 
 	};
 

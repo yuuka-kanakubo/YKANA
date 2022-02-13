@@ -6,6 +6,7 @@ class ReadIn{
 private:
 		shared_ptr<Message> ms;  
 		Settings::Options options;
+		int ncall_readTimeLapse;
 
 public:
 
@@ -15,6 +16,8 @@ ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in);
 bool read(const std::string& fname, shared_ptr<Container>& ct);
 bool read_jetinfo(const std::string& fname, shared_ptr<Container>& ct);
 bool readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, const double weight);
-
+bool get_nline_to_see(int &nline, const std::string fname);
+void get_oneline_xeta(istringstream& is, Container::StepInfo& onestep);
+void get_oneline_xy(istringstream& is, Container::StepInfo& onestep);
 };
 #endif

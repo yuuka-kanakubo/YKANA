@@ -44,8 +44,6 @@ class Settings{
 				std::string dir_name;
 				std::string f_name;
 				std::string ext_name;
-				std::string ext_nameTLxy;
-				std::string ext_nameTLxeta;
 				std::string out_directory_name;
 				std::string out_fname;
 				std::string dir_name_CentCut;
@@ -211,8 +209,8 @@ class Settings{
 				std::string get_f_name()const{return this->f_name;}
 				std::string get_ext_name()const{return this->ext_name;}
 				std::string get_ext_nameTL()const{
-					if(this->modeTL==0) return this->ext_nameTLxy;
-					else if(this->modeTL==1) return this->ext_nameTLxeta;
+					if(this->modeTL==0) return constants::ext_nameTLxy;
+					else if(this->modeTL==1) return constants::ext_nameTLxeta;
 					else{
 
 						cout << ":(ERROR Set proper option with -modeTL. 0: xy-plane, 1: xeta-plane." << endl;
