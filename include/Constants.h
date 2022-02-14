@@ -427,6 +427,8 @@ inline	const std::string default_subdir_name="centrality_cut";
 inline	const std::string fname_eByeInfo="eByeInfo.txt";
 
 inline	const double dummy = -100.0;
+inline  const int PrintCounter=1000;
+inline  const int PrintCounterTL=100;
 
 inline	std::complex<double> initialval_comp (0.0, 0.0);
 

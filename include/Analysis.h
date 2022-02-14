@@ -28,7 +28,7 @@ class Analysis{
 
 	private:
 
-
+		int PrintCounter;
 		shared_ptr<Util_func> uf;
 		shared_ptr<Message> ms;  
 		shared_ptr<ReadIn> read;
@@ -46,7 +46,7 @@ class Analysis{
 
 	public:
 
-		Analysis(Settings::Options options_in, LogSettings log_in): options(options_in), log(log_in){
+		Analysis(Settings::Options options_in, LogSettings log_in): PrintCounter(0),options(options_in), log(log_in){
 			cout << "log " << log.get_BinSettings_size() << endl;
 			infohist = make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
 			ms = make_shared<Message>();
@@ -65,6 +65,8 @@ class Analysis{
 			fill = make_shared<Fill>(this->ms, this->options, this->infohist, this->uf);
 			stat = make_shared<Stat>(this->ms, this->options, this->infohist, this->uf);
 			write = make_shared<Write>(this->ms, this->options, this->infohist, this->uf);
+			if(constants::MODE.find("timelapse")!=std::string::npos) this->PrintCounter=constants::PrintCounterTL;
+			else this->PrintCounter=constants::PrintCounter;
 
 			this->ana();
 		};
@@ -97,8 +99,10 @@ class Analysis{
 					auto ct = make_shared<Container>();
 
 					//Event Loop
+					//==========
+					int EV_Count=0;
 					for(int i=options.get_beginfile(); i<options.get_nfile(); ++i){
-						if(!(i%1000)) ms->read(i);
+						if(!(i%this->PrintCounter)) ms->read(i);
 						ct->CountEv++;
 						std::stringstream ss;
 						ss << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/" << options.get_ext_name();
@@ -108,12 +112,16 @@ class Analysis{
 						//Centrality cut.
 						//---------------
 						if(options.get_flag_CentralityCut()){
-							if(eBye_CentCut[i].get_V0M_class()!=iCent) continue;
+							if(eBye_CentCut[EV_Count].get_V0M_class()!=iCent) {
+								EV_Count++;
+								continue;
+							}
 						}
 
 						//Obtain event info for TimeLapse
 						//-------------------------------
-						double weight_TL=(options.get_flag_CentralityCut() && constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[i].weight:1.0;
+						double weight_TL=(options.get_flag_CentralityCut() && constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[EV_Count].weight:1.0;
+						EV_Count++;
 
 
 						if(!options.get_flag_CentralityCut()){

@@ -68,7 +68,8 @@ void read_events(){
 		rap_shift=(options.get_flag_pPb_cm_calculation())? constants::pPb_rap_shift_from_lab_to_cm:options.dlty;
 	}
 
-    for(int i=options.get_beginfile();i<options.get_nfile();i++) {
+	int EV_Counter=0;
+	for(int i=options.get_beginfile();i<options.get_nfile();i++) {
 
 	    if(i%1000==0) cout << ":) Reading " << i << "files." << endl; 
 	    ostringstream oss;
@@ -83,10 +84,10 @@ void read_events(){
 
 	    EbyeInfo ebye_;
 	    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level());
-            ebye_.orig_eventNum=i;
+            ebye_.orig_eventNum=EV_Counter;
 	    this->eBye.push_back(ebye_);
-
-    }
+	    EV_Counter++;
+	}
 
 
 }
