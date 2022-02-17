@@ -52,7 +52,6 @@ fi
  -to 2000000 \
  --CentralityCut 9 \
  --INEL_lg_0 \
- --HI \
  -look_at_xTL 0.0 \
  -look_at_etaTL 0.0 \
  -modeTL 1 \

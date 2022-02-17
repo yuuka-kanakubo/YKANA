@@ -1218,13 +1218,13 @@ int Fill::get_cell_index_cstm(const double val){
 					int nx=EVENT.step[j].nstep;
 					double x_val=EVENT.step[j].tau;
 					double y_val=0.0;
-					if(!(options.get_valTL().find("temp")!=string::npos)){
+					if(options.get_valTL().find("temp")!=string::npos){
 						y_val=EVENT.step[j].temp;
-					}else if(!(options.get_valTL().find("entropy")!=string::npos)){
+					}else if(options.get_valTL().find("entropy")!=string::npos){
 						y_val=EVENT.step[j].s;
-					}else if(!(options.get_valTL().find("pressure")!=string::npos)){
+					}else if(options.get_valTL().find("pressure")!=string::npos){
 						y_val=EVENT.step[j].p;
-					}else if(!(options.get_valTL().find("energy")!=string::npos)){
+					}else if(options.get_valTL().find("energy")!=string::npos){
 						y_val=EVENT.step[j].e;
 					}else{
 						cout << ":(ERROR Set proper value with -valTL" << endl;
