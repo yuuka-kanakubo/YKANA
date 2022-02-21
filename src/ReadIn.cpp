@@ -411,9 +411,14 @@ bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, 
 		in.open(os.str().c_str(),ios::in);
 		if(!in){
 					Container::StepInfo step_oneline;
-					step_oneline.tau=tau*constants::hbarc;
+					//Set time
+					//-----------
+					stringstream tmp;
+					double tau_=tau*constants::hbarc;
+					tmp << setprecision(2) << fixed << tau_;
+					double tau__ = stod(tmp.str());
+					step_oneline.tau=tau__;
 					step_oneline.nstep=step;
-//cout << "no info " << step_oneline.tau << "  " << os.str() << endl;
 					step_1ev.push_back(step_oneline);
 		}
 
@@ -431,7 +436,6 @@ bool ReadIn::readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, 
 					else if(options.get_modeTL()==1)this->get_oneline_xeta(is, step_oneline);
 					else{cout << ":( ERROR Something wrong. " << __FILE__ << __LINE__ << endl; exit(1);}
 					step_oneline.nstep=step;
-					//cout << "get " << step_oneline.tau << "  " << step_oneline.x << "  " << step_oneline.eta << "  " << step_oneline.temp << endl;
 					step_1ev.push_back(step_oneline);
 				}
 			}
@@ -525,7 +529,7 @@ return true;
 
 
 void ReadIn::get_oneline_xeta(istringstream& is, Container::StepInfo& onestep){
-			is >> onestep.tau //[GeV^-1]
+			is >> onestep.tau //[fm]
 				>> onestep.x //fm
 				>> onestep.eta //[1]
 				>> onestep.e //[GeV^4]
@@ -550,7 +554,6 @@ void ReadIn::get_oneline_xeta(istringstream& is, Container::StepInfo& onestep){
 				>> onestep.eBtildedy
 				>> onestep.eEtilde_dot_eBtilde
 				>> onestep.U4;
-			onestep.tau*=constants::hbarc;
 }
 
 void ReadIn::get_oneline_xy(istringstream& is, Container::StepInfo& onestep){
@@ -581,5 +584,4 @@ void ReadIn::get_oneline_xy(istringstream& is, Container::StepInfo& onestep){
 				>> onestep.Uy //25	
 				>> onestep.Ueta; //26	
 
-			onestep.tau*=constants::hbarc;
 }
