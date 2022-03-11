@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../DCCI/data/20220204_pp13TEV_MB_transSmear0.6_sigma0.3_pT0Ref1.9_1950Kto2000K"
+DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop_wcol.txt"
+EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="PP13TEV_ev1950Kto2000K_TempTL"
-n=100
+outputdir="V2PT_PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0_noGAP_WOCOL_CORONA"
+n=130000
 
 
 #Do not modify this.
@@ -48,12 +48,9 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- -from 1950000 \
- -to 2000000 \
- --CentralityCut 9 \
- --INEL_lg_0 \
- -look_at_xTL 0.0 \
- -look_at_etaTL 0.0 \
- -modeTL 1 \
- -valTL temp \
+ --HI \
+ --only_corona \
+ --xaxis 3 \
+ --xaxis3_input input/BinSettings_V2PT_PBPB.txt \
+ --CentralityCut 2 \
  > ${log_dname}${log_fname}.log  2>&1  &

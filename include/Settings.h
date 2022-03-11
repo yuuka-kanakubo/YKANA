@@ -192,13 +192,15 @@ class Settings{
 						cout << ":)Centrality cut for PbPb." << endl;
 					}else if(collision_type==3){
 						cout << ":)Centrality cut for pp." << endl;
+					}else if(collision_type==4){
+						cout << ":)Centrality cut for PbPb (wide)." << endl;
 					}else if(collision_type==8){
 						cout << ":)Centrality cut original (narrow)." << endl;
 					}else if(collision_type==9){
 						cout << ":)Centrality cut original." << endl;
 					}else{
 						cout << "ERROR:( Something wrong with --CentralityCut. Specify appropriate collision type. ex) --CentralityCut 1" << endl;
-						cout << "        1: pPb, 2:PbPb, 3:pp, 8: original(narrow), 9: original " << endl;
+						cout << "        1: pPb, 2:PbPb, 3:pp, 4:PbPb (wide), 8: original(narrow), 9: original " << endl;
 						exit(1);
 					}
 				}

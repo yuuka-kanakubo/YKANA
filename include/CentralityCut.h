@@ -22,6 +22,11 @@ public:
 					options.val_cent.push_back(constants::val_cent_PbPb[i]); 
 					options.name_cent.push_back(constants::name_cent_PbPb[i]);
 				}
+			}else if(options.get_collision_type()==4){
+				for(int i=0; i<7; ++i){ 
+					options.val_cent.push_back(constants::val_cent_PbPb_wide[i]); 
+					options.name_cent.push_back(constants::name_cent_PbPb_wide[i]);
+				}
 			}else if(options.get_collision_type()==3){
 				for(int i=0; i<10; ++i){ 
 					options.val_cent.push_back(constants::val_cent_pp[i]); 
