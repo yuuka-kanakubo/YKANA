@@ -206,7 +206,12 @@ class Analysis{
 							fill->fill_vneta(ct);
 						}else if(constants::MODE.find("twopc2D")!=std::string::npos){
 							if(options.get_flag_tagged()) fill->fill_twopc_tagged(ct); 
-							else fill->fill_twopc(ct);
+							else if(options.get_flag_SB_CMS()){
+								fill->fill_twopc_B_CMS(ct, eBye_CentCut);
+								fill->fill_twopc(ct);
+							}else{
+								fill->fill_twopc(ct);
+							}
 						}else if(constants::MODE.find("twopc1D")!=std::string::npos){
 							if(options.get_flag_tagged()) fill->fill_twopc1D_tagged(ct);
 							//this->fill_twopc1D_tagged_1particle(ct); 

@@ -42,6 +42,7 @@ class Util_func{
     double Multiplicity=0.0;
     double Multiplicity_V0M=0.0;
     double Multiplicity_V0A=0.0;
+    double N_trk_offline=0.0;
     bool Multiplicity_INEL_lg_0=false;
     bool V0M_FWD=false;
     bool V0M_BKW=false;
@@ -98,6 +99,9 @@ class Util_func{
 	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && this->in_V0M_detector(eta)) { 
 		Multiplicity_V0M++;
 	}
+	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRangeCMSRidge && pt > constants::MomentumMinCMSRidge) { 
+		N_trk_offline++;
+	}
 	if(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon){
             if(this->in_V0M_fwd(eta)) { V0M_FWD=true; Multiplicity_V0A++;} 
             if(this->in_V0M_bkw(eta)) { V0M_BKW=true;}
@@ -133,11 +137,32 @@ class Util_func{
     ebye.multiplicity_INEL_lg_0=Multiplicity_INEL_lg_0;
     ebye.multiplicity_V0M=(VZEROAND_trigger)? Multiplicity_V0A : Multiplicity_V0M;
     ebye.valid=true;
+    ebye.N_trk_offline=N_trk_offline;
+    ebye.set_V0M_class(this->get_NtrkClass(N_trk_offline));
     if(V0M_FWD && V0M_BKW && OUTER_SPD) {ebye.trig_3outof3=true;}
     if(V0M_FWD && V0M_BKW) {ebye.trig_VZEROAND=true;}
     if((V0M_FWD && V0M_BKW) || (V0M_BKW && OUTER_SPD) || (OUTER_SPD && V0M_FWD) ) {ebye.trig_2outof3=true;}
     if(ATLAS_cut) ebye.ATLAS_cut=true;
   }
+
+
+
+int get_NtrkClass(const double val){
+
+	for(int i=0; i<constants::n_NtrkClass_pp; i++){
+		if(val>=0.0 && val<constants::val_NtrkClass_pp[i]) {
+			return 0;
+		}
+		if(val>=constants::val_NtrkClass_pp[i-1] && val<constants::val_NtrkClass_pp[i]) {
+			return i;
+		}
+	} 
+
+	    cout << ":( ERROR Somthing wring in " << __LINE__ << " " << __FILE__ << endl;
+	    exit(1);
+}
+
+
 
   bool in_V0M_detector(const double eta){
 

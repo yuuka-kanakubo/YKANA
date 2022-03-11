@@ -79,6 +79,7 @@ class Settings{
 				bool three_subevent;
 				bool HI;
 				bool _4particle;
+				bool _SB_CMS;
 				bool _2PCfull;
 				bool _2PCnearside;
 				bool _2PCout;
@@ -175,6 +176,7 @@ class Settings{
 				void set_flag_3subevent(){this->three_subevent=true;}
 				void set_flag_HI(){this->HI=true;}
 				void set_flag__4particle(){this->_4particle=true;}
+				void set_flag_SB_CMS(){this->_SB_CMS=true;}
 				void set_flag__2PCfull(){this->_2PCfull=true;}
 				void set_flag__2PCnearside(){this->_2PCnearside=true;}
 				void set_flag__2PCout(){this->_2PCout=true;}
@@ -198,9 +200,12 @@ class Settings{
 						cout << ":)Centrality cut original (narrow)." << endl;
 					}else if(collision_type==9){
 						cout << ":)Centrality cut original." << endl;
+					}else if(collision_type==101){
+						cout << ":)Centrality cut CMS Ntrk." << endl;
 					}else{
 						cout << "ERROR:( Something wrong with --CentralityCut. Specify appropriate collision type. ex) --CentralityCut 1" << endl;
 						cout << "        1: pPb, 2:PbPb, 3:pp, 4:PbPb (wide), 8: original(narrow), 9: original " << endl;
+						cout << "        101: pp13TeV (CMS) " << endl;
 						exit(1);
 					}
 				}
@@ -267,6 +272,7 @@ class Settings{
 				bool get_flag_3subevent()const{return this->three_subevent;}
 				bool get_flag_HI()const{return this->HI;}
 				bool get_flag__4particle()const{return this->_4particle;}
+				bool get_flag_SB_CMS()const{return this->_SB_CMS;}
 				bool get_flag__2PCfull()const{return this->_2PCfull;}
 				bool get_flag__2PCnearside()const{return this->_2PCnearside;}
 				bool get_flag__2PCout()const{return this->_2PCout;}
@@ -316,6 +322,7 @@ class Settings{
 					three_subevent(false),
 					HI(false),
 					_4particle(false),
+					_SB_CMS(false),
 					_2PCfull(false),
 					_2PCnearside(false),
 					_2PCout(false),
@@ -403,6 +410,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--threesub")){options.set_flag_3subevent();}
 				else if(!strcmp(argv[i],"--HI")){options.set_flag_HI();}
 				else if(!strcmp(argv[i],"--4particle")){options.set_flag__4particle(); cout << ";) Four particle cumulant calculation started!" << endl;}
+				else if(!strcmp(argv[i],"--SB_CMS")){options.set_flag_SB_CMS(); cout << ";) 2PC correlation in 2D calculation. S/B with CMS definition will be performed." << endl;}
 				else if(!strcmp(argv[i],"--2PCfull")){options.set_flag__2PCfull(); cout << ";) 2PC correlation in 1D calculation started with --2PCfull." << endl;}
 				else if(!strcmp(argv[i],"--2PCnearside")){options.set_flag__2PCnearside(); cout << ";) 2PC correlation in 1D calculation started with --2PCnearside." << endl;}
 				else if(!strcmp(argv[i],"--2PCout")){options.set_flag__2PCout(); cout << ";) 2PC correlation in 1D calculation started with --2PCout." << endl;}

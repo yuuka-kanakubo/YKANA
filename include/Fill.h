@@ -37,6 +37,7 @@ Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHis
 ~Fill();
 
 			void fill_jets(shared_ptr<Container>& ct);
+			void fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& eBye_All);
 			void fill_twopc_tagged(shared_ptr<Container>& ct);
 			void fill_twopc(shared_ptr<Container>& ct);
 			void fill_Rt(shared_ptr<Container>& ct);

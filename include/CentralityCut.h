@@ -45,6 +45,12 @@ public:
 					options.name_cent.push_back(constants::name_cent_original[i]);
 				}
 
+			}else if(options.get_collision_type()==101){
+				for(int i=0; i<13; ++i){ 
+					options.val_cent.push_back(constants::val_NtrkClass_pp[i]); 
+					options.name_cent.push_back(constants::name_NtrkClass_pp[i]);
+				}
+
 			}else{
 				cout << "ERROR:( no such a collision type " << options.get_collision_type() << endl;
 				exit(1);
@@ -52,10 +58,14 @@ public:
 
 
 
-		Classification* ev_cl=new Classification(eBye, options);
-                ev_cl->V0M_classification();
-                delete ev_cl;
-		cout << ":)Finish centrality classification." << endl;
+			Classification* ev_cl=new Classification(eBye, options);
+			if(options.get_collision_type()==101){
+				cout << "This is Ntrk classification. No need to sort." << endl;
+			}else{
+				ev_cl->V0M_classification();
+			}
+			delete ev_cl;
+			cout << ":)Finish centrality classification." << endl;
 	}
 
 
