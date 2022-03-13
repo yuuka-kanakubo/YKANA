@@ -101,6 +101,9 @@ class Analysis{
 
 					if(options.get_flag_CentralityCut())cout << ":)Start analyzing centrality " << options.name_cent[iCent] << "." << endl;
 
+					//Archive event numbering.
+					//========================
+					this->rndom->Archive_iEv_Cent(iCent, eBye_CentCut);
 
 
 					auto ct = make_shared<Container>();
