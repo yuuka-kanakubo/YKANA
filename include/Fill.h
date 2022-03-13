@@ -8,6 +8,7 @@
 #include "Settings.h"
 #include "CentralityCut.h"
 #include "InfoHist.h"
+#include "Rndom.h"
 
 class Fill{
 
@@ -17,6 +18,7 @@ private:
 		Settings::Options options;
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
+		shared_ptr<Rndom>& rndom;
 		vector<double> xMin_cstm, xMax_cstm;
 
 			bool fix_ax(const int id, int &nx, double m);
@@ -30,10 +32,11 @@ private:
 			}
 			int get_cell_index_cstm(const double val);
 
+			vector<Container::ParticleInfo> select_N_RndomEv (const vector<EbyeInfo>& eBye_All);
 
 public:
 
-Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf, shared_ptr<Rndom>& rndom);
 ~Fill();
 
 			void fill_jets(shared_ptr<Container>& ct);

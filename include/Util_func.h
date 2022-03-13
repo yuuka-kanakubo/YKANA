@@ -5,16 +5,23 @@
 #include <string>
 #include <sys/stat.h>
 #include <iomanip>
+#include <memory>
 #include "Constants.h"
+#include "Rndom.h"
+#include "Container.h"
 #include "EbyeInfo.h"
 
-using namespace std;
+using std::string;
+using std::cout;
+using std::endl;
 
 class Util_func{
+
 
  private:
 
 	 std::string DATE;
+	 std::shared_ptr<Rndom>& rndom;
 
     bool isQuark(const int pid) {
       if(abs(pid)<9||this->is_diquark(pid)) return true;
@@ -32,13 +39,15 @@ class Util_func{
     }
 
   void get_EbyeInfo(const string fname, EbyeInfo& ebye, double rap_shift, bool VZEROAND_trigger, bool parton_level){
-    ifstream in;
-    in.open(fname.c_str(),ios::in);
+    std::ifstream in;
+    in.open(fname.c_str(),std::ios::in);
     if(!in) {
-      cerr << "Error unable to open file " << fname << endl;
+      std::cerr << "Error unable to open file " << fname << endl;
       return ;
     } 
     string templine;
+
+
     double Multiplicity=0.0;
     double Multiplicity_V0M=0.0;
     double Multiplicity_V0A=0.0;
@@ -49,22 +58,24 @@ class Util_func{
     bool OUTER_SPD=false;
     bool ATLAS_cut=false;
     double Weight=0.0;
+    vector<Container::ParticleInfo> sampleSet;
+
     while(getline(in,templine)) {
       if(templine.find('#')!=std::string::npos) {
       }else if(templine.find('%')!=std::string::npos){
-	      istringstream is(templine);
+	      std::istringstream is(templine);
 	      int iev, nv;
 	      string com;
 	      double weight_in, tau;
 	      is >> com >> iev >> nv >> tau >> weight_in;
               Weight = weight_in; 
       }else{
-	istringstream is(templine);
+	std::istringstream is(templine);
 	int ID, data1, data2, col, acol;
-	double mass, energy, px, py, pz, x,y,z,t,rap;
-	is >> data1 >> data2 >> col >> acol >> ID >> mass >> energy >> px >> py >> pz >> rap >> x >> y >> z >> t;
+	double mass, energy, px, py, pz, x,y,z,t,rap, ft;
+	string TAG;
+	is >> data1 >> data2 >> col >> acol >> ID >> mass >> energy >> px >> py >> pz >> rap >> x >> y >> z >> t >> ft >> TAG;
 	if(!parton_level && ID==constants::id_gluon){cout << ":o WARNING: This is partonEvent." << endl; return ;}
-
 
 	if(rap_shift!=0.0){
 		double m_T=energy/cosh(rap);
@@ -78,7 +89,8 @@ class Util_func{
 	double P=(P_squared)>0.0 ? sqrt(P_squared):0.0;
 	double pt_squared=px*px+py*py;
 	double pt=(pt_squared)>0.0 ? sqrt(pt_squared):0.0;
-	
+	double phi = atan2(py, px);
+
 	////
 	double eta;
 	{
@@ -89,6 +101,17 @@ class Util_func{
 	  else eta=log((P + pz)/(P - pz)) / 2.0;
 	}
 	////
+	
+    //if(options.get_flag_SB_CMS()){
+	Container::ParticleInfo part_in;
+	part_in.pt=pt;
+	part_in.id=ID;
+	part_in.eta=eta;
+	part_in.phi=phi;
+	part_in.TAG=TAG;
+	sampleSet.push_back(part_in);
+    //}
+
 	
 	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::w_eta_multiplicity) { 
 		Multiplicity++;
@@ -131,6 +154,15 @@ class Util_func{
 
       }
     }
+
+    //if(options.get_flag_SB_CMS()){
+	    std::uniform_int_distribution<> rndomSamp(0, (int)sampleSet.size());
+	    int iSamp=rndomSamp(rndom->generatorSamp);
+	    ebye.sample_part=sampleSet[iSamp];
+    //}
+
+
+
     in.close();
     ebye.multiplicity=Multiplicity;
     ebye.weight=Weight;
@@ -214,7 +246,7 @@ int get_NtrkClass(const double val){
 
 
  public:
-  Util_func():DATE(""){
+  Util_func(std::shared_ptr<Rndom>& rndom_in):DATE(""), rndom(rndom_in){
     this->get_nowdata(); 
  };
   ~Util_func(){};

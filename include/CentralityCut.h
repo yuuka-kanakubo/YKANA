@@ -7,7 +7,7 @@ class CentralityCut{
 
 public:
 
-	CentralityCut(vector<EbyeInfo>& eBye_in, Settings::Options& options_in):eBye(eBye_in), options(options_in){
+	CentralityCut(vector<EbyeInfo>& eBye_in, Settings::Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
 		cout << ":)Start analysis for centrality cut." << endl;
                 this->read_events();
 
@@ -73,6 +73,7 @@ public:
 
 private:
 	Settings::Options& options;
+	shared_ptr<Rndom>& rndom;
 
 
 
@@ -95,7 +96,7 @@ void read_events(){
 	    else oss << dirname << "/" << fname << setw(9) << setfill('0') << i << "/" << extname;
 	    string inputpath=oss.str();
 
-	    auto utl_ = make_shared<Util_func>();
+	    auto utl_ = make_shared<Util_func>(this->rndom);
 
 	    EbyeInfo ebye_;
 	    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level());

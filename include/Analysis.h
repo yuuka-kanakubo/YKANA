@@ -35,6 +35,7 @@ class Analysis{
 		shared_ptr<Fill> fill;
 		shared_ptr<Stat> stat;
 		shared_ptr<Write> write;
+		shared_ptr<Rndom> rndom;
 
 		Settings::Options& options;
 		LogSettings& log;
@@ -47,10 +48,16 @@ class Analysis{
 	public:
 
 		Analysis(Settings::Options options_in, LogSettings log_in): PrintCounter(0),options(options_in), log(log_in){
+
+			//Random number for thermal parton sampling.
+			//-------------------------------------------
+			srand((unsigned) time(NULL));
+			rndom = make_shared<Rndom>(rand());
+
 			cout << "log " << log.get_BinSettings_size() << endl;
 			infohist = make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
 			ms = make_shared<Message>();
-			uf = make_shared<Util_func>();
+			uf = make_shared<Util_func>(this->rndom);
 			if(options.get_flag_HI()){
 				cout << ":) HI option is called.\n  Maximum value of xaxis is adjusted to HI data." << endl;
 				infohist->x_max=constants::x_max_HI;
@@ -62,7 +69,7 @@ class Analysis{
 				infohist->N_coeff = options.get_Ncoeff();
 			}
 			read = make_shared<ReadIn>(this->ms, this->options);
-			fill = make_shared<Fill>(this->ms, this->options, this->infohist, this->uf);
+			fill = make_shared<Fill>(this->ms, this->options, this->infohist, this->uf, this->rndom);
 			stat = make_shared<Stat>(this->ms, this->options, this->infohist, this->uf);
 			write = make_shared<Write>(this->ms, this->options, this->infohist, this->uf);
 			if(constants::MODE.find("timelapse")!=std::string::npos) this->PrintCounter=constants::PrintCounterTL;
@@ -84,7 +91,7 @@ class Analysis{
 				int nCent=1;
 				vector<EbyeInfo> eBye_CentCut;
 				if(options.get_flag_CentralityCut()){
-					CentralityCut CentCut(eBye_CentCut, options);
+					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 					nCent=(int)options.name_cent.size();
 				}
 
@@ -127,37 +134,37 @@ class Analysis{
 						if(!options.get_flag_CentralityCut()){
 							if(options.get_flag_INEL_lg_0()){
 								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath);
+								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
 								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.multiplicity_INEL_lg_0) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_3outof3_trigger()){
 								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath);
+								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
 								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.trig_3outof3) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_2outof3_trigger()){
 								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath);
+								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
 								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.trig_2outof3) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_ATLAS_cut()){
 								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath);
+								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
 								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.ATLAS_cut) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else if(options.get_flag_VZEROAND_trigger()){
 								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath);
+								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
 								weight_TL=Multi.ebye.weight;
 								if(!Multi.ebye.trig_VZEROAND) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else{
 								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath);
+								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
 								weight_TL=Multi.ebye.weight;
 								ebe.print_eByeInfo(i,Multi);
 							}

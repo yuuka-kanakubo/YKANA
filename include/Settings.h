@@ -471,14 +471,15 @@ class eByeInSettings{
 				class eByeMulti{
 					public:
 						EbyeInfo ebye;
-						eByeMulti(Settings::Options option_in, const std::string inputpath){
+						eByeMulti(Settings::Options option_in, const std::string inputpath, shared_ptr<Rndom>& rndom_in):rndom(rndom_in){
 							EbyeInfo ebye_;
 							this->get_EbyeInfo(option_in, inputpath, ebye_);
 							ebye=ebye_;
 						}
 					private:
+						shared_ptr<Rndom>& rndom;
 						void get_EbyeInfo(Settings::Options options, const std::string inputpath, EbyeInfo& ebye){
-							auto utl_ = make_shared<Util_func>();
+							auto utl_ = make_shared<Util_func>(this->rndom);
 							double rap_shift=0.0;
 							if(options.get_hist_rapidity_shift() || options.get_flag_pPb_cm_calculation()){
 								rap_shift=(options.get_flag_pPb_cm_calculation())? constants::pPb_rap_shift_from_lab_to_cm:options.dlty;

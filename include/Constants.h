@@ -415,6 +415,7 @@ inline	int num_of_Species_Rt = 7;
 
 
 inline	const int margin = 10;
+inline  const int N_RndomEv=20;
 inline	const std::string data_directory="data";
 inline	const double binSize_small=d_x_HI;
 inline	const double binSize_log=2.0;
@@ -425,6 +426,7 @@ inline	const double maxNchPP=60.0;
 
 inline	const string default_inputfname = "input";
 inline	const string default_out_fname="hist.txt";
+inline  const string seed_outputfname="SEED.txt";
 inline	const int default_nfiles=10000;
 inline	const vector<string> save_settings_fname={"include/Constants.h"};
 

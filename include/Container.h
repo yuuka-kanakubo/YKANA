@@ -2,6 +2,11 @@
 #define CONTAINER
 #include "Constants.h"
 
+using std::string;
+using std::cout;
+using std::endl;
+using std::vector;
+
 class Container{
 
 

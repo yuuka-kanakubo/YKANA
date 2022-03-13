@@ -1,5 +1,7 @@
 #ifndef EBYEINFO
 #define EBYEINFO
+#include "Container.h"
+
 class EbyeInfo{
  public:
 
@@ -16,6 +18,7 @@ class EbyeInfo{
 	bool trig_VZEROAND;
 	double weight;
         bool valid;
+	Container::ParticleInfo sample_part;
 
 	int orig_eventNum;
 
