@@ -104,6 +104,7 @@ class Analysis{
 					//Archive event numbering.
 					//========================
 					this->rndom->Archive_iEv_Cent(iCent, eBye_CentCut);
+					this->fill->nextCent();
 
 
 					auto ct = make_shared<Container>();

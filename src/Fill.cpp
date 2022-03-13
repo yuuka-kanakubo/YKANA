@@ -13,7 +13,7 @@
 using namespace std;
 
 
-Fill::Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in, shared_ptr<Rndom>& rndom_in):ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in), rndom(rndom_in){
+Fill::Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in, shared_ptr<Rndom>& rndom_in):N_iCentEv(0), ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in), rndom(rndom_in){
 
 	if(options.get_xaxis_type()==3){
 		this->SetCustomBin();
@@ -21,6 +21,10 @@ Fill::Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<I
 
 };
 Fill::~Fill(){};
+
+void Fill::nextCent(){
+	this->N_iCentEv=this->rndom->get_iEv_Cent().size();
+}
 
 void Fill::fill_jets(shared_ptr<Container>& ct){
 
@@ -1335,9 +1339,11 @@ vector<Container::ParticleInfo> Fill::select_N_RndomEv (const vector<EbyeInfo>& 
 
         vector <Container::ParticleInfo> Mixedpart;
     
-	std::uniform_int_distribution<> rndomEv(0,100);
+	std::uniform_int_distribution<> rndomEv(0,this->N_iCentEv);
 	for(int i=0; i<constants::N_RndomEv; i++){
-		int iev=rndomEv(rndom->generator);
+		int i_=rndomEv(rndom->generator);
+		int iEv = rndom->get_iEv_Cent()[i_];
+                Mixedpart.push_back(eBye_All[iEv].sample_part);
 	}
 
 return Mixedpart;
