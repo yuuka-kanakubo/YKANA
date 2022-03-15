@@ -49,78 +49,6 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 
 
 
-			void Fill::fill_twopc_tagged(shared_ptr<Container>& ct){
-
-
-				Container::EventInfo& EVENT= ct->EVENTINFO;
-
-				//Count particle by particle.
-				//----------------------------
-				double **Hit1ev;
-				Hit1ev = new double *[constants::x_cell_capa];
-				for(int i_cell=0; i_cell<constants::x_cell_capa; i_cell++){
-					Hit1ev[i_cell] = new double [constants::y_cell_capa];
-				}
-				for(int i=0; i<constants::x_cell_capa; i++){
-					for(int j=0; j<constants::y_cell_capa; j++){
-						Hit1ev[i][j]=0.0;
-					}
-				}
-				int max_nx = 0, max_ny = 0;
-				int NumPair=0;
-				for(int i=0; i<(int)EVENT.part.size(); ++i){
-
-					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
-
-					for(int j=0; j<(int)EVENT.part.size(); ++j){
-						if (i==j) continue;
-						string TAG = EVENT.part[j].TAG;
-						if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
-						if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
-
-						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
-						int nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
-
-						double y_val=this->getDeltaPhi(EVENT.part[i].phi, EVENT.part[j].phi);
-						if(y_val<constants::y_min || y_val>this->infohist->y_max) continue;
-						int ny=(int)((y_val/this->infohist->d_y)+(std::fabs(constants::y_min)/this->infohist->d_y));
-
-						if(max_nx<nx) max_nx = nx;
-						if(max_ny<ny) max_ny = ny;
-						Hit1ev[nx][ny]+=1.0;
-						ct->Hist2D_x[nx][ny]+=x_val*EVENT.weight();
-						ct->Hist2D_y[nx][ny]+=y_val*EVENT.weight();
-						if(ct->max_nx<nx) ct->max_nx=nx;
-						if(ct->max_ny<ny) ct->max_ny=ny;
-						NumPair++;
-
-					}
-				}
-				//---------------
-				
-				for(int nx = 0; nx<max_nx+1; nx++){
-					for(int ny = 0; ny<max_ny+1; ny++){
-						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
-						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
-					}
-				}
-
-				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=((double)NumPair)*EVENT.weight();
-
-
-				for(int i = 0; i < constants::x_cell_capa; i++) {
-					delete[] Hit1ev[i];
-				}
-				delete[] Hit1ev;
-
-			}
-
-
-
-
-
 
 
 			void Fill::fill_twopc(shared_ptr<Container>& ct){
@@ -142,9 +70,16 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 				}
 				int max_nx = 0, max_ny = 0;
 				int NumPair=0;
+				int NumTrig=0;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
+
+					if(!(EVENT.part[i].pt>constants::trig_ptmin && EVENT.part[i].pt<constants::trig_ptmax)) continue;
+					NumTrig++;
+
 					for(int j=0; j<(int)EVENT.part.size(); ++j){
+
 						if (i==j) continue;
+						if(!(EVENT.part[i].pt>constants::assoc_ptmin && EVENT.part[i].pt<constants::assoc_ptmax)) continue;
 
 						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
@@ -176,6 +111,7 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 
 				ct->SumWeight+=EVENT.weight();
 				ct->SumPair+=((double)NumPair)*EVENT.weight();
+				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 
 
 				for(int i = 0; i < constants::x_cell_capa; i++) {
@@ -189,11 +125,6 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& eBye_All){
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
-
-				//Select N_RndomEv
-				//==================
-				vector <Container::ParticleInfo> Mixedpart = this->select_N_RndomEv(eBye_All);
-
 
 				//Count particle by particle.
 				//----------------------------
@@ -209,30 +140,36 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				}
 				int max_nx = 0, max_ny = 0;
 				int NumPair=0;
+				int NumTrig=0;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 
-					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
+					if(!(EVENT.part[i].pt>constants::trig_ptmin && EVENT.part[i].pt<constants::trig_ptmax)) continue;
+					NumTrig++;
 
-					//for(int j=0; j<(int)RandomAssoc.part.size(); ++j){
-					for(int j=0; j<(int)EVENT.part.size(); ++j){
-						if (i==j) continue;
-						string TAG = EVENT.part[j].TAG;
-						if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
-						if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
+					//Select N_RndomEv
+					//==================
+					vector <Container::ParticleInfo> Mixedpart = this->select_N_RndomEv(eBye_All);
 
-						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
+					for(int j=0; j<(int)Mixedpart.size(); ++j){
+
+						//string TAG = Mixedpart[j].TAG;
+						//if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
+						//if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
+						if(!(EVENT.part[i].pt>constants::assoc_ptmin && EVENT.part[i].pt<constants::assoc_ptmax)) continue;
+
+						double x_val=EVENT.part[i].eta - Mixedpart[j].eta;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
 						int nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
 
-						double y_val=this->getDeltaPhi(EVENT.part[i].phi, EVENT.part[j].phi);
+						double y_val=this->getDeltaPhi(EVENT.part[i].phi, Mixedpart[j].phi);
 						if(y_val<constants::y_min || y_val>this->infohist->y_max) continue;
 						int ny=(int)((y_val/this->infohist->d_y)+(std::fabs(constants::y_min)/this->infohist->d_y));
 
 						if(max_nx<nx) max_nx = nx;
 						if(max_ny<ny) max_ny = ny;
 						Hit1ev[nx][ny]+=1.0;
-						ct->Hist2D_x[nx][ny]+=x_val*EVENT.weight();
-						ct->Hist2D_y[nx][ny]+=y_val*EVENT.weight();
+						ct->HistSub2D_x[nx][ny]+=x_val*EVENT.weight();
+						ct->HistSub2D_y[nx][ny]+=y_val*EVENT.weight();
 						if(ct->max_nx<nx) ct->max_nx=nx;
 						if(ct->max_ny<ny) ct->max_ny=ny;
 						NumPair++;
@@ -243,13 +180,15 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				
 				for(int nx = 0; nx<max_nx+1; nx++){
 					for(int ny = 0; ny<max_ny+1; ny++){
-						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
-						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+						ct->HistSub2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+						ct->HistSub2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
 					}
 				}
 
-				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=((double)NumPair)*EVENT.weight();
+				//These are already calculated in signal calculation, so no need to do here.
+				//====================================================================
+				//ct->SumWeight+=EVENT.weight();
+				//ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 
 
 				for(int i = 0; i < constants::x_cell_capa; i++) {
@@ -417,7 +356,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
 				int nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
+					if(EVENT.part[i].pt<constants::trig_ptmin) continue;
 					NumTrig++;
 
 					//Seeing associates.
@@ -458,7 +397,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				int NumPair=0;
 				int NumTrig=0;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					if(EVENT.part[i].pt<constants::twopc_tagged_leadingptmin) continue;
+					if(EVENT.part[i].pt<constants::trig_ptmin) continue;
 					NumTrig++;
 
 					//Seeing associates.

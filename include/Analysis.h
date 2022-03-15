@@ -107,7 +107,7 @@ class Analysis{
 					this->fill->nextCent();
 
 
-					auto ct = make_shared<Container>();
+					auto ct = make_shared<Container>(this->options.get_flag_SB_CMS());
 
 					//Event Loop
 					//==========
@@ -216,8 +216,7 @@ class Analysis{
 						}else if(constants::MODE.find("cumulant_eta")!=std::string::npos){
 							fill->fill_vneta(ct);
 						}else if(constants::MODE.find("twopc2D")!=std::string::npos){
-							if(options.get_flag_tagged()) fill->fill_twopc_tagged(ct); 
-							else if(options.get_flag_SB_CMS()){
+							if(options.get_flag_SB_CMS()){
 								fill->fill_twopc_B_CMS(ct, eBye_CentCut);
 								fill->fill_twopc(ct);
 							}else{
@@ -225,7 +224,6 @@ class Analysis{
 							}
 						}else if(constants::MODE.find("twopc1D")!=std::string::npos){
 							if(options.get_flag_tagged()) fill->fill_twopc1D_tagged(ct);
-							//this->fill_twopc1D_tagged_1particle(ct); 
 							else fill->fill_twopc1D(ct);
 						}else if(constants::MODE.find("twopcInteg")!=string::npos){
 							fill->fill_twopc1D_taggedInteg(ct);

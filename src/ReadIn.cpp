@@ -247,7 +247,7 @@ bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
 
 						}else if(constants::MODE.find("twopc2D")!=string::npos){
 
-							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && pt<constants::twopc2Dptmax && pt>constants::twopc2Dptmin && fabs(eta)<constants::twopc2DetaRange){
+							if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon ) && fabs(eta)<constants::twopc2DetaRange){
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 									Container::ParticleInfo part_in;
 									part_in.id=ID;

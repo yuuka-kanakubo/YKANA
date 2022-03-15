@@ -10,6 +10,7 @@ private:
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 		int get_xaxis_RtClass(double xval);
+		double get_B00(const vector<double>& X, const vector<double>& Y, const vector<double>& Z);
 
 public:
 

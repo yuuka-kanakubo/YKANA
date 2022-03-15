@@ -30,18 +30,81 @@ Stat::~Stat(){};
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
 					for(int j=0; j<ct->max_ny+1; ++j){
-						ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumPair;
+						if(!options.get_flag_SB_CMS()){
+							ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumTrig;
+						}else{
+							ct->Hist2D[i][j]=ct->Hist2D[i][j]/ct->SumTrig;
+						}
 						ct->Hist2D_x[i][j]/=ct->Hist2DPartHit[i][j];
 						ct->Hist2D_y[i][j]/=ct->Hist2DPartHit[i][j];
 
 						//Devide by bin width
 						//---------------------------
-						ct->Final2DHist[i][j]/=this->infohist->d_x;
-						ct->Final2DHist[i][j]/=this->infohist->d_y;
+						if(!options.get_flag_SB_CMS()){
+							ct->Final2DHist[i][j]/=this->infohist->d_x;
+							ct->Final2DHist[i][j]/=this->infohist->d_y;
+						}else{
+							ct->Hist2D[i][j]/=this->infohist->d_x;
+							ct->Hist2D[i][j]/=this->infohist->d_y;
+						}
 					}
 				}
 
+
+				if(options.get_flag_SB_CMS()){
+
+					vector<double> X, Y, Z;
+					for(int i=0; i<ct->max_nx+1; ++i){
+						for(int j=0; j<ct->max_ny+1; ++j){
+							ct->HistSub2D[i][j]=ct->HistSub2D[i][j]/ct->SumTrig;
+							ct->HistSub2D_x[i][j]/=ct->HistSub2DPartHit[i][j];
+							ct->HistSub2D_y[i][j]/=ct->HistSub2DPartHit[i][j];
+
+							//Devide by bin width
+							//---------------------------
+							ct->HistSub2D[i][j]/=this->infohist->d_x;
+							ct->HistSub2D[i][j]/=this->infohist->d_y;
+
+							X.push_back(ct->HistSub2D_x[i][j]);
+							Y.push_back(ct->HistSub2D_y[i][j]);
+							Z.push_back(ct->HistSub2D[i][j]);
+						}
+					}
+
+
+					//Obtain S/B*(B(0,0))
+					//============
+					for(int i=0; i<ct->max_nx+1; ++i){
+						for(int j=0; j<ct->max_ny+1; ++j){
+
+							ct->Final2DHist[i][j]=this->get_B00(X, Y, Z)*(ct->Hist2D[i][j]/ct->HistSub2D[i][j]);
+
+						}
+					}
+
+				}
+
+
 			}
+
+
+double Stat::get_B00(const vector<double>& X, const vector<double>& Y, const vector<double>& Z){
+
+	double dl=constants::LARGE;
+	double B00=0.0;
+	for(int i=0; i<(int)X.size(); i++){
+
+			if(dl>pow(fabs(X[i]),2)+pow(fabs(Y[i]),2)){
+				dl=pow(fabs(X[i]), 2) + pow(fabs(Y[i]), 2);
+				B00=Z[i];
+			}
+
+	}
+
+return B00;
+
+}
+
 
 			void Stat::stat_twopc1D(shared_ptr<Container>& ct){
 
