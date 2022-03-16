@@ -25,6 +25,9 @@ Fill::~Fill(){};
 void Fill::nextCent(shared_ptr<Rndom> rndom_in){
         this->rndom=rndom_in;
 	this->N_iCentEv=this->rndom->get_iEv_Cent().size();
+	if(this->N_iCentEv<constants::N_RndomEv){
+		cout << ":o Warning. This centrality contains only  " << this->N_iCentEv << " events. The background might be not random enough." << endl;
+	}
 	//ms->print(this->N_iCentEv);
 }
 
@@ -1284,7 +1287,6 @@ vector<Container::ParticleInfo> Fill::select_N_RndomEv (const vector<EbyeInfo>& 
 	for(int i=0; i<constants::N_RndomEv; i++){
 		int i_=rndomEv(rndom->generator);
 		int iEv = rndom->get_iEv_Cent()[i_];
-//cout << "iEv " << iEv << endl;
                 Mixedpart.push_back(eBye_All[iEv].sample_part);
 	}
 

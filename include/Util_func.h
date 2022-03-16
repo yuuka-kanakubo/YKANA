@@ -158,7 +158,6 @@ class Util_func{
     //if(options.get_flag_SB_CMS()){
 	    std::uniform_int_distribution<> rndomSamp(0, (int)sampleSet.size());
 	    int iSamp=rndomSamp(rndom->generatorSamp);
-cout << "iSamp " << iSamp << endl;
 	    ebye.sample_part=sampleSet[iSamp];
     //}
 
