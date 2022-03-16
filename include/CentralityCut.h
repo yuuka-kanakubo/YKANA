@@ -9,12 +9,6 @@ public:
 
 	CentralityCut(vector<EbyeInfo>& eBye_in, Settings::Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
 		cout << ":)Start analysis for centrality cut." << endl;
-                this->read_events();
-
-
-	}
-
-         void ClassifyCentrality(){
 
 			if(options.get_collision_type()==1){
 				for(int i=0; i<7; ++i){ 
@@ -59,6 +53,14 @@ public:
 				cout << "ERROR:( no such a collision type " << options.get_collision_type() << endl;
 				exit(1);
 			}
+
+
+                this->read_events();
+
+
+	}
+
+         void ClassifyCentrality(){
 
 
 

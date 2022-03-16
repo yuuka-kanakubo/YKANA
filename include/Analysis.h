@@ -102,14 +102,16 @@ class Analysis{
 				//Centrality Loop
 				for(int iCent=0; iCent<nCent; iCent++){
 
-					if(options.get_flag_CentralityCut())cout << ":)Start analyzing centrality " << options.name_cent[iCent] << "." << endl;
+					if(options.get_flag_CentralityCut()){
+						cout << ":)Start analyzing centrality " << options.name_cent[iCent] << "." << endl;
+						cout << "                               --> " << iCent << " in " << nCent << endl;
+					}
 
 					//Archive event numbering.
 					//========================
 					if(this->options.get_flag_SB_CMS()){
 						this->rndom->set_flag_CentCut(options.get_flag_CentralityCut());
 						this->rndom->Archive_iEv_Cent(iCent, eBye_CentCut);
-						cout << this->rndom->get_iEv_Cent().size() << endl;
 						this->fill->nextCent(this->rndom);
 					}
 

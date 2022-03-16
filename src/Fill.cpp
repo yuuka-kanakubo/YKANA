@@ -25,6 +25,7 @@ Fill::~Fill(){};
 void Fill::nextCent(shared_ptr<Rndom> rndom_in){
         this->rndom=rndom_in;
 	this->N_iCentEv=this->rndom->get_iEv_Cent().size();
+	//ms->print(this->N_iCentEv);
 }
 
 void Fill::fill_jets(shared_ptr<Container>& ct){
@@ -1282,7 +1283,6 @@ vector<Container::ParticleInfo> Fill::select_N_RndomEv (const vector<EbyeInfo>& 
 	std::uniform_int_distribution<> rndomEv(0,this->N_iCentEv-1);
 	for(int i=0; i<constants::N_RndomEv; i++){
 		int i_=rndomEv(rndom->generator);
-//cout << "i_ " << i_ << endl;
 		int iEv = rndom->get_iEv_Cent()[i_];
 //cout << "iEv " << iEv << endl;
                 Mixedpart.push_back(eBye_All[iEv].sample_part);
@@ -1290,3 +1290,4 @@ vector<Container::ParticleInfo> Fill::select_N_RndomEv (const vector<EbyeInfo>& 
 
 return Mixedpart;
 }
+

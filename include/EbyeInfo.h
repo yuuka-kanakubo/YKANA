@@ -5,18 +5,19 @@
 class EbyeInfo{
  public:
 
-     EbyeInfo():multiplicity(-1.0),multiplicity_V0M(-1.0),multiplicity_INEL_lg_0(false),N_trk_offline(-1.0),
-	     trig_3outof3(false), trig_2outof3(false), ATLAS_cut(false),trig_VZEROAND(false), weight(-1.0), valid(false), orig_eventNum(-1), V0M_class(-1){};
+     EbyeInfo():multiplicity(-1.0),multiplicity_V0M(-1.0),N_trk_offline(-1.0), weight(-1.0), multiplicity_INEL_lg_0(false),
+	     trig_3outof3(false), trig_2outof3(false), ATLAS_cut(false),trig_VZEROAND(false), valid(false), orig_eventNum(-1), V0M_class(-1){};
 
      double multiplicity;
-	double multiplicity_V0M;
+     double multiplicity_V0M;
+	double N_trk_offline;
+	double weight;
+
 	bool multiplicity_INEL_lg_0;
-	bool N_trk_offline;
 	bool trig_3outof3;
 	bool trig_2outof3;
 	bool ATLAS_cut;
 	bool trig_VZEROAND;
-	double weight;
         bool valid;
 	Container::ParticleInfo sample_part;
 

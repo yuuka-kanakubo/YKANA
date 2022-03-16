@@ -49,5 +49,5 @@ fi
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
  --SB_CMS \
- --CentralityCut 9 \
- #> ${log_dname}${log_fname}.log  2>&1  &
+ --CentralityCut 101 \
+ > ${log_dname}${log_fname}.log  2>&1  &

@@ -24,6 +24,8 @@ class Message{
 
  }
 
+ const void print(const auto val){cout << "PRINT: " << val << endl;}
+
 
   const bool enough_argument(const int& argc){
     if(argc< 5){

@@ -52,10 +52,10 @@ private:
 				if(this->flag_CentCut){
 					if(eBye_CentCut[i].get_V0M_class()==iCent) {
 						this->iEv_Cent.push_back(i);
+						//cout << "  ==> Pushing back " << i  << "  " << eBye_CentCut[i].N_trk_offline << "  " << eBye_CentCut[i].multiplicity << endl;
 					} 
 				}else{
 					this->iEv_Cent.push_back(i);
-cout << "Pushing back " << i << endl;
 				}
 			}
 		}
