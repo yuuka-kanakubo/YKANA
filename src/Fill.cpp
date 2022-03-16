@@ -109,14 +109,12 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 				
 				for(int nx = 0; nx<max_nx+1; nx++){
 					for(int ny = 0; ny<max_ny+1; ny++){
-						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+						ct->Hist2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight()/((double)NumTrig);
 						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
 					}
 				}
 
 				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=((double)NumPair)*EVENT.weight();
-				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 
 
 				for(int i = 0; i < constants::x_cell_capa; i++) {
@@ -185,7 +183,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				
 				for(int nx = 0; nx<max_nx+1; nx++){
 					for(int ny = 0; ny<max_ny+1; ny++){
-						ct->HistSub2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+						ct->HistSub2D[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight()/((double)NumTrig);
 						ct->HistSub2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
 					}
 				}
@@ -193,7 +191,6 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				//These are already calculated in signal calculation, so no need to do here.
 				//====================================================================
 				//ct->SumWeight+=EVENT.weight();
-				//ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 
 
 				for(int i = 0; i < constants::x_cell_capa; i++) {
@@ -433,8 +430,6 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				}
 				//---------------
 				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=((double)NumPair)*EVENT.weight();
-				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 				return;
 			}
 
@@ -487,8 +482,6 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				}
 				//---------------
 				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=((double)NumPair)*EVENT.weight();
-				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 				return;
 			}
 
@@ -529,8 +522,6 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				//---------------
 
 				ct->SumWeight+=EVENT.weight();
-				ct->SumPair+=((double)NumPair)*EVENT.weight();
-				ct->SumTrig+=((double)NumTrig)*EVENT.weight();
 				return;
 			}
 
@@ -1284,10 +1275,13 @@ vector<Container::ParticleInfo> Fill::select_N_RndomEv (const vector<EbyeInfo>& 
         vector <Container::ParticleInfo> Mixedpart;
     
 	std::uniform_int_distribution<> rndomEv(0,this->N_iCentEv-1);
+	std::uniform_int_distribution<> rndomSamp_i(0,constants::Nsample-1);
 	for(int i=0; i<constants::N_RndomEv; i++){
 		int i_=rndomEv(rndom->generator);
+		int iSamp_=rndomSamp_i(rndom->generatorSamp_i);
 		int iEv = rndom->get_iEv_Cent()[i_];
-                Mixedpart.push_back(eBye_All[iEv].sample_part);
+                //Mixedpart.push_back(eBye_All[iEv].sample_part);
+                Mixedpart.push_back(eBye_All[iEv].sample_partSet[iSamp_]);
 	}
 
 return Mixedpart;

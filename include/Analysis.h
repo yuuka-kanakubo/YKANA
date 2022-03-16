@@ -52,7 +52,8 @@ class Analysis{
 			//Random number for thermal parton sampling.
 			//-------------------------------------------
 			srand((unsigned) time(NULL));
-			rndom = make_shared<Rndom>(rand());
+			rndom = make_shared<Rndom>(111);
+			//rndom = make_shared<Rndom>(rand());
 
 			cout << "log " << log.get_BinSettings_size() << endl;
 			infohist = make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
@@ -177,10 +178,10 @@ class Analysis{
 								if(!Multi.ebye.trig_VZEROAND) continue;
 								ebe.print_eByeInfo(i,Multi);
 							}else{
-								eByeInSettings ebe;
-								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
-								weight_TL=Multi.ebye.weight;
-								ebe.print_eByeInfo(i,Multi);
+								//eByeInSettings ebe;
+								//eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
+								//weight_TL=Multi.ebye.weight;
+								//ebe.print_eByeInfo(i,Multi);
 							}
 						}
 

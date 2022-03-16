@@ -31,9 +31,9 @@ Stat::~Stat(){};
 				for(int i=0; i<ct->max_nx+1; ++i){
 					for(int j=0; j<ct->max_ny+1; ++j){
 						if(!options.get_flag_SB_CMS()){
-							ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumTrig;
+							ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumWeight;
 						}else{
-							ct->Hist2D[i][j]=ct->Hist2D[i][j]/ct->SumTrig;
+							ct->Hist2D[i][j]=ct->Hist2D[i][j]/ct->SumWeight;
 						}
 						ct->Hist2D_x[i][j]/=ct->Hist2DPartHit[i][j];
 						ct->Hist2D_y[i][j]/=ct->Hist2DPartHit[i][j];
@@ -56,7 +56,7 @@ Stat::~Stat(){};
 					vector<double> X, Y, Z;
 					for(int i=0; i<ct->max_nx+1; ++i){
 						for(int j=0; j<ct->max_ny+1; ++j){
-							ct->HistSub2D[i][j]=ct->HistSub2D[i][j]/ct->SumTrig;
+							ct->HistSub2D[i][j]=ct->HistSub2D[i][j]/ct->SumWeight;
 							ct->HistSub2D_x[i][j]/=ct->HistSub2DPartHit[i][j];
 							ct->HistSub2D_y[i][j]/=ct->HistSub2DPartHit[i][j];
 
@@ -75,6 +75,7 @@ Stat::~Stat(){};
 					//Obtain S/B*(B(0,0))
 					//============
 					double B00 = this->get_B00(X, Y, Z);
+					cout << "B00 " << B00 << endl;
 					ct->B00 = B00;
 					for(int i=0; i<ct->max_nx+1; ++i){
 						for(int j=0; j<ct->max_ny+1; ++j){

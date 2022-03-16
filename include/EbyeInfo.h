@@ -6,7 +6,7 @@ class EbyeInfo{
  public:
 
      EbyeInfo():multiplicity(-1.0),multiplicity_V0M(-1.0),N_trk_offline(-1.0), weight(-1.0), multiplicity_INEL_lg_0(false),
-	     trig_3outof3(false), trig_2outof3(false), ATLAS_cut(false),trig_VZEROAND(false), valid(false), orig_eventNum(-1), V0M_class(-1){};
+	     trig_3outof3(false), trig_2outof3(false), ATLAS_cut(false),trig_VZEROAND(false), valid(false), valid_assoc(false), orig_eventNum(-1), V0M_class(-1){};
 
      double multiplicity;
      double multiplicity_V0M;
@@ -19,7 +19,9 @@ class EbyeInfo{
 	bool ATLAS_cut;
 	bool trig_VZEROAND;
         bool valid;
+        bool valid_assoc;
 	Container::ParticleInfo sample_part;
+	vector<Container::ParticleInfo> sample_partSet;
 
 	int orig_eventNum;
 

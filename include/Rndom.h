@@ -18,9 +18,10 @@ private:
 		//=================================================
 		std::ranlux48 generator;
 		std::ranlux48 generatorSamp;
+		std::ranlux48 generatorSamp_i;
 
 		Rndom(const int seed): 
-			generator(seed), generatorSamp(seed+1){
+			generator(seed), generatorSamp(seed+1), generatorSamp_i(seed+10){
 				EVENT_SEED=seed;
                                 flag_CentCut=false;
 			};
@@ -49,6 +50,7 @@ private:
 
 			for(int i=0; i<(int)eBye_CentCut.size(); i++){
 				if(!eBye_CentCut[i].valid) continue;
+				if(!eBye_CentCut[i].valid_assoc) continue;
 				if(this->flag_CentCut){
 					if(eBye_CentCut[i].get_V0M_class()==iCent) {
 						this->iEv_Cent.push_back(i);

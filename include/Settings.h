@@ -356,7 +356,7 @@ class Settings{
 			consistency_check();
 			if(options.get_xaxis_type()==3){
 				this->log.set_centrality_cut(this->options.get_flag_CentralityCut());
-				this->log.save_BinSettings(this->options.axis3_inputf);
+				this->log.save_BinSettings(this->options.xMin_cstm, this->options.xMax_cstm);
 			}
 		};
 		~Settings(){};

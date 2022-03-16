@@ -38,6 +38,8 @@ class Util_func{
       return is_diquark;
     }
 
+
+
   void get_EbyeInfo(const string fname, EbyeInfo& ebye, double rap_shift, bool VZEROAND_trigger, bool parton_level){
     std::ifstream in;
     in.open(fname.c_str(),std::ios::in);
@@ -102,15 +104,16 @@ class Util_func{
 	}
 	////
 	
-    //if(options.get_flag_SB_CMS()){
-	Container::ParticleInfo part_in;
-	part_in.pt=pt;
-	part_in.id=ID;
-	part_in.eta=eta;
-	part_in.phi=phi;
-	part_in.TAG=TAG;
-	sampleSet.push_back(part_in);
-    //}
+	//if(options.get_flag_SB_CMS()){
+	if(pt>constants::assoc_ptmin && pt<constants::assoc_ptmax){
+		Container::ParticleInfo part_in;
+		part_in.pt=pt;
+		part_in.id=ID;
+		part_in.eta=eta;
+		part_in.phi=phi;
+		part_in.TAG=TAG;
+		sampleSet.push_back(part_in);
+	}
 
 	
 	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::w_eta_multiplicity) { 
@@ -155,13 +158,16 @@ class Util_func{
       }
     }
 
-    //if(options.get_flag_SB_CMS()){
-	    std::uniform_int_distribution<> rndomSamp(0, (int)sampleSet.size());
-	    int iSamp=rndomSamp(rndom->generatorSamp);
-	    ebye.sample_part=sampleSet[iSamp];
-    //}
-
-
+    if((int)sampleSet.size()>0){
+	    std::uniform_int_distribution<> rndomSamp(0, (int)sampleSet.size()-1);
+	    for(int is=0; is<constants::Nsample; is++){
+		    int iSamp=rndomSamp(rndom->generatorSamp);
+		    //ebye.sample_part=sampleSet[iSamp];
+		    ebye.sample_partSet.push_back(sampleSet[iSamp]);
+	    }
+	    ebye.valid_assoc=true;
+    }
+    vector<Container::ParticleInfo>().swap(sampleSet);
 
     in.close();
     ebye.multiplicity=Multiplicity;
