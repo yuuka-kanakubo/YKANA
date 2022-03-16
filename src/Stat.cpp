@@ -74,10 +74,12 @@ Stat::~Stat(){};
 
 					//Obtain S/B*(B(0,0))
 					//============
+					double B00 = this->get_B00(X, Y, Z);
+					ct->B00 = B00;
 					for(int i=0; i<ct->max_nx+1; ++i){
 						for(int j=0; j<ct->max_ny+1; ++j){
 
-							ct->Final2DHist[i][j]=this->get_B00(X, Y, Z)*(ct->Hist2D[i][j]/ct->HistSub2D[i][j]);
+							ct->Final2DHist[i][j]=B00*(ct->Hist2D[i][j]/ct->HistSub2D[i][j]);
 
 						}
 					}

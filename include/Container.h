@@ -119,7 +119,7 @@ class Container{
 
 	public:
 
-       Container(bool SB_CMS):flag_SB_CMS(SB_CMS),SumWeight(0.0), SumPair(0.0), SumTrig(0.0), CountEv(0), meanNt(-1.0){
+       Container(bool SB_CMS):flag_SB_CMS(SB_CMS),SumWeight(0.0), SumPair(0.0), SumTrig(0.0), CountEv(0), B00(0.0), meanNt(-1.0){
 cout << "Calling Container." << endl;
 	       if(constants::MODE.find("twopc")!=string::npos){
 		       Hist2D = new double *[constants::x_cell_capa];
@@ -278,6 +278,7 @@ cout << "Calling Container." << endl;
 	double SumPair;
 	double SumTrig;
 	int CountEv;
+	double B00;
 
 	//Special case: Rt analysis needs eBye Nt. So need to store info of all events.
 	//------------------------------------------------------------------

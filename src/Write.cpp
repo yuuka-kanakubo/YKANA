@@ -60,19 +60,38 @@ Write::~Write(){};
 
 				}else if(constants::MODE.find("twopc2D")!=string::npos) {
 
-					for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
-						for(int j=0; j<this->getMapEdgeY(this->infohist->y_max); ++j){
+					if(!options.get_flag_SB_CMS()){
+						for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
+							for(int j=0; j<this->getMapEdgeY(this->infohist->y_max); ++j){
 
-							double xaxis=((constants::x_min+(this->infohist->d_x*i))+(constants::x_min+(this->infohist->d_x*(i+1))))/2.0;
-							double yaxis=((constants::y_min+(this->infohist->d_y*j))+(constants::y_min+(this->infohist->d_y*(j+1))))/2.0;
-							//ct->Hist2D_x[i][j];
-							//ct->Hist2D_y[i][j];
-							ofs << setw(16) << fixed << setprecision(8) << xaxis << "  "
-								<< setw(16) << yaxis << "  "
-								<< setw(16) << ct->Final2DHist[i][j] << "  "
-								<< setw(16) << ct->Hist2DPartHit[i][j] << endl;
+								double xaxis=((constants::x_min+(this->infohist->d_x*i))+(constants::x_min+(this->infohist->d_x*(i+1))))/2.0;
+								double yaxis=((constants::y_min+(this->infohist->d_y*j))+(constants::y_min+(this->infohist->d_y*(j+1))))/2.0;
+								//ct->Hist2D_x[i][j];
+								//ct->Hist2D_y[i][j];
+								ofs << setw(16) << fixed << setprecision(8) << xaxis << "  "
+									<< setw(16) << yaxis << "  "
+									<< setw(16) << ct->Final2DHist[i][j] << "  "
+									<< setw(16) << ct->Hist2DPartHit[i][j] << endl;
+							}
+							ofs << endl;
 						}
-						ofs << endl;
+					}else{
+						for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
+							for(int j=0; j<this->getMapEdgeY(this->infohist->y_max); ++j){
+
+								double xaxis=((constants::x_min+(this->infohist->d_x*i))+(constants::x_min+(this->infohist->d_x*(i+1))))/2.0;
+								double yaxis=((constants::y_min+(this->infohist->d_y*j))+(constants::y_min+(this->infohist->d_y*(j+1))))/2.0;
+								//ct->Hist2D_x[i][j];
+								//ct->Hist2D_y[i][j];
+								ofs << setw(16) << fixed << setprecision(8) << xaxis << "  "
+									<< setw(16) << yaxis << "  "
+									<< setw(16) << ct->Final2DHist[i][j] << "  "
+									<< setw(16) << ct->Hist2D[i][j] << "  "
+									<< setw(16) << ct->HistSub2D[i][j] << "  "
+									<< setw(16) << ct->Hist2DPartHit[i][j] << endl;
+							}
+							ofs << endl;
+						}
 					}
 
 				}else{
