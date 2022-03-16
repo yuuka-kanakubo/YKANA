@@ -69,7 +69,7 @@ class Analysis{
 				infohist->N_coeff = options.get_Ncoeff();
 			}
 			read = make_shared<ReadIn>(this->ms, this->options);
-			fill = make_shared<Fill>(this->ms, this->options, this->infohist, this->uf, this->rndom);
+			fill = make_shared<Fill>(this->ms, this->options, this->infohist, this->uf);
 			stat = make_shared<Stat>(this->ms, this->options, this->infohist, this->uf);
 			write = make_shared<Write>(this->ms, this->options, this->infohist, this->uf);
 			if(constants::MODE.find("timelapse")!=std::string::npos) this->PrintCounter=constants::PrintCounterTL;
@@ -92,7 +92,10 @@ class Analysis{
 				vector<EbyeInfo> eBye_CentCut;
 				if(options.get_flag_CentralityCut()){
 					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
+					CentCut.ClassifyCentrality();
 					nCent=(int)options.name_cent.size();
+				}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
+					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 				}
 
 
@@ -103,11 +106,16 @@ class Analysis{
 
 					//Archive event numbering.
 					//========================
-					this->rndom->Archive_iEv_Cent(iCent, eBye_CentCut);
-					this->fill->nextCent();
+					if(this->options.get_flag_SB_CMS()){
+						this->rndom->set_flag_CentCut(options.get_flag_CentralityCut());
+						this->rndom->Archive_iEv_Cent(iCent, eBye_CentCut);
+						cout << this->rndom->get_iEv_Cent().size() << endl;
+						this->fill->nextCent(this->rndom);
+					}
 
 
 					auto ct = make_shared<Container>(this->options.get_flag_SB_CMS());
+
 
 					//Event Loop
 					//==========
@@ -173,6 +181,8 @@ class Analysis{
 								ebe.print_eByeInfo(i,Multi);
 							}
 						}
+
+
 
 
 

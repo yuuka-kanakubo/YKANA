@@ -17,7 +17,13 @@ class Message{
   
  Message(){};
   ~Message(){};
-  
+
+ const void DBG(const int line, const char file[42]){
+
+   cout << "DBG :3 " << file << " (" << line << ")" << endl;
+
+ }
+
 
   const bool enough_argument(const int& argc){
     if(argc< 5){

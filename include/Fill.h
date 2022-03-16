@@ -19,7 +19,7 @@ private:
 		Settings::Options options;
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
-		shared_ptr<Rndom>& rndom;
+		shared_ptr<Rndom> rndom;
 		vector<double> xMin_cstm, xMax_cstm;
 
 
@@ -38,11 +38,11 @@ private:
 
 public:
 
-Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf, shared_ptr<Rndom>& rndom);
+Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
 ~Fill();
 
 
-void nextCent();
+void nextCent(shared_ptr<Rndom> rndom);
 void fill_jets(shared_ptr<Container>& ct);
 			void fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& eBye_All);
 			void fill_twopc(shared_ptr<Container>& ct);

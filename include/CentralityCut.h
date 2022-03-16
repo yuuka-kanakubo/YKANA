@@ -12,6 +12,10 @@ public:
                 this->read_events();
 
 
+	}
+
+         void ClassifyCentrality(){
+
 			if(options.get_collision_type()==1){
 				for(int i=0; i<7; ++i){ 
 					options.val_cent.push_back(constants::val_cent_pPb[i]); 
@@ -66,7 +70,9 @@ public:
 			}
 			delete ev_cl;
 			cout << ":)Finish centrality classification." << endl;
-	}
+
+
+}
 
 
          vector<EbyeInfo>& eBye;

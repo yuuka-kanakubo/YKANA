@@ -5,7 +5,7 @@ EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
 outputdir="test"
-n=1000
+n=100
 
 
 #Do not modify this.
@@ -48,5 +48,6 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --CentralityCut 101 \
- > ${log_dname}${log_fname}.log  2>&1  &
+ --SB_CMS \
+ --CentralityCut 9 \
+ #> ${log_dname}${log_fname}.log  2>&1  &

@@ -10,6 +10,7 @@ private:
 
 	int EVENT_SEED;
 	vector<int> iEv_Cent;
+	bool flag_CentCut;
 
 	public:
 
@@ -21,6 +22,7 @@ private:
 		Rndom(const int seed): 
 			generator(seed), generatorSamp(seed+1){
 				EVENT_SEED=seed;
+                                flag_CentCut=false;
 			};
 
 		void keep_seed_info(const std::string path){
@@ -35,6 +37,7 @@ private:
 
                }
 
+		void set_flag_CentCut(bool flag){this->flag_CentCut=flag;}
 
 		int get_EVENT_SEED(){return this->EVENT_SEED;}
 
@@ -46,9 +49,14 @@ private:
 
 			for(int i=0; i<(int)eBye_CentCut.size(); i++){
 				if(!eBye_CentCut[i].valid) continue;
-				if(eBye_CentCut[i].get_V0M_class()==iCent) {
+				if(this->flag_CentCut){
+					if(eBye_CentCut[i].get_V0M_class()==iCent) {
+						this->iEv_Cent.push_back(i);
+					} 
+				}else{
 					this->iEv_Cent.push_back(i);
-				} 
+cout << "Pushing back " << i << endl;
+				}
 			}
 		}
 
