@@ -105,7 +105,7 @@ class Util_func{
 	////
 	
 	//if(options.get_flag_SB_CMS()){
-	if(pt>constants::assoc_ptmin && pt<constants::assoc_ptmax){
+	if(pt>constants::assoc_ptmin && pt<constants::assoc_ptmax && fabs(eta)<constants::etaRangeCMSRidge){
 		Container::ParticleInfo part_in;
 		part_in.pt=pt;
 		part_in.id=ID;

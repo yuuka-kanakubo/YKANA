@@ -80,7 +80,7 @@ Stat::~Stat(){};
 					for(int i=0; i<ct->max_nx+1; ++i){
 						for(int j=0; j<ct->max_ny+1; ++j){
 
-							ct->Final2DHist[i][j]=B00*(ct->Hist2D[i][j]/ct->HistSub2D[i][j]);
+							ct->Final2DHist[i][j]=(ct->HistSub2D[i][j]>constants::SMALL)? B00*(ct->Hist2D[i][j]/ct->HistSub2D[i][j]):0.0;
 
 						}
 					}
