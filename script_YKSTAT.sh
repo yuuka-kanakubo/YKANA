@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PP7TEV_transSmear0.6_sigma0.3_pT01.9"
+DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
@@ -50,5 +50,4 @@ fi
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
  --SB_CMS \
  --INEL_lg_0 \
- --CentralityCut 101 \
  #> ${log_dname}${log_fname}.log  2>&1  &

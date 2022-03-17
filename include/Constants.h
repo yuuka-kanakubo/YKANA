@@ -416,7 +416,7 @@ inline	int num_of_Species_Rt = 7;
 
 
 inline	const int margin = 10;
-inline  const int N_RndomEv=20;
+inline  const int N_RndomEv=10;
 inline  const int Nsample=5;
 
 inline	const std::string data_directory="data";
