@@ -158,7 +158,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						//string TAG = Mixedpart[j].TAG;
 						//if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
 						//if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
-						if(!(EVENT.part[j].pt>constants::assoc_ptmin && EVENT.part[j].pt<constants::assoc_ptmax)) continue;
+						if(!(Mixedpart[j].pt>constants::assoc_ptmin && Mixedpart[j].pt<constants::assoc_ptmax)) continue;
 
 						double x_val=EVENT.part[i].eta - Mixedpart[j].eta;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
