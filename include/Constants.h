@@ -20,10 +20,10 @@ inline	double twopc2DetaRange=2.4;
 inline	double twopc2Dptmin_N=0.4;
 inline	double twopc2Dptmax_N=1000.0;
 inline	double twopc2DetaRange_N=2.4;
-inline	double trig_ptmin=0.5;
+inline	double trig_ptmin=3.0;
 inline	double trig_ptmax=3.5;
-inline	double assoc_ptmin=0.5;
-inline	double assoc_ptmax=3.5;
+inline	double assoc_ptmin=1.0;
+inline	double assoc_ptmax=1.5;
 inline	const double minpt_Rt=5.0;
 inline  const double maxPhi_RtTrans=(2.0/3.0)*M_PI;
 inline  const double minPhi_RtTrans=(1.0/3.0)*M_PI;
@@ -416,7 +416,7 @@ inline	int num_of_Species_Rt = 7;
 
 
 inline	const int margin = 10;
-inline  const int N_RndomEv=20;
+inline  const int N_RndomEv=10;
 inline  const int Nsample=5;
 
 inline	const std::string data_directory="data";

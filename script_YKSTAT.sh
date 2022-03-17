@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PP7TEV_transSmear0.6_sigma0.3_pT01.9"
+DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
 EV="ev"
 EXT="hadronFinal_corecorona_weakStop_wcol.txt"
 #EXT="default.txt"
-outputdir="SBtest_PP7"
-n=100
+outputdir="SBtest_PBPB2760"
+n=1000
 
 
 #Do not modify this.
@@ -49,5 +49,4 @@ fi
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
  --SB_CMS \
- --CentralityCut 101 \
- > ${log_dname}${log_fname}.log  2>&1  &
+# > ${log_dname}${log_fname}.log  2>&1  &
