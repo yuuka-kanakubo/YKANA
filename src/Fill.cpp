@@ -79,12 +79,16 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 
 					if(!(EVENT.part[i].pt>constants::trig_ptmin && EVENT.part[i].pt<constants::trig_ptmax)) continue;
+					if(options.get_flag_only_core_triggers() && EVENT.part[i].TAG==constants::corona_tag) continue;
+					if(options.get_flag_only_corona_triggers() && EVENT.part[i].TAG==constants::core_tag) continue;
 					NumTrig++;
 
 					for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 						if (i==j) continue;
 						if(!(EVENT.part[j].pt>constants::assoc_ptmin && EVENT.part[j].pt<constants::assoc_ptmax)) continue;
+						if(options.get_flag_only_core_associates() && EVENT.part[j].TAG==constants::corona_tag) continue;
+						if(options.get_flag_only_corona_associates() && EVENT.part[j].TAG==constants::core_tag) continue;
 
 						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
@@ -147,6 +151,8 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 
 					if(!(EVENT.part[i].pt>constants::trig_ptmin && EVENT.part[i].pt<constants::trig_ptmax)) continue;
+					if(options.get_flag_only_core_triggers() && EVENT.part[i].TAG==constants::corona_tag) continue;
+					if(options.get_flag_only_corona_triggers() && EVENT.part[i].TAG==constants::core_tag) continue;
 					NumTrig++;
 
 					//Select N_RndomEv
@@ -155,9 +161,9 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 
 					for(int j=0; j<(int)Mixedpart.size(); ++j){
 
-						//string TAG = Mixedpart[j].TAG;
-						//if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
-						//if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
+						string TAG = Mixedpart[j].TAG;
+						if(options.get_flag_only_core_associates() && TAG==constants::corona_tag) continue;
+						if(options.get_flag_only_corona_associates() && TAG==constants::core_tag) continue;
 						if(!(Mixedpart[j].pt>constants::assoc_ptmin && Mixedpart[j].pt<constants::assoc_ptmax)) continue;
 
 						double x_val=EVENT.part[i].eta - Mixedpart[j].eta;

@@ -2,10 +2,10 @@
 
 DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop_wcol.txt"
+EXT="hadronFinal_corecorona_weakStop.txt"
 #EXT="default.txt"
-outputdir="SBtest_PP7"
-n=100000
+outputdir="PBPB_V0Mcut_WOCOL_CORE_CORONAtrigger"
+n=130000
 
 
 #Do not modify this.
@@ -49,5 +49,7 @@ fi
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
  --SB_CMS \
- --INEL_lg_0 \
- #> ${log_dname}${log_fname}.log  2>&1  &
+ --CentralityCut 4 \
+ --only_corona_triggers \
+ --only_core_associates \
+ > ${log_dname}${log_fname}.log  2>&1  &

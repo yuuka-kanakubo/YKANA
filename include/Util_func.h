@@ -106,13 +106,17 @@ class Util_func{
 	
 	//if(options.get_flag_SB_CMS()){
 	if(pt>constants::assoc_ptmin && pt<constants::assoc_ptmax && fabs(eta)<constants::etaRangeCMSRidge){
-		Container::ParticleInfo part_in;
-		part_in.pt=pt;
-		part_in.id=ID;
-		part_in.eta=eta;
-		part_in.phi=phi;
-		part_in.TAG=TAG;
-		sampleSet.push_back(part_in);
+		if((flag_only_corona && TAG == constants::corona_tag) || (flag_only_core && TAG == constants::core_tag)|| (!flag_only_core && !flag_only_corona )){
+			if((flag_only_core_associates && TAG==constants::core_tag) || (flag_only_corona_associates && TAG==constants::corona_tag) || (!flag_only_corona_associates && !flag_only_core_associates)){
+				Container::ParticleInfo part_in;
+				part_in.pt=pt;
+				part_in.id=ID;
+				part_in.eta=eta;
+				part_in.phi=phi;
+				part_in.TAG=TAG;
+				sampleSet.push_back(part_in);
+			}
+		}
 	}
 
 	
@@ -252,8 +256,15 @@ int get_NtrkClass(const double val){
 
 
  public:
-  Util_func(std::shared_ptr<Rndom>& rndom_in):DATE(""), rndom(rndom_in){
-    this->get_nowdata(); 
+
+	 bool flag_only_core;
+	 bool flag_only_corona;
+	 bool flag_only_core_associates;
+	 bool flag_only_corona_associates;
+
+  Util_func(std::shared_ptr<Rndom>& rndom_in):DATE(""), rndom(rndom_in), flag_only_core(false), flag_only_corona(false), 
+	flag_only_core_associates(false), flag_only_corona_associates(false){
+		this->get_nowdata(); 
  };
   ~Util_func(){};
   

@@ -106,6 +106,13 @@ void read_events(){
 
 	    auto utl_ = make_shared<Util_func>(this->rndom);
 
+	    //This need to be organized. It would be better to make option class?
+	    //===========================
+	    if(options.get_flag_only_core())utl_->flag_only_core=true;
+	    if(options.get_flag_only_corona())utl_->flag_only_corona=true;
+	    if(options.get_flag_only_core_associates())utl_->flag_only_core_associates=true;
+	    if(options.get_flag_only_corona_associates())utl_->flag_only_corona_associates=true;
+
 	    EbyeInfo ebye_;
 	    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level());
             ebye_.orig_eventNum=EV_Counter;
