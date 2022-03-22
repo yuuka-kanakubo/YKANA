@@ -96,6 +96,7 @@ class Settings{
                                 int modeTL;//0:xy, 1:xeta
                                 std::string valTL;
                                 double at_xTL, at_yTL, at_etaTL;
+				int ID;
 
 				void GetBinSettings(){
 
@@ -189,6 +190,7 @@ class Settings{
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
+				void set_specify_ID(int i){this->ID=i;}
 				void set_flag_CentralityCut(int collision_type_in=-1){
 					CentralityCut=true;
 					collision_type=collision_type_in;
@@ -284,6 +286,7 @@ class Settings{
 				bool get_flag__2PCout()const{return this->_2PCout;}
 				bool get_flag_tagged()const{return this->tagged;}
 				bool get_flag_set_Ncoeff()const{return this->set_Ncoeff;}
+				int get_specify_ID(){return this->ID;}
 
 
 
@@ -347,7 +350,8 @@ class Settings{
 					valTL("temp"),
 					at_xTL(0.0),
 					at_yTL(0.0),
-					at_etaTL(0.0)
+					at_etaTL(0.0),
+					ID(-10000)
 					{};
 
 		};
@@ -386,6 +390,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--multip_cut_more_than")){options.set_flag_multiplicity_cut_more_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--multip_cut_less_than")){options.set_flag_multiplicity_cut_less_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"-modeTL")){options.set_modeTL(atoi(argv[i+1]));}
+				else if(!strcmp(argv[i],"--ID")){options.set_specify_ID(atoi(argv[i+1]));}
 				else if(!strcmp(argv[i],"-valTL")){options.set_valTL(argv[i+1]);}
 				else if(!strcmp(argv[i],"-look_at_xTL")){options.set_at_xTL(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"-look_at_yTL")){options.set_at_yTL(atof(argv[i+1]));}
@@ -468,6 +473,11 @@ void consistency_check(){
 				options.set_flag_only_corona_triggers();
 				options.set_flag_only_corona_associates();
 		}
+	}
+
+	if (constants::MODE.find("MeanptPID")!=string::npos && options.get_specify_ID() == -10000){
+		cout << "ERROR:( Specify ID for meanpt PID calculation." << endl;
+		exit(1);
 	}
 
 }
