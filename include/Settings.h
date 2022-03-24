@@ -76,6 +76,7 @@ class Settings{
 				bool print_dndmt;
 				bool flag_pPb_cm_calculation;
 				bool flag_multiplicity_cut;
+				bool flag_vs_dNdeta;
 				bool zerofill;
 				bool two_subevent;
 				bool three_subevent;
@@ -164,6 +165,7 @@ class Settings{
 					mid_rapidity_cut_type=2;
 					cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << endl;
 				}
+				void set_flag_vs_dNdeta(const int i){this->flag_vs_dNdeta=true; this->collision_type=i;}
 				void set_modeTL(const int val){this->modeTL=val;}
 				void set_valTL(const std::string val){this->valTL=val;}
 				void set_at_xTL(const double val){this->at_xTL=val;}
@@ -208,6 +210,12 @@ class Settings{
 						cout << ":)Centrality cut original." << endl;
 					}else if(collision_type==101){
 						cout << ":)Centrality cut CMS Ntrk." << endl;
+					}else if(collision_type==10){
+						cout << ":)Centrality cut pp 5TeV." << endl;
+					}else if(collision_type==11){
+						cout << ":)Centrality cut pp 5TeV (Xi)." << endl;
+					}else if(collision_type==12){
+						cout << ":)Centrality cut pp 5TeV (Omega)." << endl;
 					}else{
 						cout << "ERROR:( Something wrong with --CentralityCut. Specify appropriate collision type. ex) --CentralityCut 1" << endl;
 						cout << "        1: pPb, 2:PbPb, 3:pp, 4:PbPb (wide), 8: original(narrow), 9: original " << endl;
@@ -237,6 +245,7 @@ class Settings{
 				int get_nfile()const{return this->nfile;}
 				int get_beginfile()const{return this->beginfile;}
 				bool get_flag_specify_startingfile()const{return this->specify_startingfile;}
+				bool get_flag_vs_dNdeta()const{return this->flag_vs_dNdeta;}
 				int get_xaxis_type()const{return axis_type;};
 				bool get_hist_parton_level()const{return parton_level;};
 				bool get_hist_rapidity_shift()const{return rapidity_shift;};
@@ -400,6 +409,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1
 				else if(!strcmp(argv[i],"--parton")){options.set_parton_level_hist();}
 				else if(!strcmp(argv[i],"--nozeros")){options.set_flag_zerofill();}
+				else if(!strcmp(argv[i],"--vs_dNdeta")){options.set_flag_vs_dNdeta(atoi(argv[i+1]));}
 				else if(!strcmp(argv[i],"--xaxis3_input")){options.set_axis3_input(argv[i+1]);}
 				//else if(!strcmp(argv[i],"--range")){options.set_xmax(atof(argv[i+1]));}///FOR x RANGE.
 				else if(!strcmp(argv[i],"--yshift")){options.dlty = atof(argv[i+1]); options.set_rapidity_shift_hist();} ///FOR rapidity shift.
@@ -514,7 +524,7 @@ class eByeInSettings{
 							if(options.get_hist_rapidity_shift() || options.get_flag_pPb_cm_calculation()){
 								rap_shift=(options.get_flag_pPb_cm_calculation())? constants::pPb_rap_shift_from_lab_to_cm:options.dlty;
 							}
-							utl_->get_EbyeInfo_(inputpath, ebye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level());
+							utl_->get_EbyeInfo_(inputpath, ebye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
 						}
 
 				};

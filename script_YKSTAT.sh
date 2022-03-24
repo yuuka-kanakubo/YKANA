@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PP13TEV_transSmear0.6_sigma0.3_pT01.9"
+DIR="../DCCI/data/PP5TEV_transSmear0.6_sigma0.3_pT01.9"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop_wcol.txt"
+EXT="hadronFinal_corecorona_K0decay_wcol.txt"
 #EXT="default.txt"
-outputdir="RidgePP13_V0M"
-n=2300000
+outputdir="PP5_MEANPT_K0S"
+n=850000
 
 
 #Do not modify this.
@@ -48,7 +48,8 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --SB_CMS \
+ --vs_dNdeta 10 \
+ --ID 310 \
+ --CentralityCut_ext hadronFinal_corecorona_weakStop_wcol.txt \
  --INEL_lg_0 \
- --CentralityCut 3 \
  > ${log_dname}${log_fname}.log  2>&1  &

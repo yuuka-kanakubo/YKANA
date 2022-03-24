@@ -52,7 +52,7 @@ void fill_jets(shared_ptr<Container>& ct);
 			void fill_twopc1D_tagged(shared_ptr<Container>& ct);
 			void fill_twopc1D_tagged_1particle(shared_ptr<Container>& ct);
 			void fill_twopc1D(shared_ptr<Container>& ct);
-			void fill(shared_ptr<Container>& ct);
+			void fill(shared_ptr<Container>& ct, const double dNdeta, const int bin);
 			void fill_TimeLapse(shared_ptr<Container>& ct);
 			void fill_vn4multi(shared_ptr<Container>& ct);
 			void fill_vnmulti(shared_ptr<Container>& ct);
