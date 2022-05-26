@@ -91,10 +91,10 @@ class Analysis{
 				//-----------------------
 				int nCent=1;
 				vector<EbyeInfo> eBye_CentCut;
-				if(options.get_flag_CentralityCut()){
+				if(options.get_flag_CentralityCut() || options.get_flag_vs_dNdeta()){
 					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 					CentCut.ClassifyCentrality();
-					nCent=(int)options.name_cent.size();
+					if(!options.get_flag_vs_dNdeta()) nCent=(int)options.name_cent.size();
 				}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
 					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 				}
@@ -143,10 +143,13 @@ class Analysis{
 						//Obtain event info for TimeLapse
 						//-------------------------------
 						double weight_TL=(options.get_flag_CentralityCut() && constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[EV_Count].weight:1.0;
+						double dNdeta_fill=eBye_CentCut[EV_Count].multiplicity;
+						int bin = eBye_CentCut[EV_Count].get_V0M_class();
 						EV_Count++;
 
 
-						if(!options.get_flag_CentralityCut()){
+						if(options.get_flag_vs_dNdeta() && bin<0) continue;
+						if(!options.get_flag_CentralityCut() && !options.get_flag_vs_dNdeta()){
 							if(options.get_flag_INEL_lg_0()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
@@ -249,7 +252,7 @@ class Analysis{
 						}else if(constants::MODE.find("timelapse")!=string::npos){
 							fill->fill_TimeLapse(ct);
 						}else{
-							fill->fill(ct);
+							fill->fill(ct,dNdeta_fill, bin);
 						}
 
 					}//Event loop

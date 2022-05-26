@@ -157,7 +157,7 @@ bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
 
 
 						}else if(constants::MODE.find("MeanptPID")!=string::npos){
-							if(ID==constants::id_proton && std::fabs(eta)<0.5) { 
+							if(abs(ID)==options.get_specify_ID() && std::fabs(eta)<constants::default_midy_pm) { 
 								if((options.get_flag_only_corona() && TAG == constants::corona_tag) || (options.get_flag_only_core() && TAG == constants::core_tag)|| (!options.get_flag_only_core() && !options.get_flag_only_corona() )){
 
 								Container::ParticleInfo part_in;

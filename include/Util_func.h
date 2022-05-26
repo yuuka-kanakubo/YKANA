@@ -40,7 +40,7 @@ class Util_func{
 
 
 
-  void get_EbyeInfo(const string fname, EbyeInfo& ebye, double rap_shift, bool VZEROAND_trigger, bool parton_level){
+  void get_EbyeInfo(const string fname, EbyeInfo& ebye, double rap_shift, bool VZEROAND_trigger, bool parton_level, int collision_type){
     std::ifstream in;
     in.open(fname.c_str(),std::ios::in);
     if(!in) {
@@ -180,7 +180,8 @@ class Util_func{
     ebye.multiplicity_V0M=(VZEROAND_trigger)? Multiplicity_V0A : Multiplicity_V0M;
     ebye.valid=true;
     ebye.N_trk_offline=N_trk_offline_;
-    ebye.set_V0M_class(this->get_NtrkClass(N_trk_offline_));
+    if(collision_type==101)
+	    ebye.set_V0M_class(this->get_NtrkClass(N_trk_offline_));
     if(V0M_FWD && V0M_BKW && OUTER_SPD) {ebye.trig_3outof3=true;}
     if(V0M_FWD && V0M_BKW) {ebye.trig_VZEROAND=true;}
     if((V0M_FWD && V0M_BKW) || (V0M_BKW && OUTER_SPD) || (OUTER_SPD && V0M_FWD) ) {ebye.trig_2outof3=true;}
@@ -295,8 +296,8 @@ int get_NtrkClass(const double val){
 
 
 
-  void get_EbyeInfo_(const string fname, EbyeInfo& ebye, double rap_shift, bool VZEROAND_trigger, bool parton_level){
-    this->get_EbyeInfo(fname, ebye, rap_shift, VZEROAND_trigger, parton_level);
+  void get_EbyeInfo_(const string fname, EbyeInfo& ebye, double rap_shift, bool VZEROAND_trigger, bool parton_level, int collision_type){
+    this->get_EbyeInfo(fname, ebye, rap_shift, VZEROAND_trigger, parton_level, collision_type);
   }
 
 

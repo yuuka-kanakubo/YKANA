@@ -49,6 +49,24 @@ public:
 					options.name_cent.push_back(constants::name_NtrkClass_pp[i]);
 				}
 
+			}else if(options.get_collision_type()==10){
+				for(int i=0; i<11; ++i){ 
+					options.val_cent.push_back(constants::val_cent_pp5[i]); 
+					options.name_cent.push_back(constants::name_cent_pp5[i]);
+				}
+
+			}else if(options.get_collision_type()==11){
+				for(int i=0; i<11; ++i){ 
+					options.val_cent.push_back(constants::val_cent_pp5_Xi[i]); 
+					options.name_cent.push_back(constants::name_cent_pp5_Xi[i]);
+				}
+
+			}else if(options.get_collision_type()==12){
+				for(int i=0; i<7; ++i){ 
+					options.val_cent.push_back(constants::val_cent_pp5_Omega[i]); 
+					options.name_cent.push_back(constants::name_cent_pp5_Omega[i]);
+				}
+
 			}else{
 				cout << "ERROR:( no such a collision type " << options.get_collision_type() << endl;
 				exit(1);
@@ -114,7 +132,7 @@ void read_events(){
 	    if(options.get_flag_only_corona_associates())utl_->flag_only_corona_associates=true;
 
 	    EbyeInfo ebye_;
-	    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level());
+	    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
             ebye_.orig_eventNum=EV_Counter;
 	    this->eBye.push_back(ebye_);
 	    EV_Counter++;

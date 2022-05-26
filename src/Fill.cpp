@@ -568,7 +568,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 			}
 
 
-			void Fill::fill(shared_ptr<Container>& ct){
+			void Fill::fill(shared_ptr<Container>& ct, const double dNdeta, const int bin){
 
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -576,14 +576,19 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				//Determine xbin
 				//---------------
 				double x_val=constants::dummy;
-				if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("meanmt")!=string::npos){
+				if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("meanmt")!=string::npos || constants::MODE.find("MeanptPID")!=string::npos){
 					x_val=EVENT.Nch();
 					if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
 				}
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
-				//For mean pt PID, assign 1 bin for each centrality.
+
+				//For mean pt PID vs. dNdeta
 				//--------------------------------------------------
-				if(constants::MODE.find("MeanptPID")!=string::npos) nx=0;
+				if(options.get_flag_vs_dNdeta()){
+					nx=bin;
+					x_val=dNdeta;
+				}
+
 
 
 				//Count particle by particle.

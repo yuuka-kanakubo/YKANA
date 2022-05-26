@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PBPB2760GEV_transSmear0.6_sigma0.3_pT01.0"
+DIR="../DCCI/data/PP5TEV_transSmear0.6_sigma0.3_pT01.9"
 EV="ev"
-EXT="hadronFinal_corecorona_weakStop.txt"
+EXT="hadronFinal_corecorona_K0decay_wcol.txt"
 #EXT="default.txt"
-outputdir="PBPB_V0Mcut_WOCOL_CORE_CORONAtrigger"
-n=130000
+outputdir="PP5_MEANPT_K0S"
+n=850000
 
 
 #Do not modify this.
@@ -48,8 +48,8 @@ fi
 
 ./YKSTAT \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --SB_CMS \
- --CentralityCut 4 \
- --only_corona_triggers \
- --only_core_associates \
+ --vs_dNdeta 10 \
+ --ID 310 \
+ --CentralityCut_ext hadronFinal_corecorona_weakStop_wcol.txt \
+ --INEL_lg_0 \
  > ${log_dname}${log_fname}.log  2>&1  &

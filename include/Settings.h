@@ -76,6 +76,7 @@ class Settings{
 				bool print_dndmt;
 				bool flag_pPb_cm_calculation;
 				bool flag_multiplicity_cut;
+				bool flag_vs_dNdeta;
 				bool zerofill;
 				bool two_subevent;
 				bool three_subevent;
@@ -96,6 +97,7 @@ class Settings{
                                 int modeTL;//0:xy, 1:xeta
                                 std::string valTL;
                                 double at_xTL, at_yTL, at_etaTL;
+				int ID;
 
 				void GetBinSettings(){
 
@@ -163,6 +165,7 @@ class Settings{
 					mid_rapidity_cut_type=2;
 					cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << endl;
 				}
+				void set_flag_vs_dNdeta(const int i){this->flag_vs_dNdeta=true; this->collision_type=i;}
 				void set_modeTL(const int val){this->modeTL=val;}
 				void set_valTL(const std::string val){this->valTL=val;}
 				void set_at_xTL(const double val){this->at_xTL=val;}
@@ -189,6 +192,7 @@ class Settings{
 				void set_flag_Specify_dir_for_CentralityCut(){this->Specify_dir_for_CentralityCut=true;}
 				void set_flag_Specify_f_for_CentralityCut(){this->Specify_f_for_CentralityCut=true;}
 				void set_flag_Specify_ext_for_CentralityCut(){this->Specify_ext_for_CentralityCut=true;}
+				void set_specify_ID(int i){this->ID=i;}
 				void set_flag_CentralityCut(int collision_type_in=-1){
 					CentralityCut=true;
 					collision_type=collision_type_in;
@@ -206,6 +210,12 @@ class Settings{
 						cout << ":)Centrality cut original." << endl;
 					}else if(collision_type==101){
 						cout << ":)Centrality cut CMS Ntrk." << endl;
+					}else if(collision_type==10){
+						cout << ":)Centrality cut pp 5TeV." << endl;
+					}else if(collision_type==11){
+						cout << ":)Centrality cut pp 5TeV (Xi)." << endl;
+					}else if(collision_type==12){
+						cout << ":)Centrality cut pp 5TeV (Omega)." << endl;
 					}else{
 						cout << "ERROR:( Something wrong with --CentralityCut. Specify appropriate collision type. ex) --CentralityCut 1" << endl;
 						cout << "        1: pPb, 2:PbPb, 3:pp, 4:PbPb (wide), 8: original(narrow), 9: original " << endl;
@@ -235,6 +245,7 @@ class Settings{
 				int get_nfile()const{return this->nfile;}
 				int get_beginfile()const{return this->beginfile;}
 				bool get_flag_specify_startingfile()const{return this->specify_startingfile;}
+				bool get_flag_vs_dNdeta()const{return this->flag_vs_dNdeta;}
 				int get_xaxis_type()const{return axis_type;};
 				bool get_hist_parton_level()const{return parton_level;};
 				bool get_hist_rapidity_shift()const{return rapidity_shift;};
@@ -284,6 +295,7 @@ class Settings{
 				bool get_flag__2PCout()const{return this->_2PCout;}
 				bool get_flag_tagged()const{return this->tagged;}
 				bool get_flag_set_Ncoeff()const{return this->set_Ncoeff;}
+				int get_specify_ID(){return this->ID;}
 
 
 
@@ -347,7 +359,8 @@ class Settings{
 					valTL("temp"),
 					at_xTL(0.0),
 					at_yTL(0.0),
-					at_etaTL(0.0)
+					at_etaTL(0.0),
+					ID(-10000)
 					{};
 
 		};
@@ -386,6 +399,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--multip_cut_more_than")){options.set_flag_multiplicity_cut_more_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--multip_cut_less_than")){options.set_flag_multiplicity_cut_less_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"-modeTL")){options.set_modeTL(atoi(argv[i+1]));}
+				else if(!strcmp(argv[i],"--ID")){options.set_specify_ID(atoi(argv[i+1]));}
 				else if(!strcmp(argv[i],"-valTL")){options.set_valTL(argv[i+1]);}
 				else if(!strcmp(argv[i],"-look_at_xTL")){options.set_at_xTL(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"-look_at_yTL")){options.set_at_yTL(atof(argv[i+1]));}
@@ -395,6 +409,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1
 				else if(!strcmp(argv[i],"--parton")){options.set_parton_level_hist();}
 				else if(!strcmp(argv[i],"--nozeros")){options.set_flag_zerofill();}
+				else if(!strcmp(argv[i],"--vs_dNdeta")){options.set_flag_vs_dNdeta(atoi(argv[i+1]));}
 				else if(!strcmp(argv[i],"--xaxis3_input")){options.set_axis3_input(argv[i+1]);}
 				//else if(!strcmp(argv[i],"--range")){options.set_xmax(atof(argv[i+1]));}///FOR x RANGE.
 				else if(!strcmp(argv[i],"--yshift")){options.dlty = atof(argv[i+1]); options.set_rapidity_shift_hist();} ///FOR rapidity shift.
@@ -470,6 +485,11 @@ void consistency_check(){
 		}
 	}
 
+	if (constants::MODE.find("MeanptPID")!=string::npos && options.get_specify_ID() == -10000){
+		cout << "ERROR:( Specify ID for meanpt PID calculation." << endl;
+		exit(1);
+	}
+
 }
 
 
@@ -504,7 +524,7 @@ class eByeInSettings{
 							if(options.get_hist_rapidity_shift() || options.get_flag_pPb_cm_calculation()){
 								rap_shift=(options.get_flag_pPb_cm_calculation())? constants::pPb_rap_shift_from_lab_to_cm:options.dlty;
 							}
-							utl_->get_EbyeInfo_(inputpath, ebye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level());
+							utl_->get_EbyeInfo_(inputpath, ebye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
 						}
 
 				};
