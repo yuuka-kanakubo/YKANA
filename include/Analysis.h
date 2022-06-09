@@ -91,10 +91,10 @@ class Analysis{
 				//-----------------------
 				int nCent=1;
 				vector<EbyeInfo> eBye_CentCut;
-				if(options.get_flag_CentralityCut() || options.get_flag_vs_dNdeta()){
+				if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
 					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 					CentCut.ClassifyCentrality();
-					if(!options.get_flag_vs_dNdeta()) nCent=(int)options.name_cent.size();
+					if(!options.get_flag_vs_Multi()) nCent=(int)options.name_cent.size();
 				}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
 					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 				}
@@ -143,13 +143,14 @@ class Analysis{
 						//Obtain event info for TimeLapse
 						//-------------------------------
 						double weight_TL=(options.get_flag_CentralityCut() && constants::MODE.find("timelapse")!=std::string::npos)? eBye_CentCut[EV_Count].weight:1.0;
-						double dNdeta_fill=eBye_CentCut[EV_Count].multiplicity;
-						int bin = eBye_CentCut[EV_Count].get_V0M_class();
+						double dNdeta_fill=(options.get_flag_vs_Multi())? eBye_CentCut[EV_Count].multiplicity:0.0;
+						double Nch_fill=(options.get_flag_vs_Multi())? eBye_CentCut[EV_Count].Nch:0.0;
+						int bin = (options.get_flag_vs_Multi())?eBye_CentCut[EV_Count].get_V0M_class():0.0;
 						EV_Count++;
 
 
-						if(options.get_flag_vs_dNdeta() && bin<0) continue;
-						if(!options.get_flag_CentralityCut() && !options.get_flag_vs_dNdeta()){
+						if(options.get_flag_vs_Multi() && bin<0) continue;
+						if(!options.get_flag_CentralityCut() && !options.get_flag_vs_Multi()){
 							if(options.get_flag_INEL_lg_0()){
 								eByeInSettings ebe;
 								eByeInSettings::eByeMulti Multi(options, inputpath, this->rndom);
@@ -221,7 +222,8 @@ class Analysis{
 								}              
 							}else{
 								if(options.get_flag__4particle()){
-									fill->fill_vn4multi(ct);
+									//TODO: Currently Nch_fill is added like this.. but need to integrate information into ct.
+									fill->fill_vn4multi(ct, Nch_fill);
 								}else{
 									fill->fill_vnmulti(ct);
 								}

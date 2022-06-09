@@ -584,7 +584,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 
 				//For mean pt PID vs. dNdeta
 				//--------------------------------------------------
-				if(options.get_flag_vs_dNdeta()){
+				if(options.get_flag_vs_Multi()){
 					nx=bin;
 					x_val=dNdeta;
 				}
@@ -722,7 +722,7 @@ int Fill::get_cell_index_cstm(const double val){
 
 
 
-			void Fill::fill_vn4multi(shared_ptr<Container>& ct){
+			void Fill::fill_vn4multi(shared_ptr<Container>& ct, const double Nch){
 
 
 				Container::EventInfo& EVENT= ct->EVENTINFO;
@@ -734,6 +734,12 @@ int Fill::get_cell_index_cstm(const double val){
 				double x_val=EVENT.Nch();
 				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
+				//If xval is calculated from different particle list.
+				//======================================================
+				if(options.get_flag_vs_Multi()){
+					x_val=Nch;
+					nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
+				}
 
 
 				//Count particle by particle.

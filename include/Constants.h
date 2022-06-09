@@ -28,6 +28,7 @@ inline	const double minpt_Rt=5.0;
 inline  const double maxPhi_RtTrans=(2.0/3.0)*M_PI;
 inline  const double minPhi_RtTrans=(1.0/3.0)*M_PI;
 inline	const double etaRange_Rt=0.8;
+inline	const double etaRange_Nch=0.8;
 inline	const double etaRangeMultiplicity=0.5;
 inline	const double etaA_3sub = -0.4;
 inline	const double etaB_3sub = 0.4;

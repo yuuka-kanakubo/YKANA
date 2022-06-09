@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../DCCI/data/PP5TEV_transSmear0.6_sigma0.3_pT01.9"
+DIR="../pythia8244/default_pythia_mymain/data/20210325_DEFAULT_PBPB2760GEV_weakStop_100K"
 EV="ev"
-EXT="hadronFinal_corecorona_K0decay_wcol.txt"
-#EXT="default.txt"
-outputdir="PP5_MEANPT_K0S"
-n=850000
+#EXT="hadronFinal_core_weakStop_wcol.txt"
+EXT="default.txt"
+outputdir="PYTHIA_Default_PBPBC24Nch_CORE_WSCAT"
+n=10000
 
 
 #Do not modify this.
@@ -45,11 +45,10 @@ fi
 # --2PCout \
 # --setNcoeff 3 \
 # --only_corona_associates \
+# --vs_Multi 2 \
 
-./YKSTAT \
+./YKANA \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --vs_dNdeta 10 \
- --ID 310 \
- --CentralityCut_ext hadronFinal_corecorona_weakStop_wcol.txt \
- --INEL_lg_0 \
+ --4particle \
+ --HI \
  > ${log_dname}${log_fname}.log  2>&1  &

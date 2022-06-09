@@ -51,6 +51,7 @@ class Util_func{
 
 
     double Multiplicity=0.0;
+    double N_charge=0.0;
     double Multiplicity_V0M=0.0;
     double Multiplicity_V0A=0.0;
     double N_trk_offline_=0.0;
@@ -123,6 +124,9 @@ class Util_func{
 	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::w_eta_multiplicity) { 
 		Multiplicity++;
 	}
+	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::etaRange_Nch && (pt<constants::ptmax_cumulantmulti_Nch && pt>constants::ptmin_cumulantmulti_Nch)) { 
+		N_charge++;
+	}
 	if((abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) && fabs(eta)<constants::w_eta_multiplicity_INEL_lg_0) { 
 		Multiplicity_INEL_lg_0=true;
 	}
@@ -175,6 +179,7 @@ class Util_func{
 
     in.close();
     ebye.multiplicity=Multiplicity;
+    ebye.Nch=N_charge;
     ebye.weight=Weight;
     ebye.multiplicity_INEL_lg_0=Multiplicity_INEL_lg_0;
     ebye.multiplicity_V0M=(VZEROAND_trigger)? Multiplicity_V0A : Multiplicity_V0M;
