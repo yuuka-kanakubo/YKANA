@@ -599,6 +599,11 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						y_val = EVENT.part[j].pt;
 					}else if(constants::MODE.find("meanmt")!=string::npos){
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
+					}else if(constants::MODE.find("plotxy")!=string::npos){
+						x_val=EVENT.part[j].r;//One can change to other values as one likes.
+						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
+						y_val = EVENT.part[j].vt;
 					}else if(constants::MODE.find("mtscaling")!=string::npos){
 						x_val=EVENT.part[j].m;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;

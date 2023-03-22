@@ -202,6 +202,8 @@ class Analysis{
 								std::stringstream ssTL;
 								ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/";
 								if(!read->readTimeLapse(ssTL.str(), ct, weight_TL)) continue;
+							}else if(constants::MODE.find("plotxy")!=std::string::npos){
+								if(!read->read_XY(inputpath, ct)) continue;
 							}else{
 								if(!read->read(inputpath, ct)) continue;
 							}

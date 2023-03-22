@@ -22,6 +22,58 @@ using namespace std;
 ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0), nline(-1){};
 ReadIn::~ReadIn(){};
 
+
+
+
+bool ReadIn::read_XY(const std::string& fname, shared_ptr<Container>& ct){
+
+			ifstream in;
+			in.open(fname.c_str(),ios::in);
+			if(!in){ ms->open(fname); return false;}
+
+			//Variables.
+			//part_1ev is a vector containing particle lists
+			//info_1ev stores info of one single event.
+			//-----------
+			Container::EventInfo info_1ev;
+			vector<Container::ParticleInfo> part_1ev;
+
+			{
+				std::string templine;
+				while(getline(in,templine)) {
+					if(templine.find('#')!=std::string::npos) {
+					} else if(templine.find('%')!=std::string::npos){
+					}else{
+						istringstream is(templine);
+						double data1, data2;//I dare to leave them as arbitral values so that this function is available for anything.
+						is >> data1 >> data2;
+
+
+						Container::ParticleInfo part_in;
+						part_in.r=data1;
+						part_in.vt=data2;
+						part_1ev.push_back(part_in);
+
+					}
+				}
+
+			}
+
+			info_1ev.part=part_1ev;
+			ct->EVENTINFO=info_1ev;
+			vector<Container::ParticleInfo>().swap(part_1ev);
+
+			return true;
+}
+
+
+
+
+
+
+
+
+
 bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
 
 			ifstream in;

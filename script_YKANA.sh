@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../pythia8244/default_pythia_mymain/data/20210325_DEFAULT_PBPB2760GEV_weakStop_100K"
+DIR="../DCCI/data/20221219_EKRT_0_5_A_SAT_MC_toPrintProfileXETA"
 EV="ev"
 #EXT="hadronFinal_core_weakStop_wcol.txt"
-EXT="default.txt"
-outputdir="PYTHIA_Default_PBPBC24Nch_CORE_WSCAT"
-n=10000
+EXT="eta_veta.txt"
+outputdir="Initial_etaVeta_EKRT_0_5_A_SAT_MC"
+n=1
 
 
 #Do not modify this.
@@ -49,6 +49,4 @@ fi
 
 ./YKANA \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --4particle \
- --HI \
- > ${log_dname}${log_fname}.log  2>&1  &
+ #> ${log_dname}${log_fname}.log  2>&1  &
