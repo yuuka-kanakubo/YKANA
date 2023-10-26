@@ -123,8 +123,13 @@ class Analysis{
 					//Event Loop
 					//==========
 					int EV_Count=0;
+					int pct=0;
 					for(int i=options.get_beginfile(); i<options.get_nfile(); ++i){
 						if(!(i%this->PrintCounter)) ms->read(i);
+						if(fabs((double)i/(double)options.get_nfile()-pct*0.1)<constants::SMALL){
+							cout << ":D " << pct*10 << "\% is done " << endl;
+							pct++;
+						}
 						ct->CountEv++;
 						std::stringstream ss;
 						ss << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/" << options.get_ext_name();
@@ -202,8 +207,10 @@ class Analysis{
 								std::stringstream ssTL;
 								ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/";
 								if(!read->readTimeLapse(ssTL.str(), ct, weight_TL)) continue;
-							}else if(constants::MODE.find("plotxy")!=std::string::npos){
-								if(!read->read_XY(inputpath, ct)) continue;
+							}else if(constants::MODE.find("readXY")!=std::string::npos){
+								if(!read->readXY(inputpath, ct)) continue;
+							}else if(options.get_flag_EKRTformat()){
+								if(!read->readEKRT(inputpath, ct)) continue;
 							}else{
 								if(!read->read(inputpath, ct)) continue;
 							}

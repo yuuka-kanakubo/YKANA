@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DIR="../DCCI/data/20221219_EKRT_0_5_A_SAT_MC_toPrintProfileXETA"
+DIR="../mcaa-master/data/26Oct2023_b0.01"
 EV="ev"
 #EXT="hadronFinal_core_weakStop_wcol.txt"
-EXT="eta_veta.txt"
-outputdir="Initial_etaVeta_EKRT_0_5_A_SAT_MC"
-n=1
+EXT="EKRTminijet.txt"
+outputdir="dNdr"
+n=100
 
 
 #Do not modify this.
@@ -49,4 +49,5 @@ fi
 
 ./YKANA \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
+--EKRTformat \
  #> ${log_dname}${log_fname}.log  2>&1  &

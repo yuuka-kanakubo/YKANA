@@ -590,7 +590,6 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				}
 
 
-
 				//Count particle by particle.
 				//----------------------------
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
@@ -599,11 +598,6 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						y_val = EVENT.part[j].pt;
 					}else if(constants::MODE.find("meanmt")!=string::npos){
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
-					}else if(constants::MODE.find("plotxy")!=string::npos){
-						x_val=EVENT.part[j].r;//One can change to other values as one likes.
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
-						nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
-						y_val = EVENT.part[j].vt;
 					}else if(constants::MODE.find("mtscaling")!=string::npos){
 						x_val=EVENT.part[j].m;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
@@ -615,18 +609,42 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 
 						if(!this->fix_ax(EVENT.part[j].id, nx, x_val)) continue;
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
+					}else{
+						//Default filling.
+						//You can put whatever you want in x and y.
+						//==========================================
+						x_val=EVENT.part[j].r;
+						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
+						y_val = 1.0/(x_val*this->infohist->d_x);
 					}
+
 					ct->Hist[nx]+=y_val*EVENT.weight();
 					ct->Hist_x[nx]+=x_val*EVENT.weight();
 					ct->HistHit[nx]++;
-					ct->HistHist[nx]+=pow(y_val,2)*EVENT.weight();
+
+					//Temporal archive of Njet in one event for each bin
+					//=================================================
+					ct->Hist_1ev[nx]+=y_val;
+
 					ct->Hist_weight[nx]+=EVENT.weight();
 					if(ct->max_nx<nx) ct->max_nx=nx;
 
-					ct->SumWeight+=EVENT.weight();
 
+				}//particle loop
+
+				ct->SumWeight+=EVENT.weight();
+
+				//loop over bins. This should be done after particle loop
+				//======================================================
+				for(int i=0; i<ct->max_nx+1; ++i){
+
+					//I want to get sum_ev Nminijet*Nminijet 
+					//in [nx]
+					//===================================
+					ct->HistHist[i]+=pow(ct->Hist_1ev[i], 2);
+					ct->Hist_1ev[i]=0.0;
 				}
-
 
 			}
 

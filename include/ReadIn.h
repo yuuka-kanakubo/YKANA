@@ -22,7 +22,8 @@ ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in);
 ~ReadIn();
 
 bool read(const std::string& fname, shared_ptr<Container>& ct);
-bool read_XY(const std::string& fname, shared_ptr<Container>& ct);
+bool readEKRT(const std::string& fname, shared_ptr<Container>& ct);
+bool readXY(const std::string& fname, shared_ptr<Container>& ct);
 bool read_jetinfo(const std::string& fname, shared_ptr<Container>& ct);
 bool readTimeLapse(const std::string& fname, shared_ptr<Container>& ct, const double weight);
 bool get_nline_to_see(int &nline, const std::string fname);

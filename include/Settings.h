@@ -66,6 +66,7 @@ class Settings{
 				bool trig_2outof3;
 				bool trig_VZEROAND;
 				bool ATLAS_cut;
+				bool EKRTformat;
 				bool only_core;
 				bool only_corona;
 				bool only_core_triggers;
@@ -149,6 +150,10 @@ class Settings{
 				void set_ATLAS_cut(){ ATLAS_cut=true; 
 					this->set_longrange_of_hist__plus_minus(constants::w_eta_ATLAS_cut);
 					mid_rapidity_cut_type=3;
+				};
+				void set_EKRTformat(){ 
+					EKRTformat=true;
+					std::cout << "Now EKRT format is assumed for input." << std::endl; 
 				};
 				void set_flag_multiplicity_cut_more_than(const double multip_cut_more_than_in){
 					flag_multiplicity_cut=true;
@@ -273,6 +278,7 @@ class Settings{
 				bool get_flag_2outof3_trigger()const{return trig_2outof3;};
 				bool get_flag_VZEROAND_trigger()const{return trig_VZEROAND;};
 				bool get_flag_ATLAS_cut()const{return ATLAS_cut;};
+				bool get_flag_EKRTformat()const{return EKRTformat;};
 				bool get_flag_only_core()const{return only_core;} 
 				bool get_flag_only_corona()const{return only_corona;}
 				bool get_flag_only_core_triggers()const{return only_core_triggers;} 
@@ -327,6 +333,7 @@ class Settings{
 					trig_2outof3(false),
 					trig_VZEROAND(false),
 					ATLAS_cut(false),
+					EKRTformat(false),
 					only_core(false),
 					only_corona(false),
 					only_core_triggers(false),
@@ -419,6 +426,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--trig_2outof3")){options.set_trig_2outof3();}
 				else if(!strcmp(argv[i],"--trig_VZEROAND")){options.set_trig_VZEROAND();}
 				else if(!strcmp(argv[i],"--ATLAS_cut")){options.set_ATLAS_cut();}
+				else if(!strcmp(argv[i],"--EKRTformat")){options.set_EKRTformat();}
 				else if(!strcmp(argv[i],"--only_core")){options.set_flag_only_core();}
 				else if(!strcmp(argv[i],"--only_corona")){options.set_flag_only_corona();}
 				else if(!strcmp(argv[i],"--only_core_triggers")){options.set_flag_only_core_triggers();}
@@ -447,6 +455,7 @@ class Settings{
 					cout << "ERROR:( There is no such an option: " << opt_in << endl; 
 					exit(1);
 				}
+				i++;
 			}
 		}
 

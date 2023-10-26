@@ -25,7 +25,7 @@ ReadIn::~ReadIn(){};
 
 
 
-bool ReadIn::read_XY(const std::string& fname, shared_ptr<Container>& ct){
+bool ReadIn::readXY(const std::string& fname, shared_ptr<Container>& ct){
 
 			ifstream in;
 			in.open(fname.c_str(),ios::in);
@@ -67,6 +67,125 @@ bool ReadIn::read_XY(const std::string& fname, shared_ptr<Container>& ct){
 }
 
 
+
+bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
+
+	ifstream in;
+	in.open(fname.c_str(),ios::in);
+	if(!in){ ms->open(fname); return false;}
+
+	//Variables.
+	//part_1ev is a vector containing particle lists
+	//info_1ev stores info of one single event.
+	//-----------
+	Container::EventInfo info_1ev;
+	vector<Container::ParticleInfo> part_1ev;
+	int Nch=0;
+	double weight=1.0;
+
+
+	{
+		std::string templine;
+		while(getline(in,templine)) {
+			if(templine.find('#')!=std::string::npos) {
+			} else if(templine.find('%')!=std::string::npos){
+			}else{
+				double x, y, pt, rap, phi, t;
+				double tata;
+				int ID;
+				int momID1;
+				int momID2;
+				int imomNucleon1;
+				int imomNucleon2;
+				double xmomNucleon1;
+				double xmomNucleon2;
+				double ymomNucleon1;
+				double ymomNucleon2;
+				double zmomNucleon1;
+				double zmomNucleon2;
+				bool is_mom1Neutron;
+				bool is_mom2Neutron;
+				istringstream is(templine);
+				is >> t 
+					>> x 
+					>> y 
+					>> pt 
+					>> rap 
+					>> phi 
+					>> tata 
+					>> ID 
+					>> momID1 
+					>> momID2 
+					>> imomNucleon1 
+					>> imomNucleon2 
+					>> xmomNucleon1 
+					>> xmomNucleon2 
+					>> ymomNucleon1 
+					>> ymomNucleon2 
+					>> zmomNucleon1 
+					>> zmomNucleon2 
+					>> is_mom1Neutron 
+					>> is_mom2Neutron;
+
+				Container::ParticleInfo part_in;
+
+				part_in.x=x;//[fm]
+				part_in.y=y;//[fm]
+				double rr = pow(x,2)+pow(y,2);
+				part_in.r=(rr<constants::SMALL)? 0.0:sqrt(rr);//[fm]
+				part_in.t=t;//[fm]
+				part_in.phi=phi;
+				part_in.rap=rap;
+				part_in.pt=pt;//[GeV]
+				part_in.tata=tata;
+				part_in.ID=ID;
+				part_in.momID1=momID1;
+				part_in.momID2=momID2;
+				part_in.imomNucleon1=imomNucleon1;
+				part_in.imomNucleon2=imomNucleon2;
+				part_in.xmomNucleon1=xmomNucleon1;
+				part_in.xmomNucleon2=xmomNucleon2;
+				part_in.ymomNucleon1=ymomNucleon1;
+				part_in.ymomNucleon2=ymomNucleon2;
+				part_in.zmomNucleon1=zmomNucleon1;
+				part_in.zmomNucleon2=zmomNucleon2;
+				part_in.is_mom1Neutron=is_mom1Neutron;
+				part_in.is_mom2Neutron=is_mom2Neutron;
+
+				double m=0.0;//it is mass less partons in MCEKRT with current version.
+				part_in.m=m;
+				double mt_squared=pow(part_in.pt,2)*pow(part_in.m,2);
+				double mt=(mt_squared)>0.0 ? sqrt(mt_squared):0.0;
+				part_in.mt=mt;
+				part_in.eta=rap;
+				part_in.px=part_in.pt*cos(part_in.phi);
+				part_in.py=part_in.pt*sin(part_in.phi);
+				part_in.pz=part_in.mt*sinh(part_in.rap);
+				part_in.e=part_in.mt*cosh(part_in.rap);
+				part_in.tau=part_in.t/cosh(part_in.rap);
+				part_in.z=part_in.tau*sinh(part_in.rap);
+
+				part_1ev.push_back(part_in);
+
+			}//particle loop if no # %
+		}//particle loop
+		in.close();
+	}//namespace 
+
+	//Store
+	//part_1ev is a vector containing particle lists
+	//info_1ev stores info of one single event.
+	//-------
+	info_1ev.weight(weight);
+	info_1ev.Nch(Nch);
+	info_1ev.part=part_1ev;
+	ct->EVENTINFO=info_1ev;
+	vector<Container::ParticleInfo>().swap(part_1ev);
+
+	return true;
+
+
+}
 
 
 
@@ -358,6 +477,8 @@ bool ReadIn::read(const std::string& fname, shared_ptr<Container>& ct){
 
 				return true;
 			}
+
+
 
 
 

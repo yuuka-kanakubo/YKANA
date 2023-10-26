@@ -299,9 +299,9 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
-#elif defined PLOTXY
-	const std::string MODE = "plotxy";
-	const string default_out_directory_name="plotxy";
+#elif defined READXY
+	const std::string MODE = "readXY";
+	const string default_out_directory_name="readXY";
 	const double x_max = 10.0;
 	const double x_min = -10.0;
 	const double d_x = 0.2;
@@ -345,22 +345,24 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
-#elif defined DEF
+#elif defined JUSTSIMPLE1D
 	const std::string MODE = "default";
 	const string default_out_directory_name="output";
-	const double x_max = 20.0;
-	const double x_min = -20.0;
-	const double d_x = 0.5;
+	const double x_max = 15.0;
+	const double x_min = 0.001;
+	const double x_max_HI = 0.0;
+	const double d_x = 0.05;
+	const double d_x_HI = 0.1;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
+	const double y_max = 0.0;
+	const double y_max_HI = 0.0;
+	const double y_min = 0.0;
+	const double d_y = 0.0;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=0;
 #else
-	const std::string MODE = "default";
-	const string default_out_directory_name="output";
-	const double x_max = 20.0;
-	const double x_min = -20.0;
-	const double d_x = 0.5;
-	const int x_cell_capa=1000;
-	const string default_ext="/hadronised.txt";
+//It should crush if you compile without any flags.
 #endif
 
 

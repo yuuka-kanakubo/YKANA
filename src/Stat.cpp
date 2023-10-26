@@ -146,20 +146,21 @@ return B00;
 				//take average    
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
-					ct->FinalHist[i]=ct->Hist[i]/ct->Hist_weight[i];
+					ct->FinalHist[i]=ct->Hist[i]/ct->SumWeight;
 					ct->Hist_x[i]/=ct->Hist_weight[i];
-					double meanxx  = ct->HistHist[i]/ct->Hist_weight[i];
-					double meanx = ct->FinalHist[i];
 
-					// devide by cell width 
-					//-------------------------------------
-					//ct->Hist[i]/=this->infohist->d_x;
+ 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->FinalHist[i] :" << ct->FinalHist[i] << endl;
+ 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->HistHist[i] :" << ct->HistHist[i] << endl;
+
+					double meanxx  = ct->HistHist[i]/ct->SumWeight;
+					double meanx = ct->FinalHist[i];
 
 
 					//Get standard error
 					//-------------------------------------
 					double var=meanxx-pow(meanx,2.0);
-					double error=sqrt(var/ct->HistHit[i]);
+ 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") var:" << var<< endl;
+					double error=sqrt(var/ct->SumWeight);
 					ct->HistErr[i]=error;
 				}
 

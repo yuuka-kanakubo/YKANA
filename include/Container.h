@@ -33,11 +33,26 @@ class Container{
 			double y;
 			double z;
 			double t;
+			double tau;
 			double r;
 			double rap;
 			double eta;
 			double phi;
 			string TAG;
+			double tata;
+			uint_fast16_t ID;
+			uint_fast16_t momID1;
+			uint_fast16_t momID2;
+			uint_fast16_t imomNucleon1;
+			uint_fast16_t imomNucleon2;
+			double xmomNucleon1;
+			double xmomNucleon2;
+			double ymomNucleon1;
+			double ymomNucleon2;
+			double zmomNucleon1;
+			double zmomNucleon2;
+			bool is_mom1Neutron;
+			bool is_mom2Neutron;
 
 	};
 
