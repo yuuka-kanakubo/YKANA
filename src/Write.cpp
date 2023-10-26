@@ -99,6 +99,7 @@ Write::~Write(){};
 
 						if(ct->HistHit[i]==0) continue;
 						double x_axis =ct->Hist_x[i];
+ 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ")" << endl;
 						ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
 							<< setw(16) << ct->FinalHist[i] << "  "
 							<< setw(16) << ct->HistErr[i] << "  "

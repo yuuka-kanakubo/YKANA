@@ -4,7 +4,7 @@ DIR="../mcaa-master/data/26Oct2023_b0.01"
 EV="ev"
 #EXT="hadronFinal_core_weakStop_wcol.txt"
 EXT="EKRTminijet.txt"
-outputdir="dNdr"
+outputdir="derdr_midy"
 n=100
 
 

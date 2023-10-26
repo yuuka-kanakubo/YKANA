@@ -154,7 +154,7 @@ bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
 
 				double m=0.0;//it is mass less partons in MCEKRT with current version.
 				part_in.m=m;
-				double mt_squared=pow(part_in.pt,2)*pow(part_in.m,2);
+				double mt_squared=pow(part_in.pt,2)+pow(part_in.m,2);
 				double mt=(mt_squared)>0.0 ? sqrt(mt_squared):0.0;
 				part_in.mt=mt;
 				part_in.eta=rap;
@@ -164,8 +164,9 @@ bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
 				part_in.e=part_in.mt*cosh(part_in.rap);
 				part_in.tau=part_in.t/cosh(part_in.rap);
 				part_in.z=part_in.tau*sinh(part_in.rap);
-
-				part_1ev.push_back(part_in);
+				if(std::fabs(part_in.eta)<constants::delta_eta ) { 
+					part_1ev.push_back(part_in);
+				}
 
 			}//particle loop if no # %
 		}//particle loop

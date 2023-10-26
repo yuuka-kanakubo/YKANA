@@ -148,6 +148,7 @@ return B00;
 				for(int i=0; i<ct->max_nx+1; ++i){
 					ct->FinalHist[i]=ct->Hist[i]/ct->SumWeight;
 					ct->Hist_x[i]/=ct->Hist_weight[i];
+ 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->SumWeight :" << ct->SumWeight << endl;
 
  	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->FinalHist[i] :" << ct->FinalHist[i] << endl;
  	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->HistHist[i] :" << ct->HistHist[i] << endl;
