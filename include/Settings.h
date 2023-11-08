@@ -396,6 +396,7 @@ class Settings{
 
 			for(int i=1; i<argc; i++) {
 				log.options.push_back(argv[i]);
+				log.options.push_back(argv[i+1]);
 				if(!strcmp(argv[i],"-dir")){options.set_dir_name ( argv[i+1]);}///FOR OUTPUT DIR.NAME.
 				else if(!strcmp(argv[i],"-f")){options.set_f_name ( argv[i+1]);}
 				else if(!strcmp(argv[i],"-ext")){options.set_ext_name ( argv[i+1]);}

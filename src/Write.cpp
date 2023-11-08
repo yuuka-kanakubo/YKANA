@@ -58,7 +58,8 @@ Write::~Write(){};
 							<< setw(16) << ct->HistHit[i] << endl;
 					}
 
-				}else if(constants::MODE.find("twopc2D")!=string::npos) {
+				}else if(constants::MODE.find("twopc2D")!=string::npos 
+						|| constants::MODE.find("twodm")!=string::npos) {
 
 					if(!options.get_flag_SB_CMS()){
 						for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
@@ -68,10 +69,14 @@ Write::~Write(){};
 								double yaxis=((constants::y_min+(this->infohist->d_y*j))+(constants::y_min+(this->infohist->d_y*(j+1))))/2.0;
 								//ct->Hist2D_x[i][j];
 								//ct->Hist2D_y[i][j];
-								ofs << setw(16) << fixed << setprecision(8) << xaxis << "  "
+								ofs << fixed << setprecision(8) 
+									<< setw(16) << xaxis << "  "
 									<< setw(16) << yaxis << "  "
+									//<< setw(16) << ct->Hist2D_x[i][j] << "  "
+									//<< setw(16) << ct->Hist2D_x[i][j] << "  "
 									<< setw(16) << ct->Final2DHist[i][j] << "  "
-									<< setw(16) << ct->Hist2DPartHit[i][j] << endl;
+									<< setw(16) << ct->Final2DHistSub[i][j] << "  "
+									<< setw(16) << ct->Final2DHit[i][j] << endl;
 							}
 							ofs << endl;
 						}

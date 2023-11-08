@@ -56,6 +56,80 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 
 
 
+			void Fill::fill_2D(shared_ptr<Container>& ct){
+
+
+				Container::EventInfo& EVENT= ct->EVENTINFO;
+
+				//Count particle by particle.
+				//----------------------------
+				double **Hit1ev, **zVal1ev, **zSubVal1ev;
+				Hit1ev = new double *[constants::x_cell_capa];
+				zVal1ev = new double *[constants::x_cell_capa];
+				zSubVal1ev = new double *[constants::x_cell_capa];
+				for(int i_cell=0; i_cell<constants::x_cell_capa; i_cell++){
+					Hit1ev[i_cell] = new double [constants::y_cell_capa];
+					zVal1ev[i_cell] = new double [constants::y_cell_capa];
+					zSubVal1ev[i_cell] = new double [constants::y_cell_capa];
+				}
+				for(int i=0; i<constants::x_cell_capa; i++){
+					for(int j=0; j<constants::y_cell_capa; j++){
+						Hit1ev[i][j]=0.0;
+						zVal1ev[i][j]=0.0;
+						zSubVal1ev[i][j]=0.0;
+					}
+				}
+				int max_nx = 0, max_ny = 0;
+				for(int j=0; j<(int)EVENT.part.size(); ++j){
+
+					double x_val=EVENT.part[j].x;
+					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+					int nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
+					double y_val=EVENT.part[j].y;
+					if(y_val<constants::y_min || y_val>this->infohist->y_max) continue;
+					int ny=(int)((y_val/this->infohist->d_y)+(std::fabs(constants::y_min)/this->infohist->d_y));
+
+					if(max_nx<nx) max_nx = nx;
+					if(max_ny<ny) max_ny = ny;
+
+					zVal1ev[nx][ny]+=EVENT.part[j].tata;
+					zSubVal1ev[nx][ny]+=EVENT.part[j].mt;
+					Hit1ev[nx][ny]+=1;
+					ct->Hist2D_x[nx][ny]+=x_val*EVENT.weight();
+					ct->Hist2D_y[nx][ny]+=y_val*EVENT.weight();
+					if(ct->max_nx<nx) ct->max_nx=nx;
+					if(ct->max_ny<ny) ct->max_ny=ny;
+
+				}
+
+				for(int nx = 0; nx<max_nx+1; nx++){
+					for(int ny = 0; ny<max_ny+1; ny++){
+						if(fabs(Hit1ev[nx][ny])<constants::SMALL){
+							ct->Hist2D[nx][ny]+=0.0;
+						}else{
+							ct->Hist2D[nx][ny]+=zVal1ev[nx][ny]*EVENT.weight()/Hit1ev[nx][ny];
+							ct->HistSub2D[nx][ny]+=zSubVal1ev[nx][ny]*EVENT.weight()/Hit1ev[nx][ny];
+						}
+						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
+					}
+				}
+
+				ct->SumWeight+=EVENT.weight();
+
+				for(int i = 0; i < constants::x_cell_capa; i++) {
+					delete[] Hit1ev[i];
+					delete[] zVal1ev[i];
+					delete[] zSubVal1ev[i];
+				}
+				delete[] Hit1ev;
+				delete[] zVal1ev;
+				delete[] zSubVal1ev;
+
+				return;
+			}
+
+
+
 			void Fill::fill_twopc(shared_ptr<Container>& ct){
 
 
@@ -613,12 +687,13 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						//Default filling.
 						//You can put whatever you want in x and y.
 						//==========================================
-						x_val=EVENT.part[j].r;
+						x_val=EVENT.part[j].y;
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
 						nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
 						//y_val = 1.0/(x_val*this->infohist->d_x);
 						//y_val = 1.0/(this->infohist->d_x);
-						y_val = EVENT.part[j].e/(x_val*this->infohist->d_x);
+						//y_val = EVENT.part[j].e/(x_val*this->infohist->d_x);
+						y_val = EVENT.part[j].mt/this->infohist->d_x/(constants::delta_eta*2)/(constants::delta_xcoord*2);//dydx
 						//y_val =EVENT.part[j].tata/(x_val*this->infohist->d_x);
 					}
 

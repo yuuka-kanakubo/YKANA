@@ -262,6 +262,8 @@ class Analysis{
 							fill->fill_RtYield(ct);
 						}else if(constants::MODE.find("timelapse")!=string::npos){
 							fill->fill_TimeLapse(ct);
+						}else if(constants::MODE.find("twodm")!=string::npos){
+							fill->fill_2D(ct);
 						}else{
 							fill->fill(ct,dNdeta_fill, bin);
 						}
@@ -276,6 +278,9 @@ class Analysis{
 						stat->stat_twopc(ct);
 					}else if(constants::MODE.find("twopc1D")!=string::npos){
 						stat->stat_twopc1D(ct);
+					}else if(constants::MODE.find("twodm")!=string::npos){
+ 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") " << endl;
+						stat->stat_twopc(ct);
 					}else if(constants::MODE.find("Rt_spectra")!=string::npos){
 						stat->stat_Rt(ct);
 					}else if(constants::MODE.find("Rt_yield")!=string::npos){

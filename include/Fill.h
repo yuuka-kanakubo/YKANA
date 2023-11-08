@@ -46,6 +46,7 @@ void nextCent(shared_ptr<Rndom> rndom);
 void fill_jets(shared_ptr<Container>& ct);
 			void fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& eBye_All);
 			void fill_twopc(shared_ptr<Container>& ct);
+			void fill_2D(shared_ptr<Container>& ct);
 			void fill_Rt(shared_ptr<Container>& ct);
 			void fill_RtYield(shared_ptr<Container>& ct);
 			void fill_twopc1D_taggedInteg(shared_ptr<Container>& ct);

@@ -26,23 +26,27 @@ Stat::~Stat(){};
 
 			void Stat::stat_twopc(shared_ptr<Container>& ct){
 
+
 				//take average    
 				//-------------------------------------
 				for(int i=0; i<ct->max_nx+1; ++i){
 					for(int j=0; j<ct->max_ny+1; ++j){
 						if(!options.get_flag_SB_CMS()){
 							ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumWeight;
+							ct->Final2DHistSub[i][j]=ct->HistSub2D[i][j]/ct->SumWeight;
 						}else{
 							ct->Hist2D[i][j]=ct->Hist2D[i][j]/ct->SumWeight;
 						}
 						ct->Hist2D_x[i][j]/=ct->Hist2DPartHit[i][j];
 						ct->Hist2D_y[i][j]/=ct->Hist2DPartHit[i][j];
 
+						ct->Final2DHit[i][j]=ct->Hist2DPartHit[i][j]/ct->SumWeight;
+
 						//Devide by bin width
 						//---------------------------
 						if(!options.get_flag_SB_CMS()){
-							ct->Final2DHist[i][j]/=this->infohist->d_x;
-							ct->Final2DHist[i][j]/=this->infohist->d_y;
+							ct->Final2DHit[i][j]/=this->infohist->d_x;
+							ct->Final2DHit[i][j]/=this->infohist->d_y;
 						}else{
 							ct->Hist2D[i][j]/=this->infohist->d_x;
 							ct->Hist2D[i][j]/=this->infohist->d_y;
@@ -87,7 +91,7 @@ Stat::~Stat(){};
 
 				}
 
-
+return;
 			}
 
 
@@ -148,19 +152,13 @@ return B00;
 				for(int i=0; i<ct->max_nx+1; ++i){
 					ct->FinalHist[i]=ct->Hist[i]/ct->SumWeight;
 					ct->Hist_x[i]/=ct->Hist_weight[i];
- 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->SumWeight :" << ct->SumWeight << endl;
-
- 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->FinalHist[i] :" << ct->FinalHist[i] << endl;
- 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") ct->HistHist[i] :" << ct->HistHist[i] << endl;
 
 					double meanxx  = ct->HistHist[i]/ct->SumWeight;
 					double meanx = ct->FinalHist[i];
 
-
 					//Get standard error
 					//-------------------------------------
 					double var=meanxx-pow(meanx,2.0);
- 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") var:" << var<< endl;
 					double error=sqrt(var/ct->SumWeight);
 					ct->HistErr[i]=error;
 				}

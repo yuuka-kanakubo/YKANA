@@ -345,13 +345,29 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
+#elif defined JUSTSIMPLE2D
+	const std::string MODE = "twodm";
+	const string default_out_directory_name="output";
+	const double x_max = 8.0;
+	const double x_min = -8.0;
+	const double x_max_HI = 0.0;
+	const double d_x = 0.75;
+	const double d_x_HI = 0.1;
+	const int x_cell_capa=1000;
+	const string default_ext="/hadronised.txt";
+	const double y_max = 8.0;
+	const double y_max_HI = 0.0;
+	const double y_min = -8.0;
+	const double d_y = 0.75;
+	const double d_y_HI = 0.0;
+	const int y_cell_capa=1000;
 #elif defined JUSTSIMPLE1D
 	const std::string MODE = "default";
 	const string default_out_directory_name="output";
-	const double x_max = 15.0;
-	const double x_min = 0.001;
+	const double x_max = 8.0;
+	const double x_min = -8.0;
 	const double x_max_HI = 0.0;
-	const double d_x = 0.1;
+	const double d_x = 0.75;
 	const double d_x_HI = 0.1;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
@@ -392,7 +408,8 @@ inline  const double etaRangeCMSRidge=2.4;
 inline  const double MomentumMinCMSRidge=0.4;
 
 inline	const double delta_phi_SMALL = 0.5;
-inline	const double delta_eta = 0.5;
+inline	const double delta_eta = 2.0;
+inline	const double delta_xcoord = 0.2;
 
 
 inline	const double pPb_mid_rapidity__fwd=0.50;

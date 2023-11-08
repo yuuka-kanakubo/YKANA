@@ -165,7 +165,9 @@ bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
 				part_in.tau=part_in.t/cosh(part_in.rap);
 				part_in.z=part_in.tau*sinh(part_in.rap);
 				if(std::fabs(part_in.eta)<constants::delta_eta ) { 
-					part_1ev.push_back(part_in);
+					//if(std::fabs(part_in.x)<constants::delta_xcoord) { 
+						part_1ev.push_back(part_in);
+					//}
 				}
 
 			}//particle loop if no # %

@@ -137,46 +137,53 @@ class Container{
 
        Container(bool SB_CMS):flag_SB_CMS(SB_CMS),SumWeight(0.0), SumPair(0.0), SumTrig(0.0), CountEv(0), B00(0.0), meanNt(-1.0){
 cout << "Calling Container." << endl;
-	       if(constants::MODE.find("twopc")!=string::npos){
+	       if(constants::MODE.find("twopc")!=string::npos
+			       || constants::MODE.find("twodm")!=string::npos){
 		       Hist2D = new double *[constants::x_cell_capa];
+		       HistSub2D = new double *[constants::x_cell_capa];
 		       Hist2D_x= new double *[constants::x_cell_capa];
 		       Hist2D_y= new double *[constants::x_cell_capa];
 		       Hist2DPartHit= new double *[constants::x_cell_capa];
 		       if(flag_SB_CMS){
-			       HistSub2D = new double *[constants::x_cell_capa];
 			       HistSub2D_x= new double *[constants::x_cell_capa];
 			       HistSub2D_y= new double *[constants::x_cell_capa];
 			       HistSub2DPartHit= new double *[constants::x_cell_capa];
 		       }
 		       Final2DHist= new double *[constants::x_cell_capa];
+		       Final2DHistSub= new double *[constants::x_cell_capa];
+		       Final2DHit= new double *[constants::x_cell_capa];
 
 		       for(int i=0; i<constants::x_cell_capa; i++){
 			       Hist2D[i] = new double[constants::y_cell_capa];
+			       HistSub2D[i] = new double[constants::y_cell_capa];
 			       Hist2D_x[i]= new double[constants::y_cell_capa];
 			       Hist2D_y[i]= new double[constants::y_cell_capa];
 			       Hist2DPartHit[i]= new double[constants::y_cell_capa];
 			       if(flag_SB_CMS){
-				       HistSub2D[i] = new double[constants::y_cell_capa];
 				       HistSub2D_x[i]= new double[constants::y_cell_capa];
 				       HistSub2D_y[i]= new double[constants::y_cell_capa];
 				       HistSub2DPartHit[i]= new double[constants::y_cell_capa];
 			       }
 			       Final2DHist[i]= new double[constants::y_cell_capa];
+			       Final2DHistSub[i]= new double[constants::y_cell_capa];
+			       Final2DHit[i]= new double[constants::y_cell_capa];
 		       }
 
 		       for(int i=0; i<constants::x_cell_capa; i++){
 			       for(int j=0; j<constants::y_cell_capa; j++){
 				       Hist2D[i][j]=0.0;
+				       HistSub2D[i][j]=0.0;
 				       Hist2D_x[i][j]=0.0;
 				       Hist2D_y[i][j]=0.0;
 				       Hist2DPartHit[i][j]=0.0;
 				       if(flag_SB_CMS){
-					       HistSub2D[i][j]=0.0;
 					       HistSub2D_x[i][j]=0.0;
 					       HistSub2D_y[i][j]=0.0;
 					       HistSub2DPartHit[i][j]=0.0;
 				       }
 				       Final2DHist[i][j]=0.0;
+				       Final2DHistSub[i][j]=0.0;
+				       Final2DHit[i][j]=0.0;
 			       }
 		       }
 
@@ -218,32 +225,37 @@ cout << "Calling Container." << endl;
        ~Container(){
 	       cout << "Calling Deconstructore of Container." << endl;
 	       //Free each sub-array
-	       if(constants::MODE.find("twopc")!=string::npos){
+	       if(constants::MODE.find("twopc")!=string::npos
+			       || constants::MODE.find("twodm")!=string::npos){
 		       for(int i = 0; i < constants::x_cell_capa; i++) {
 			       delete[] Hist2D[i];
+			       delete[] HistSub2D[i];
 			       delete[] Hist2D_x[i];
 			       delete[] Hist2D_y[i];
 			       delete[] Hist2DPartHit[i];
 			       if(flag_SB_CMS){
-				       delete[] HistSub2D[i];
 				       delete[] HistSub2D_x[i];
 				       delete[] HistSub2D_y[i];
 				       delete[] HistSub2DPartHit[i];
 			       }
 			       delete[] Final2DHist[i];
+			       delete[] Final2DHistSub[i];
+			       delete[] Final2DHit[i];
 		       }
 		       //Free the array of pointers
 		       delete[] Hist2D;
+		       delete[] HistSub2D;
 		       delete[] Hist2D_x;
 		       delete[] Hist2D_y;
 		       delete[] Hist2DPartHit;
 		       if(flag_SB_CMS){
-			       delete[] HistSub2D;
 			       delete[] HistSub2D_x;
 			       delete[] HistSub2D_y;
 			       delete[] HistSub2DPartHit;
 		       }
 		       delete[] Final2DHist;
+		       delete[] Final2DHistSub;
+		       delete[] Final2DHit;
 }else if(constants::MODE.find("Rt_yield")!=string::npos){
 		       for(int i = 0; i < constants::num_of_Species_Rt; i++) {
 			       delete[] RtHist_RtTrans_yield[i];
@@ -397,6 +409,8 @@ cout << "Calling Container." << endl;
 	double **HistSub2D_y;
 	double **HistSub2DPartHit;
 	double **Final2DHist;
+	double **Final2DHistSub;
+	double **Final2DHit;
 
 };
 #endif
