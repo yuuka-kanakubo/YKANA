@@ -1,11 +1,11 @@
 #!/bin/sh
 
-#SBATCH --job-name=YKANA
-#SBATCH -e errorout4
-#SBATCH --output=log/outYKANACONSsnpdfnpdf.out
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=40
-#SBATCH --time=48:00:00
+##SBATCH --job-name=YKANA
+##SBATCH -e errorout4
+##SBATCH --output=log/outYKANACONSsnpdfnpdf.out
+##SBATCH --ntasks=1
+##SBATCH --cpus-per-task=40
+##SBATCH --time=48:00:00
 
 
 DIR="/n/work02/yukanaku/mcaa-master/data/02Nov2023_b0.01_1000ev_alloff_fixedGlauber"
@@ -57,5 +57,5 @@ fi
 
 ./YKANA \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
---EKRTformat \
+ --EKRTformat 
  ##> ${log_dname}${log_fname}.log  2>&1  &
