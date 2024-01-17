@@ -1,18 +1,18 @@
 #!/bin/sh
 
-##SBATCH --job-name=YKANA
-##SBATCH -e errorout4
-##SBATCH --output=log/outYKANACONSsnpdfnpdf.out
-##SBATCH --ntasks=1
-##SBATCH --cpus-per-task=40
-##SBATCH --time=48:00:00
+#SBATCH --job-name=allon_sum
+#SBATCH -e errorout
+#SBATCH --output=log/outYKANA.out
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=40
+#SBATCH --time=48:00:00
 
 
-DIR="/n/work02/yukanaku/mcaa-master/data/02Nov2023_b0.01_1000ev_alloff_fixedGlauber"
+DIR="/n/work02/yukanaku/mcaa-master/data/16Jan2024_test/60_70"
 EV="ev"
 ##EXT="hadronFinal_core_weakStop_wcol.txt"
 EXT="EKRTminijet.txt"
-outputdir="TATA_MT_perjet_b0.01_alloff_1ev"
+outputdir="test"
 n=1
 
 

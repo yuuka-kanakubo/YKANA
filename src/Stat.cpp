@@ -32,8 +32,8 @@ Stat::~Stat(){};
 				for(int i=0; i<ct->max_nx+1; ++i){
 					for(int j=0; j<ct->max_ny+1; ++j){
 						if(!options.get_flag_SB_CMS()){
-							ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->SumWeight;
-							ct->Final2DHistSub[i][j]=ct->HistSub2D[i][j]/ct->SumWeight;
+							ct->Final2DHist[i][j]=ct->Hist2D[i][j]/ct->Hist2DPartHit[i][j]/ct->SumWeight;
+							ct->Final2DHistSub[i][j]=ct->HistSub2D[i][j]/ct->Hist2DPartHit[i][j]/ct->SumWeight;
 						}else{
 							ct->Hist2D[i][j]=ct->Hist2D[i][j]/ct->SumWeight;
 						}

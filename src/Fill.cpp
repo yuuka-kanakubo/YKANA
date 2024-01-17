@@ -107,8 +107,8 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 						if(fabs(Hit1ev[nx][ny])<constants::SMALL){
 							ct->Hist2D[nx][ny]+=0.0;
 						}else{
-							ct->Hist2D[nx][ny]+=zVal1ev[nx][ny]*EVENT.weight()/Hit1ev[nx][ny];
-							ct->HistSub2D[nx][ny]+=zSubVal1ev[nx][ny]*EVENT.weight()/Hit1ev[nx][ny];
+							ct->Hist2D[nx][ny]+=zVal1ev[nx][ny]*EVENT.weight();
+							ct->HistSub2D[nx][ny]+=zSubVal1ev[nx][ny]*EVENT.weight();
 						}
 						ct->Hist2DPartHit[nx][ny]+=Hit1ev[nx][ny]*EVENT.weight();
 					}
