@@ -152,18 +152,21 @@ bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
 				part_in.is_mom1Neutron=is_mom1Neutron;
 				part_in.is_mom2Neutron=is_mom2Neutron;
 
-				double m=0.0;//it is mass less partons in MCEKRT with current version.
-				part_in.m=m;
-				double mt_squared=pow(part_in.pt,2)+pow(part_in.m,2);
-				double mt=(mt_squared)>0.0 ? sqrt(mt_squared):0.0;
+				double mtsq=pow(part_in.pt,2)+pow(part_in.m,2);
+				double mt=(mtsq>0.0) ? sqrt(mtsq):0.0;
 				part_in.mt=mt;
-				part_in.eta=rap;
 				part_in.px=part_in.pt*cos(part_in.phi);
 				part_in.py=part_in.pt*sin(part_in.phi);
 				part_in.pz=part_in.mt*sinh(part_in.rap);
 				part_in.e=part_in.mt*cosh(part_in.rap);
 				part_in.tau=part_in.t/cosh(part_in.rap);
 				part_in.z=part_in.tau*sinh(part_in.rap);
+				double msq=pow(part_in.e,2)
+					-pow(part_in.px,2)
+					-pow(part_in.py,2)
+					-pow(part_in.pz,2);
+				double m=(msq>0.)? sqrt(msq):0.;
+				part_in.m=m;
 				if(std::fabs(part_in.eta)<constants::delta_eta ) { 
 					//if(std::fabs(part_in.x)<constants::delta_xcoord) { 
 						part_1ev.push_back(part_in);
