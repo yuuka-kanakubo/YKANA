@@ -1,8 +1,6 @@
 # YKANA
 
-Build
-$cd build
-$ cmake DCMAKE_CXX_FLAGS="-DCUMULANT" ..
-$make
+General analysis code. Not made for the public.
+But report me (yuka.y.kanakubo@jyu.fi) when you find something wrong.
 
-yuuka
+Yuuka
