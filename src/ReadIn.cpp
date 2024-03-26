@@ -167,11 +167,11 @@ bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
 					-pow(part_in.pz,2);
 				double m=(msq>0.)? sqrt(msq):0.;
 				part_in.m=m;
-				if(std::fabs(part_in.eta)<constants::delta_eta ) { 
+				//if(std::fabs(part_in.eta)<constants::delta_eta ) { 
 					//if(std::fabs(part_in.x)<constants::delta_xcoord) { 
 						part_1ev.push_back(part_in);
 					//}
-				}
+				//}
 
 			}//particle loop if no # %
 		}//particle loop

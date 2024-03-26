@@ -687,14 +687,10 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						//Default filling.
 						//You can put whatever you want in x and y.
 						//==========================================
-						x_val=EVENT.part[j].y;
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						x_val=EVENT.part[j].rap;
+						//if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
 						nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
-						//y_val = 1.0/(x_val*this->infohist->d_x);
-						//y_val = 1.0/(this->infohist->d_x);
-						//y_val = EVENT.part[j].e/(x_val*this->infohist->d_x);
-						y_val = EVENT.part[j].mt/this->infohist->d_x/(constants::delta_eta*2)/(constants::delta_xcoord*2);//dydx
-						//y_val =EVENT.part[j].tata/(x_val*this->infohist->d_x);
+						y_val = EVENT.part[j].e/(this->infohist->d_x);
 					}
 
 					ct->Hist[nx]+=y_val*EVENT.weight();

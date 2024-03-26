@@ -12,8 +12,8 @@ DIR="/n/work02/yukanaku/mcaa-master/data/16Jan2024_test/60_70"
 EV="ev"
 ##EXT="hadronFinal_core_weakStop_wcol.txt"
 EXT="EKRTminijet.txt"
-outputdir="test"
-n=1
+outputdir="dedy_60_70"
+n=2000
 
 
 ##Do not modify this.

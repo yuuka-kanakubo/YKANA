@@ -63,7 +63,6 @@ bool archive_settings(const string output_directory_name){
     templine_set.push_back("");
     for(int i=0; i<(int)options.size(); ++i){
 	    templine_set.push_back(options[i]);
- 	  cout << ":( " << __FILE__ << " (" << __LINE__ << ") template:" << options[i] << endl;
     }
 
     templine_set.push_back("");
