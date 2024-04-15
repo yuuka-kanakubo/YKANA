@@ -119,6 +119,16 @@ class Analysis{
 
 					auto ct = make_shared<Container>(this->options.get_flag_SB_CMS());
 
+					//Read binary filne and archive all 
+					//minijets info from all events.
+					//================================
+					std::vector <Container::EventInfo> nEventInfo;
+					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+						read->readEKRTbinary(nEventInfo);
+						//options.set_nfile((int)nEventInfo.size());
+						cout << ":D Reading binary file in EKRT format. " << options.get_nfile() << " events being analyzed." << endl;
+					}
+
 
 					//Event Loop
 					//==========
@@ -210,7 +220,9 @@ class Analysis{
 							}else if(constants::MODE.find("readXY")!=std::string::npos){
 								if(!read->readXY(inputpath, ct)) continue;
 							}else if(options.get_flag_EKRTformat()){
-								if(!read->readEKRT(inputpath, ct)) continue;
+								if(options.get_flag_EKRTbinary()){
+									ct->EVENTINFO = nEventInfo[i];
+								}else if(!read->readEKRT(inputpath, ct)) continue;
 							}else{
 								if(!read->read(inputpath, ct)) continue;
 							}

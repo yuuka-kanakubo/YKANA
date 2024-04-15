@@ -11,9 +11,9 @@
 DIR="/n/work02/yukanaku/mcaa-master/data/16Jan2024_test/60_70"
 EV="ev"
 ##EXT="hadronFinal_core_weakStop_wcol.txt"
-EXT="EKRTminijet.txt"
-outputdir="dedy_60_70"
-n=2000
+EXT="jets_60_70_pbpb5020.dat"
+outputdir="EKRTbinarytest_detdy_60_70"
+n=1000
 
 
 ##Do not modify this.
@@ -57,5 +57,6 @@ fi
 
 ./YKANA \
  -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --EKRTformat 
+ --EKRTformat  \
+ --EKRTbinary 
  ##> ${log_dname}${log_fname}.log  2>&1  &

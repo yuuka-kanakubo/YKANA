@@ -195,6 +195,190 @@ bool ReadIn::readEKRT(const std::string& fname, shared_ptr<Container>& ct){
 
 
 
+bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo){
+
+	std::stringstream ss;
+	ss << options.get_dir_name() << "/" << options.get_ext_name();
+	std::string inputf = ss.str();
+	std::ifstream in(inputf, std::ios::in | std::ios::binary);
+	if(!in.is_open()) {
+		cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << " )unable to open file " << inputf << endl;
+		exit(EXIT_FAILURE);
+	} 
+	uint64_t n_events, n_jets;
+	double t01, t02, x, y, pt, y1, y2, phi, tata;
+	int_fast16_t init1, init2, final1, final2;
+	uint_fast16_t ia, ib;
+	double xa, ya, za, xb, yb, zb;
+	bool a_is_neutron, b_is_neutron;
+	//double TotPt=0.0;
+	//double TotE=0.0;
+	//int nEvent=0;
+	if (sizeof n_jets != 8 || sizeof t01 != 8 )
+	{
+		std::cout << "Change the types! n_jets should be 64 bit unsigned integer"
+			<< " and the coordinates should all be 64 bit float numbers" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	in.read(reinterpret_cast<char*>(&n_events), sizeof n_events);
+	std::cout << "Trying to read " << n_events << " events from the file "
+              << inputf << " ..." << std::endl;
+	uint64_t n_jet_total = 0;
+	int pct = 0;
+	for (uint64_t i=0; i<n_events; i++){
+		if(fabs((double)i/(double)n_events-pct*0.1)<constants::SMALL){
+			cout << ":) " << pct*10 << "\% is done " << endl;
+			pct++;
+		}
+
+		in.read(reinterpret_cast<char*>(&n_jets), sizeof n_jets);
+		//cout << " n_jets " << n_jets << endl;
+		//if(i>=1) break;
+		//cout << i << "  in  " << n_events << " : " << n_jets<< endl;
+
+		//part_1ev is a vector containing particle lists
+		//-----------
+		Container::EventInfo oneEventInfo;
+		vector<Container::ParticleInfo> part_1ev;
+		//This should be each minijet loop
+		for (uint64_t ii=0; ii<n_jets; ii++, n_jet_total++){
+
+
+			in.read(reinterpret_cast<char*>(&t01)  , sizeof t01);  //t01
+			in.read(reinterpret_cast<char*>(&t02)  , sizeof t02);  //t02
+			in.read(reinterpret_cast<char*>(&x)    , sizeof x);    //x
+			in.read(reinterpret_cast<char*>(&y)    , sizeof y);    //y
+			in.read(reinterpret_cast<char*>(&pt)   , sizeof pt);   //pT
+			in.read(reinterpret_cast<char*>(&y1)   , sizeof y1);   //y1
+			in.read(reinterpret_cast<char*>(&y2)   , sizeof y2);   //y2
+			in.read(reinterpret_cast<char*>(&phi)  , sizeof phi);  //phi_1
+			in.read(reinterpret_cast<char*>(&tata) , sizeof tata); //T_A * T_A
+			in.read(reinterpret_cast<char *>(&init1), sizeof init1);   // flavour of incoming 1
+			in.read(reinterpret_cast<char *>(&init2), sizeof init2);   // flavour of incoming 2
+			in.read(reinterpret_cast<char *>(&final1), sizeof final1); // flavour of outgoing 1
+			in.read(reinterpret_cast<char *>(&final2), sizeof final2); // flavour of outgoing 2
+
+			in.read(reinterpret_cast<char *>(&ia), sizeof ia); // index of mother a
+			in.read(reinterpret_cast<char *>(&ib), sizeof ib); // index of mother b
+			in.read(reinterpret_cast<char *>(&xa), sizeof xa);
+			in.read(reinterpret_cast<char *>(&ya), sizeof ya);
+			in.read(reinterpret_cast<char *>(&za), sizeof za);
+			in.read(reinterpret_cast<char *>(&xb), sizeof xb);
+			in.read(reinterpret_cast<char *>(&yb), sizeof yb);
+			in.read(reinterpret_cast<char *>(&zb), sizeof zb);
+			in.read(reinterpret_cast<char *>(&a_is_neutron), sizeof a_is_neutron);
+			in.read(reinterpret_cast<char *>(&b_is_neutron), sizeof b_is_neutron);
+
+			//I will put the information into container
+			//=========================================
+			//Minijet 1.
+			Container::ParticleInfo parton_in1;
+			parton_in1.x=x;//[fm]
+			parton_in1.y=y;//[fm]
+			parton_in1.t=t01*constants::hbarc;//[fm]
+			parton_in1.phi=phi;
+			parton_in1.rap=y1;
+			parton_in1.pt=pt;//[GeV]
+			parton_in1.tata=tata;
+			parton_in1.ID=final1;
+			parton_in1.momID1=init1;
+			parton_in1.momID2=init2;
+			parton_in1.imomNucleon1=ia;
+			parton_in1.imomNucleon2=ib;
+			parton_in1.xmomNucleon1=xa;
+			parton_in1.xmomNucleon2=xb;
+			parton_in1.ymomNucleon1=ya;
+			parton_in1.ymomNucleon2=yb;
+			parton_in1.zmomNucleon1=za;
+			parton_in1.zmomNucleon2=zb;
+			parton_in1.is_mom1Neutron=a_is_neutron;
+			parton_in1.is_mom2Neutron=b_is_neutron;
+
+			double mtsq=pow(parton_in1.pt,2)+pow(parton_in1.m,2);
+			double mt=(mtsq>0.0) ? sqrt(mtsq):0.0;
+			parton_in1.mt=mt;
+			parton_in1.px=parton_in1.pt*cos(parton_in1.phi);
+			parton_in1.py=parton_in1.pt*sin(parton_in1.phi);
+			parton_in1.pz=parton_in1.mt*sinh(parton_in1.rap);
+			parton_in1.e=parton_in1.mt*cosh(parton_in1.rap);
+			parton_in1.tau=parton_in1.t/cosh(parton_in1.rap);
+			parton_in1.z=parton_in1.tau*sinh(parton_in1.rap);
+			double msq=pow(parton_in1.e,2)
+				-pow(parton_in1.px,2)
+				-pow(parton_in1.py,2)
+				-pow(parton_in1.pz,2);
+			double m=(msq>0.)? sqrt(msq):0.;
+			parton_in1.m=m;
+
+			part_1ev.push_back(parton_in1);
+
+			//Minijet 2.
+			Container::ParticleInfo parton_in2;
+			parton_in2.x=x;//[fm]
+			parton_in2.y=y;//[fm]
+			parton_in2.t=t02*constants::hbarc;//[fm]
+			parton_in2.phi=phi+M_PI;
+			parton_in2.rap=y2;
+			parton_in2.pt=pt;//[GeV]
+			parton_in2.tata=tata;
+			parton_in2.ID=final2;
+			parton_in2.momID1=init1;
+			parton_in2.momID2=init2;
+			parton_in2.imomNucleon1=ia;
+			parton_in2.imomNucleon2=ib;
+			parton_in2.xmomNucleon1=xa;
+			parton_in2.xmomNucleon2=xb;
+			parton_in2.ymomNucleon1=ya;
+			parton_in2.ymomNucleon2=yb;
+			parton_in2.zmomNucleon1=za;
+			parton_in2.zmomNucleon2=zb;
+			parton_in2.is_mom1Neutron=a_is_neutron;
+			parton_in2.is_mom2Neutron=b_is_neutron;
+
+			mtsq=pow(parton_in2.pt,2)+pow(parton_in2.m,2);
+			mt=(mtsq>0.0) ? sqrt(mtsq):0.0;
+			parton_in2.mt=mt;
+			parton_in2.px=parton_in2.pt*cos(parton_in2.phi);
+			parton_in2.py=parton_in2.pt*sin(parton_in2.phi);
+			parton_in2.pz=parton_in2.mt*sinh(parton_in2.rap);
+			parton_in2.e=parton_in2.mt*cosh(parton_in2.rap);
+			parton_in2.tau=parton_in2.t/cosh(parton_in2.rap);
+			parton_in2.z=parton_in2.tau*sinh(parton_in2.rap);
+			msq=pow(parton_in2.e,2)
+				-pow(parton_in2.px,2)
+				-pow(parton_in2.py,2)
+				-pow(parton_in2.pz,2);
+			m=(msq>0.)? sqrt(msq):0.;
+			parton_in2.m=m;
+
+			part_1ev.push_back(parton_in2);
+
+
+		}//minijet loop
+
+		//cout << "Finished minijet loop :D " << endl;
+
+
+		//Once found a last minijet from one single event,
+		//put info of one event into 'oneEventInfo'
+		//====================================================
+		oneEventInfo.part = part_1ev;
+		//oneEventInfo. = Nch 
+		//oneEventInfo. = weight;
+		//oneEventInfo. = ....;
+		vector<Container::ParticleInfo>().swap(part_1ev);
+
+		nEventInfo.push_back(oneEventInfo);
+
+	}//Event loop
+
+	in.close();
+
+	//	//Put info of Count Ev
+	//	//ct->CountEv++;
+	return true;
+}
 
 
 

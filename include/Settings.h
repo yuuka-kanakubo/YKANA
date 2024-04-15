@@ -67,6 +67,7 @@ class Settings{
 				bool trig_VZEROAND;
 				bool ATLAS_cut;
 				bool EKRTformat;
+				bool EKRTbinary;
 				bool only_core;
 				bool only_corona;
 				bool only_core_triggers;
@@ -154,6 +155,10 @@ class Settings{
 				void set_EKRTformat(){ 
 					EKRTformat=true;
 					std::cout << "Now EKRT format is assumed for input." << std::endl; 
+				};
+				void set_EKRTbinary(){ 
+					EKRTbinary=true;
+					std::cout << "Reading EKRT binary files..." << std::endl; 
 				};
 				void set_flag_multiplicity_cut_more_than(const double multip_cut_more_than_in){
 					flag_multiplicity_cut=true;
@@ -279,6 +284,7 @@ class Settings{
 				bool get_flag_VZEROAND_trigger()const{return trig_VZEROAND;};
 				bool get_flag_ATLAS_cut()const{return ATLAS_cut;};
 				bool get_flag_EKRTformat()const{return EKRTformat;};
+				bool get_flag_EKRTbinary()const{return EKRTbinary;};
 				bool get_flag_only_core()const{return only_core;} 
 				bool get_flag_only_corona()const{return only_corona;}
 				bool get_flag_only_core_triggers()const{return only_core_triggers;} 
@@ -334,6 +340,7 @@ class Settings{
 					trig_VZEROAND(false),
 					ATLAS_cut(false),
 					EKRTformat(false),
+					EKRTbinary(false),
 					only_core(false),
 					only_corona(false),
 					only_core_triggers(false),
@@ -397,9 +404,9 @@ class Settings{
 			for(int i=1; i<argc; i++) {
 				log.options.push_back(argv[i-1]);
 				log.options.push_back(argv[i]);
-				if(!strcmp(argv[i],"-dir")){options.set_dir_name ( argv[i+1]);}///FOR OUTPUT DIR.NAME.
-				else if(!strcmp(argv[i],"-f")){options.set_f_name ( argv[i+1]);}
-				else if(!strcmp(argv[i],"-ext")){options.set_ext_name ( argv[i+1]);}
+				if(!strcmp(argv[i],"-dir")){options.set_dir_name ( argv[i+1]); i++;}///FOR OUTPUT DIR.NAME.
+				else if(!strcmp(argv[i],"-f")){options.set_f_name ( argv[i+1]); i++;}
+				else if(!strcmp(argv[i],"-ext")){options.set_ext_name ( argv[i+1]); i++;}
 				else if(!strcmp(argv[i],"-n")){options.set_nfile (atoi(argv[i+1]));}
 				else if(!strcmp(argv[i],"-from")){options.set_beginfile (atoi(argv[i+1])); options.set_flag_specify_startingfile();}
 				else if(!strcmp(argv[i],"-to")){options.set_nfile (atoi(argv[i+1])); options.set_flag_specify_startingfile();}
@@ -428,6 +435,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--trig_VZEROAND")){options.set_trig_VZEROAND();}
 				else if(!strcmp(argv[i],"--ATLAS_cut")){options.set_ATLAS_cut();}
 				else if(!strcmp(argv[i],"--EKRTformat")){options.set_EKRTformat();}
+				else if(!strcmp(argv[i],"--EKRTbinary")){options.set_EKRTbinary();}
 				else if(!strcmp(argv[i],"--only_core")){options.set_flag_only_core();}
 				else if(!strcmp(argv[i],"--only_corona")){options.set_flag_only_corona();}
 				else if(!strcmp(argv[i],"--only_core_triggers")){options.set_flag_only_core_triggers();}
@@ -456,7 +464,6 @@ class Settings{
 					cout << "ERROR:( There is no such an option: " << opt_in << endl; 
 					exit(1);
 				}
-				i++;
 			}
 		}
 
