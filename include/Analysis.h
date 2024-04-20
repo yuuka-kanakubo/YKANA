@@ -125,7 +125,7 @@ class Analysis{
 					std::vector <Container::EventInfo> nEventInfo;
 					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
 						read->readEKRTbinary(nEventInfo);
-						//options.set_nfile((int)nEventInfo.size());
+						options.set_nfile((int)nEventInfo.size());
 						cout << ":D Reading binary file in EKRT format. " << options.get_nfile() << " events being analyzed." << endl;
 					}
 

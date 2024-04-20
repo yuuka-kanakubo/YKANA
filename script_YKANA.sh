@@ -1,62 +1,53 @@
 #!/bin/sh
 
-#SBATCH --job-name=allon_sum
-#SBATCH -e errorout
-#SBATCH --output=log/outYKANA.out
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=40
-#SBATCH --time=48:00:00
+CENT=(0_5 20_30 60_70)
+K=(2.0 3.0)
+Kapsat=(1.0 2.0)
+
+for i in `seq 0 1 2`
+do
+	for k in `seq 0 1 0`
+	do
+		for sat in `seq 0 1 1`
+		do
+   		DIR=/n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K${K[k]}sat${Kapsat[sat]}
+   		EV="ev"
+   		##EXT="hadronFinal_core_weakStop_wcol.txt"
+   		EXT=jets_${CENT[i]}_pbpb5020.dat
+   		outputdir=detdy_wohs_K${K[k]}sat${Kapsat[sat]}_${CENT[i]}
+   		n=1000
+   		
+   		
+   		##Do not modify this.
+   		##---------------------
+   		log_dname="log/"
+   		data_dir="data/"
+   		
+   		today=$(date "+%Y%m%d")
+   		log_fname=${today}${outputdir}
+   		if [ ! -d $log_dname ]
+   		then
+   		    echo "Directory "$log_dname" DOES NOT exists." 
+   		    echo "mkdir "$log_dname
+   		    mkdir $log_dname
+   		fi
+   		if [ ! -d $data_dir ]
+   		then
+   		    echo "Directory "$data_dir" DOES NOT exists." 
+   		    mkdir $data_dir
+   		fi
+   		##-------------------------
+   		
+   		sbatch -o YKANA${outputdir}.out  runYKANA.sbatch $n ${outputdir} ${DIR} ${EV} ${EXT}
+   		echo sbatch -o YKANA${outputdir}.out  runYKANA.sbatch $n ${outputdir} ${DIR} ${EV} ${EXT}
+
+		sleep 0.1
+		done
+	sleep 0.1
+	done
+sleep 0.1
+done
 
 
-DIR="/n/work02/yukanaku/mcaa-master/data/16Jan2024_test/60_70"
-EV="ev"
-##EXT="hadronFinal_core_weakStop_wcol.txt"
-EXT="jets_60_70_pbpb5020.dat"
-outputdir="EKRTbinarytest_detdy_60_70"
-n=1000
 
-
-##Do not modify this.
-##---------------------
-log_dname="log/"
-data_dir="data/"
-
-today=$(date "+%Y%m%d")
-log_fname=${today}${outputdir}
-if [ ! -d $log_dname ]
-then
-    echo "Directory "$log_dname" DOES NOT exists." 
-    echo "mkdir "$log_dname
-    mkdir $log_dname
-fi
-if [ ! -d $data_dir ]
-then
-    echo "Directory "$data_dir" DOES NOT exists." 
-    mkdir $data_dir
-fi
-##-------------------------
-
-
-##Options.
-##--------------
-## --CentralityCut 9 \
-## --CentralityCut_ext hadronFinal_corecorona_weakStop.txt \
-## --HI \
-## --only_corona \
-## --INEL_lg_0 \
-## --twosub  \
-## --threesub  \
-## --4particle \
-## --tagged \
-## --2PCfull \
-## --2PCnearside \
-## --2PCout \
-## --setNcoeff 3 \
-## --only_corona_associates \
-## --vs_Multi 2 \
-
-./YKANA \
- -n $n -outdir ${outputdir} -dir ${DIR} -f ${EV} -ext ${EXT} \
- --EKRTformat  \
- --EKRTbinary 
- ##> ${log_dname}${log_fname}.log  2>&1  &
+##./YKANA -n 1 -outdir detdy_whs_K2.0sat3.0_0_5_man -dir /n/work02/yukanaku/mcaa/data/12Apr2024_whs_K2.0sat3.0 -f ev -ext jets_0_5_pbpb5020.dat --EKRTformat --EKRTbinary
