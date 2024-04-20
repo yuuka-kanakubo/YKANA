@@ -99,6 +99,20 @@ class Analysis{
 					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
 				}
 
+				//Read binary filne and archive all 
+				//minijets info from all events.
+				//================================
+				std::vector <Container::EventInfo> nEventInfo;
+				if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+					read->readEKRTbinary(nEventInfo);
+					options.set_nfile((int)nEventInfo.size());
+					cout << ":D Reading binary file in EKRT format. " << options.get_nfile() << " events being analyzed." << endl;
+					if(options.get_flag_CentralityCut()){
+							CentralityCut CentCut(eBye_CentCut, options, this->rndom);
+							CentCut.ClassifyCentrality();
+					}
+				}
+
 
 				//Centrality Loop
 				for(int iCent=0; iCent<nCent; iCent++){
@@ -119,15 +133,6 @@ class Analysis{
 
 					auto ct = make_shared<Container>(this->options.get_flag_SB_CMS());
 
-					//Read binary filne and archive all 
-					//minijets info from all events.
-					//================================
-					std::vector <Container::EventInfo> nEventInfo;
-					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
-						read->readEKRTbinary(nEventInfo);
-						options.set_nfile((int)nEventInfo.size());
-						cout << ":D Reading binary file in EKRT format. " << options.get_nfile() << " events being analyzed." << endl;
-					}
 
 
 					//Event Loop

@@ -73,7 +73,7 @@ public:
 			}
 
 
-                this->read_events();
+			this->read_events();
 
 
 	}
@@ -111,7 +111,9 @@ void read_events(){
 	}
 
 	int EV_Counter=0;
-	for(int i=options.get_beginfile();i<options.get_nfile();i++) {
+	int nfile=options.get_nfile();
+	if(options.get_flag_EKRTbinary()) nfile=1;
+	for(int i=options.get_beginfile();i<nfile;i++) {
 
 	    if(i%1000==0) cout << ":) Reading " << i << "files." << endl; 
 	    ostringstream oss;
@@ -119,6 +121,7 @@ void read_events(){
 	    string fname = (!options.get_flag_Specify_f_for_CentralityCut())?  options.get_f_name() : options.get_f_name_CentCut();
 	    string extname = (!options.get_flag_Specify_ext_for_CentralityCut())? options.get_ext_name() : options.get_ext_name_CentCut();
 	    if(!options.get_flag_zerofill()) oss << dirname << "/" << fname << i << "/" << extname;
+	    else if (options.get_flag_EKRTbinary()) oss << options.get_dir_name() << "/" << options.get_ext_name();
 	    else oss << dirname << "/" << fname << setw(9) << setfill('0') << i << "/" << extname;
 	    string inputpath=oss.str();
 
@@ -131,14 +134,22 @@ void read_events(){
 	    if(options.get_flag_only_core_associates())utl_->flag_only_core_associates=true;
 	    if(options.get_flag_only_corona_associates())utl_->flag_only_corona_associates=true;
 
-	    EbyeInfo ebye_;
-	    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
-            ebye_.orig_eventNum=EV_Counter;
-	    this->eBye.push_back(ebye_);
-	    EV_Counter++;
+	    //This is the case when reading files are ebye.
+	    //==========================================
+	    {
+		    EbyeInfo ebye_;
+		    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
+		    ebye_.orig_eventNum=EV_Counter;
+		    this->eBye.push_back(ebye_);
+		    EV_Counter++;
+	    }
+	    //else EKRT binary files are input then put ebye info below.
+	    {
+		    utl_->get_EbyeInfo_forAlleventsBinaryEKRTformat(inputpath, this->eBye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
+	    }
 	}
 
-
+return;
 }
 
 
