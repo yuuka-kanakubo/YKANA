@@ -136,6 +136,7 @@ void read_events(){
 
 	    //This is the case when reading files are ebye.
 	    //==========================================
+	    if (!options.get_flag_EKRTbinary()) 
 	    {
 		    EbyeInfo ebye_;
 		    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
@@ -143,7 +144,7 @@ void read_events(){
 		    this->eBye.push_back(ebye_);
 		    EV_Counter++;
 	    }
-	    //else EKRT binary files are input then put ebye info below.
+	    else// EKRT binary files are input then get vector of eBye[nev] in the following.
 	    {
 		    utl_->get_EbyeInfo_forAlleventsBinaryEKRTformat(inputpath, this->eBye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
 	    }

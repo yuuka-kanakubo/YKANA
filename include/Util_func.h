@@ -44,7 +44,7 @@ class Util_func{
     std::ifstream in;
     in.open(fname.c_str(),std::ios::in);
     if(!in) {
-	    cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << " )unable to open file " << inputf << endl;
+	    cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << " )unable to open file " << fname << endl;
 	    return ;
     } 
     string templine;
@@ -314,7 +314,7 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 
 	std::ifstream in(fname, std::ios::in | std::ios::binary);
 	if(!in.is_open()) {
-		cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << " )unable to open file " << inputf << endl;
+		cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << " )unable to open file " << fname << endl;
 		exit(EXIT_FAILURE);
 	} 
 	uint64_t n_events, n_jets;
@@ -335,7 +335,7 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 
 	in.read(reinterpret_cast<char*>(&n_events), sizeof n_events);
 	std::cout << "Trying to read " << n_events << " events from the file "
-              << inputf << " ..." << std::endl;
+              << fname << " ..." << std::endl;
 	uint64_t n_jet_total = 0;
 	int pct = 0;
 	for (uint64_t i=0; i<n_events; i++){
@@ -476,7 +476,7 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 		}//minijet loop
 
 		//cout << "Finished minijet loop :D " << endl;
-
+		this->getEbyEInfo_in_particleloop(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, part_1ev);
 
 		//Once found a last minijet from one single event,
 		//put info of one event into 'oneEventInfo'
@@ -503,6 +503,8 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 		//===============
 		vector<Container::ParticleInfo>().swap(part_1ev);
 
+		eBye.push_back(ebye_oneEvent);
+
 	}//Event loop
 
 	in.close();
@@ -510,7 +512,50 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 	return;
 }
 
- 
+bool is_pikp(int ID){
+	if (abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon) 
+		return true;
+	else 
+		return false;
+}
+
+void getEbyEInfo_in_particleloop(double& Multiplicity, double& N_charge, double& Multiplicity_V0M, double &Multiplicity_V0A, double& N_trk_offline_, bool& Multiplicity_INEL_lg_0, bool &V0M_FWD, bool &V0M_BKW, bool& OUTER_SPD, bool& ATLAS_cut, vector<Container::ParticleInfo> &part_1ev){
+
+	for(int i=0; i<(int)part_1ev.size(); i++){
+
+		Container::ParticleInfo & p = part_1ev[i];
+		double eta=p.rap;
+
+		//Assuming EKRT input which is partons. 
+		//So far I do not care about hadron species.
+		//=============================================
+		//if(is_pikp(p.ID)){
+			if(fabs(eta)<constants::w_eta_multiplicity) { 
+				Multiplicity++;
+			}
+			if(fabs(eta)<constants::etaRange_Nch && (p.pt<constants::ptmax_cumulantmulti_Nch && p.pt>constants::ptmin_cumulantmulti_Nch)) { 
+				N_charge++;
+			}
+			if(abs(eta)<constants::w_eta_multiplicity_INEL_lg_0) { 
+				Multiplicity_INEL_lg_0=true;
+			}
+			if(this->in_V0M_detector(eta)) { 
+				Multiplicity_V0M++;
+			}
+			if(fabs(eta)<constants::etaRangeCMSRidge && p.pt > constants::MomentumMinCMSRidge) { 
+				N_trk_offline_++;
+			}
+			if(this->in_V0M_fwd(eta)) { V0M_FWD=true; Multiplicity_V0A++;} 
+			if(this->in_V0M_bkw(eta)) { V0M_BKW=true;}
+			if(this->in_outerSPD(eta)){ OUTER_SPD=true;}
+			if(p.pt>0.5 && fabs(eta)<constants::w_eta_ATLAS_cut) ATLAS_cut=true;
+		//}
+	}
+
+	return;
+}
+
+
   
   void make_output_directory(const std::string name_){
     
