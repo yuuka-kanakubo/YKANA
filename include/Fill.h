@@ -16,7 +16,7 @@ private:
 
 	int N_iCentEv;
 	shared_ptr<Message> ms;  
-		Settings::Options options;
+		Options options;
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 		shared_ptr<Rndom> rndom;
@@ -38,7 +38,7 @@ private:
 
 public:
 
-Fill(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
 ~Fill();
 
 

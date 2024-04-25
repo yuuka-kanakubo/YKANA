@@ -9,6 +9,7 @@
 #include <complex>
 #include <math.h>
 #include "Constants.h"
+#include "Options.h"
 #include "Util_func.h"
 #include "Container.h"
 #include "Message.h"
@@ -37,7 +38,7 @@ class Analysis{
 		shared_ptr<Write> write;
 		shared_ptr<Rndom> rndom;
 
-		Settings::Options& options;
+		Options& options;
 		LogSettings& log;
 
 
@@ -47,7 +48,7 @@ class Analysis{
 
 	public:
 
-		Analysis(Settings::Options options_in, LogSettings log_in): PrintCounter(0),options(options_in), log(log_in){
+		Analysis(Options options_in, LogSettings log_in): PrintCounter(0),options(options_in), log(log_in){
 
 			//Random number for thermal parton sampling.
 			//-------------------------------------------

@@ -24,4 +24,9 @@
 ## --only_corona_associates \
 ## --vs_Multi 2 \
 
-./YKANA  -n $1 -outdir $2 -dir $3 -f $4 -ext $5  --EKRTformat  --EKRTbinary > log/$2YKANA.log 
+./YKANA  -n $1 -outdir $2 -dir $3 -f $4 -ext $5  \
+ --CentralityCut 2 \
+ -print_dndeta \
+ --xaxis 1 \
+ --EKRTformat  \
+ --EKRTbinary > log/$2YKANA.log 

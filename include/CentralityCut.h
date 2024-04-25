@@ -7,7 +7,7 @@ class CentralityCut{
 
 public:
 
-	CentralityCut(vector<EbyeInfo>& eBye_in, Settings::Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
+	CentralityCut(vector<EbyeInfo>& eBye_in, Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
 		cout << ":)Start analysis for centrality cut." << endl;
 
 			if(options.get_collision_type()==1){
@@ -98,7 +98,7 @@ public:
          vector<EbyeInfo>& eBye;
 
 private:
-	Settings::Options& options;
+	Options& options;
 	shared_ptr<Rndom>& rndom;
 
 
@@ -146,7 +146,7 @@ void read_events(){
 	    }
 	    else// EKRT binary files are input then get vector of eBye[nev] in the following.
 	    {
-		    utl_->get_EbyeInfo_forAlleventsBinaryEKRTformat(inputpath, this->eBye, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
+		    utl_->get_EbyeInfo_forAlleventsBinaryEKRTformat(inputpath, this->eBye, options);
 	    }
 	}
 

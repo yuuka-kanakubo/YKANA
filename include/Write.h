@@ -6,13 +6,13 @@ class Write{
 private:
 
 		shared_ptr<Message> ms;  
-		Settings::Options options;
+		Options options;
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 
 public:
 
-Write(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Write(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
 ~Write();
 		int getMapEdgeX(const double maxval);
 		int getMapEdgeY(const double maxval);

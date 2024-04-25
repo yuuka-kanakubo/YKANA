@@ -10,6 +10,7 @@
 #include "Rndom.h"
 #include "Container.h"
 #include "EbyeInfo.h"
+#include "Options.h"
 
 using std::string;
 using std::cout;
@@ -307,10 +308,7 @@ int get_NtrkClass(const double val){
 void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 		const string fname, 
 		vector<EbyeInfo>& eBye, 
-		double rap_shift, 
-		bool VZEROAND_trigger, 
-		bool parton_level, 
-		int collision_type){
+		Options &options){
 
 	std::ifstream in(fname, std::ios::in | std::ios::binary);
 	if(!in.is_open()) {
@@ -489,10 +487,10 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 		ebye_oneEvent.Nch=N_charge;
 		ebye_oneEvent.weight=1.0;//In EKRT current version all events are equally weighted.
 		ebye_oneEvent.multiplicity_INEL_lg_0=Multiplicity_INEL_lg_0;
-		ebye_oneEvent.multiplicity_V0M=(VZEROAND_trigger)? Multiplicity_V0A : Multiplicity_V0M;
+		ebye_oneEvent.multiplicity_V0M=(options.get_flag_VZEROAND_trigger())? Multiplicity_V0A : Multiplicity_V0M;
 		ebye_oneEvent.valid=true;
 		ebye_oneEvent.N_trk_offline=N_trk_offline_;
-		if(collision_type==101)
+		if(options.get_collision_type()==101)
 			ebye_oneEvent.set_V0M_class(this->get_NtrkClass(N_trk_offline_));
 		if(V0M_FWD && V0M_BKW && OUTER_SPD) {ebye_oneEvent.trig_3outof3=true;}
 		if(V0M_FWD && V0M_BKW) {ebye_oneEvent.trig_VZEROAND=true;}

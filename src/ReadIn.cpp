@@ -19,7 +19,7 @@
 
 using namespace std;
 
-ReadIn::ReadIn(shared_ptr<Message> ms_in, Settings::Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0), nline(-1){};
+ReadIn::ReadIn(shared_ptr<Message> ms_in, Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0), nline(-1){};
 ReadIn::~ReadIn(){};
 
 

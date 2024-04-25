@@ -3,16 +3,17 @@
 #include <algorithm>
 #include <functional>
 #include "EbyeInfo.h"
+#include "Options.h"
 
 class Classification{
 
 	private:
 		double sumN;
                 vector<EbyeInfo>& eBye;
-		const Settings::Options options;
+		const Options options;
 
 	public:
-		Classification(vector<EbyeInfo>& eBye_in, const Settings::Options options_in):sumN(0.0), eBye(eBye_in), options(options_in){
+		Classification(vector<EbyeInfo>& eBye_in, const Options options_in):sumN(0.0), eBye(eBye_in), options(options_in){
 
 
 		};

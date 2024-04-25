@@ -6,7 +6,7 @@ class Stat{
 private:
 
 		shared_ptr<Message> ms;  
-		Settings::Options options;
+		Options options;
 		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 		int get_xaxis_RtClass(double xval);
@@ -14,7 +14,7 @@ private:
 
 public:
 
-Stat(shared_ptr<Message> ms_in, Settings::Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Stat(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
 ~Stat();
 
 			void stat_twopc(shared_ptr<Container>& ct);
