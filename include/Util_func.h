@@ -332,10 +332,11 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 	}
 
 	in.read(reinterpret_cast<char*>(&n_events), sizeof n_events);
-	std::cout << "Trying to read " << n_events << " events from the file "
-              << fname << " ..." << std::endl;
 	uint64_t n_jet_total = 0;
 	int pct = 0;
+	n_events = options.get_nfile();
+	std::cout << "Trying to read " << n_events << " events from the file "
+              << fname << " ..." << std::endl;
 	for (uint64_t i=0; i<n_events; i++){
 		if(fabs((double)i/(double)n_events-pct*0.1)<constants::SMALL){
 			cout << ":) " << pct*10 << "\% is done " << endl;
@@ -411,7 +412,7 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 			parton_in1.is_mom1Neutron=a_is_neutron;
 			parton_in1.is_mom2Neutron=b_is_neutron;
 
-			double mtsq=pow(parton_in1.pt,2)+pow(parton_in1.m,2);
+			double mtsq=pow(parton_in1.pt,2)+pow(0.0,2);
 			double mt=(mtsq>0.0) ? sqrt(mtsq):0.0;
 			parton_in1.mt=mt;
 			parton_in1.px=parton_in1.pt*cos(parton_in1.phi);
@@ -425,6 +426,10 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 				-pow(parton_in1.py,2)
 				-pow(parton_in1.pz,2);
 			double m=(msq>0.)? sqrt(msq):0.;
+			if(m>constants::MEDSMALL){
+				cout << __FILE__ << " Should be mass-less in EKRT. m: " << m << endl;
+				exit(1);
+			}
 			parton_in1.m=m;
 
 			part_1ev.push_back(parton_in1);
@@ -452,7 +457,7 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 			parton_in2.is_mom1Neutron=a_is_neutron;
 			parton_in2.is_mom2Neutron=b_is_neutron;
 
-			mtsq=pow(parton_in2.pt,2)+pow(parton_in2.m,2);
+			mtsq=pow(parton_in2.pt,2)+pow(0.0,2);
 			mt=(mtsq>0.0) ? sqrt(mtsq):0.0;
 			parton_in2.mt=mt;
 			parton_in2.px=parton_in2.pt*cos(parton_in2.phi);
@@ -467,6 +472,10 @@ void get_EbyeInfo_forAlleventsBinaryEKRTformat(
 				-pow(parton_in2.pz,2);
 			m=(msq>0.)? sqrt(msq):0.;
 			parton_in2.m=m;
+			if(m>constants::MEDSMALL){
+				cout << __FILE__ << " Should be mass-less in EKRT. m: " << m << endl;
+				exit(1);
+			}
 
 			part_1ev.push_back(parton_in2);
 

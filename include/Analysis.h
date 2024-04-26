@@ -56,7 +56,6 @@ class Analysis{
 			rndom = make_shared<Rndom>(111);
 			//rndom = make_shared<Rndom>(rand());
 
-			cout << "log " << log.get_BinSettings_size() << endl;
 			infohist = make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
 			ms = make_shared<Message>();
 			uf = make_shared<Util_func>(this->rndom);
@@ -106,12 +105,8 @@ class Analysis{
 				std::vector <Container::EventInfo> nEventInfo;
 				if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
 					read->readEKRTbinary(nEventInfo);
-					options.set_nfile((int)nEventInfo.size());
+					//options.set_nfile((int)nEventInfo.size());
 					cout << ":D Reading binary file in EKRT format. " << options.get_nfile() << " events being analyzed." << endl;
-					if(options.get_flag_CentralityCut()){
-							CentralityCut CentCut(eBye_CentCut, options, this->rndom);
-							CentCut.ClassifyCentrality();
-					}
 				}
 
 
@@ -283,7 +278,7 @@ class Analysis{
 						}else if(constants::MODE.find("twodm")!=string::npos){
 							fill->fill_2D(ct);
 						}else{
-							fill->fill(ct,dNdeta_fill, bin);
+							fill->fill(ct, dNdeta_fill, bin);
 						}
 
 					}//Event loop
@@ -297,7 +292,6 @@ class Analysis{
 					}else if(constants::MODE.find("twopc1D")!=string::npos){
 						stat->stat_twopc1D(ct);
 					}else if(constants::MODE.find("twodm")!=string::npos){
- 	  cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") " << endl;
 						stat->stat_twopc(ct);
 					}else if(constants::MODE.find("Rt_spectra")!=string::npos){
 						stat->stat_Rt(ct);

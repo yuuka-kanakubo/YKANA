@@ -367,7 +367,7 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 	const double x_max = 8.0;
 	const double x_min = -8.0;
 	const double x_max_HI = 0.0;
-	const double d_x = 0.75;
+	const double d_x = 1.0;
 	const double d_x_HI = 0.1;
 	const int x_cell_capa=1000;
 	const string default_ext="/hadronised.txt";
@@ -419,6 +419,7 @@ inline	const double default_midy_pm = 0.5;
 inline	const double LARGE=1.0e+16;
 inline	const int LARGEint=10000;
 inline	const double SMALL=1.0e-5;
+inline	const double MEDSMALL=1.0e-3;
 inline	const double multip_cut_more_than=-LARGE;
 inline	const double multip_cut_less_than=LARGE;
 

@@ -50,13 +50,13 @@
 ##
 
 
+ ##--CentralityCut 2 \
 ./YKANA  \
- -n 1 \
- -outdir CentralityCut_whs_K2.4sat2.0_allev  \
+ -n 1000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
+ -outdir noCentralityCutwhs_K2.4sat2.0_1000  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --EKRTformat  \
  --EKRTbinary \
- --CentralityCut 2 \
  --xaxis 1 
