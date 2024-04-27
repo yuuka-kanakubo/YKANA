@@ -2,12 +2,14 @@
 #define CENTRALITYCUT
 #include "EbyeInfo.h"
 #include "Classification.h"
+#include "ReadIn.h"
 
 class CentralityCut{
 
+
 public:
 
-	CentralityCut(vector<EbyeInfo>& eBye_in, Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
+	CentralityCut(vector<EbyeInfo>& eBye_in, vector<Container::EventInfo>& nEventInfo, Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
 		cout << ":)Start analysis for centrality cut." << endl;
 
 			if(options.get_collision_type()==1){
@@ -73,7 +75,7 @@ public:
 			}
 
 
-			this->read_events();
+			this->read_events(nEventInfo);
 
 
 	}
@@ -92,7 +94,7 @@ public:
 			cout << ":)Finish centrality classification." << endl;
 
 
-}
+	 }
 
 
          vector<EbyeInfo>& eBye;
@@ -100,16 +102,15 @@ public:
 private:
 	Options& options;
 	shared_ptr<Rndom>& rndom;
+	shared_ptr<ReadIn> read;
+	shared_ptr<Message> ms;
 
 
 
-void read_events(){
+void read_events(vector<Container::EventInfo>& nEventInfo){
 
-	double rap_shift=0.0;
-	if(options.get_hist_rapidity_shift() || options.get_flag_pPb_cm_calculation()){
-		rap_shift=(options.get_flag_pPb_cm_calculation())? constants::pPb_rap_shift_from_lab_to_cm:options.dlty;
-	}
-
+	ms = make_shared<Message>();
+	read = make_shared<ReadIn>(this->ms, this->options);
 	int EV_Counter=0;
 	int nfile=options.get_nfile();
 	if(options.get_flag_EKRTbinary()) nfile=1;
@@ -125,28 +126,21 @@ void read_events(){
 	    else oss << dirname << "/" << fname << setw(9) << setfill('0') << i << "/" << extname;
 	    string inputpath=oss.str();
 
-	    auto utl_ = make_shared<Util_func>(this->rndom);
-
-	    //This need to be organized. It would be better to make option class?
-	    //===========================
-	    if(options.get_flag_only_core())utl_->flag_only_core=true;
-	    if(options.get_flag_only_corona())utl_->flag_only_corona=true;
-	    if(options.get_flag_only_core_associates())utl_->flag_only_core_associates=true;
-	    if(options.get_flag_only_corona_associates())utl_->flag_only_corona_associates=true;
-
 	    //This is the case when reading files are ebye.
 	    //==========================================
 	    if (!options.get_flag_EKRTbinary()) 
 	    {
 		    EbyeInfo ebye_;
-		    utl_->get_EbyeInfo_(inputpath, ebye_, rap_shift, options.get_flag_VZEROAND_trigger(), options.get_hist_parton_level(), options.get_collision_type());
+		    Container::EventInfo oneEventInfo;
+		    read->read(inputpath, oneEventInfo, ebye_);
 		    ebye_.orig_eventNum=EV_Counter;
 		    this->eBye.push_back(ebye_);
+		    nEventInfo.push_back(oneEventInfo);
 		    EV_Counter++;
 	    }
 	    else// EKRT binary files are input then get vector of eBye[nev] in the following.
 	    {
-		    utl_->get_EbyeInfo_forAlleventsBinaryEKRTformat(inputpath, this->eBye, options);
+		    read->readEKRTbinary(nEventInfo, eBye);
 	    }
 	}
 

@@ -20,7 +20,6 @@ class Container{
 
 		public:
 
-			int id;
 			double e;
 			double m;
 			double mt;
@@ -53,6 +52,9 @@ class Container{
 			double zmomNucleon2;
 			bool is_mom1Neutron;
 			bool is_mom2Neutron;
+
+			ParticleInfo():e(0.0), m(0.0), mt(0.0), px(0.0), py(0.0), pz(0.0), pt(0.0), vt(0.0), x(0.0), y(0.0), z(0.0), t(0.0), tau(0.0), r(0.0), rap(0.0), eta(0.0), phi(0.0), TAG("na"), tata(0.0), ID(0), momID1(0), momID2(0), imomNucleon1(0), imomNucleon2(0), xmomNucleon1(0.0), xmomNucleon2(0.0), ymomNucleon1(0.0), ymomNucleon2(0.0), zmomNucleon1(0.0), zmomNucleon2(0.0), is_mom1Neutron(false), is_mom2Neutron(false){}
+
 
 	};
 

@@ -91,22 +91,23 @@ class Analysis{
 				//-----------------------
 				int nCent=1;
 				vector<EbyeInfo> eBye_CentCut;
+				std::vector <Container::EventInfo> nEventInfo;//Archive all event info
 				if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
-					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
+					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
 					CentCut.ClassifyCentrality();
 					if(!options.get_flag_vs_Multi()) nCent=(int)options.name_cent.size();
 				}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
-					CentralityCut CentCut(eBye_CentCut, options, this->rndom);
-				}
+					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
+				}else{
 
-				//Read binary filne and archive all 
-				//minijets info from all events.
-				//================================
-				std::vector <Container::EventInfo> nEventInfo;
-				if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
-					read->readEKRTbinary(nEventInfo);
-					//options.set_nfile((int)nEventInfo.size());
-					cout << ":D Reading binary file in EKRT format. " << options.get_nfile() << " events being analyzed." << endl;
+					//Read binary filne and archive all
+					//minijets info from all events.
+					//================================
+					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+						vector<EbyeInfo> dmmy;
+						read->readEKRTbinary(nEventInfo, dmmy);
+					}
+
 				}
 
 
@@ -138,7 +139,7 @@ class Analysis{
 					for(int i=options.get_beginfile(); i<options.get_nfile(); ++i){
 						if(!(i%this->PrintCounter)) ms->read(i);
 						if(fabs((double)i/(double)options.get_nfile()-pct*0.1)<constants::SMALL){
-							cout << ":D " << pct*10 << "\% is done " << endl;
+							cout << ":D Analysing... " << pct*10 << "\% " << endl;
 							pct++;
 						}
 						ct->CountEv++;
@@ -210,24 +211,31 @@ class Analysis{
 
 
 						//Read events
-						//---------------
-						if(constants::MODE.find("JET_PRAC")!=std::string::npos){
-							if(!read->read_jetinfo(inputpath, ct)) continue;
-						}else{
-							if(constants::MODE.find("timelapse")!=std::string::npos){
-								std::stringstream ssTL;
-								ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/";
-								if(!read->readTimeLapse(ssTL.str(), ct, weight_TL)) continue;
-							}else if(constants::MODE.find("readXY")!=std::string::npos){
-								if(!read->readXY(inputpath, ct)) continue;
-							}else if(options.get_flag_EKRTformat()){
-								if(options.get_flag_EKRTbinary()){
-									ct->EVENTINFO = nEventInfo[i];
-								}else if(!read->readEKRT(inputpath, ct)) continue;
+						//===========
+						if(!options.get_flag_CentralityCut() && !options.get_flag_EKRTbinary()){
+							if(constants::MODE.find("JET_PRAC")!=std::string::npos){
+								if(!read->read_jetinfo(inputpath, ct->EVENTINFO)) continue;
 							}else{
-								if(!read->read(inputpath, ct)) continue;
+								if(constants::MODE.find("timelapse")!=std::string::npos){
+									std::stringstream ssTL;
+									ssTL << options.get_dir_name() << "/" << options.get_f_name() << setw(9) << setfill('0') << i << "/";
+									if(!read->readTimeLapse(ssTL.str(), ct->EVENTINFO, weight_TL)) continue;
+								}else if(constants::MODE.find("readXY")!=std::string::npos){
+									if(!read->readXY(inputpath, ct->EVENTINFO)) continue;
+								}else if(options.get_flag_EKRTformat()){
+									if(!read->readEKRT(inputpath, ct->EVENTINFO)) continue;
+								}else{
+									EbyeInfo dmmy;
+									if(!read->read(inputpath, ct->EVENTINFO, dmmy)) continue;
+								}
 							}
+						}else{
+							ct->EVENTINFO = nEventInfo[i];
 						}
+
+
+						//Filling
+						//=======
 						if(constants::MODE.find("cumulant_multi")!=std::string::npos){
 							if(options.get_flag_2subevent()){ 
 								if(options.get_flag__4particle()){

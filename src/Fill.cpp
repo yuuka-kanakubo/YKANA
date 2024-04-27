@@ -292,7 +292,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				int itrig=-1;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 					if(fabs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
-					int ID = EVENT.part[i].id;
+					int ID = (int)EVENT.part[i].ID;
 					if(!(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)) continue;
 					if(max_pt<EVENT.part[i].pt) {
 						max_pt = EVENT.part[i].pt;
@@ -309,7 +309,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					//Count Nt
 					//-----------
-					int ID = EVENT.part[j].id;
+					int ID = (int)EVENT.part[j].ID;
 					if(!(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)) continue;
 					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans 
 							&& fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
@@ -335,7 +335,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				double max_pt=-1.0;
 				int itrig=-1;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					int ID = EVENT.part[i].id;
+					int ID = (int)EVENT.part[i].ID;
 					if(!(abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)) continue;
 					if(fabs(EVENT.part[i].pt)<constants::minpt_Rt) continue;
 					if(max_pt<EVENT.part[i].pt) {
@@ -361,7 +361,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					//Count Nt (multiplicity in transverse region)
 					//----------------------------------------------
-					int ID = EVENT.part[j].id;
+					int ID = (int)EVENT.part[j].ID;
 					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans && (abs(ID)==constants::id_proton||abs(ID)==constants::id_ch_pion||abs(ID)==constants::id_ch_kaon)){
 						Nt++;
 						if(EVENT.part[j].phi-EVENT.part[itrig].phi>0.0) Ntmin++;
@@ -376,7 +376,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 					//Count Nth(yield in transverse region)
 					//----------------------------------------------
 					if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::maxPhi_RtTrans && fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)>constants::minPhi_RtTrans){
-						int ID = EVENT.part[j].id;
+						int ID = (int)EVENT.part[j].ID;
 						string TAG = EVENT.part[j].TAG;
 						if(abs(ID)==constants::id_proton) TransYield.add_ppbar(1.0);
 							if(abs(ID)==constants::id_ch_pion)TransYield.add_chpi(1.0); 
@@ -393,7 +393,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 					//Count Nth(yield in towards region)
 					//----------------------------------------------
 					else if(fabs(EVENT.part[j].phi-EVENT.part[itrig].phi)<constants::minPhi_RtTrans){
-						int ID = EVENT.part[j].id;
+						int ID = (int)EVENT.part[j].ID;
 						string TAG = EVENT.part[j].TAG;
 						if(abs(ID)==constants::id_proton) TowardYield.add_ppbar(1.0);
 							if(abs(ID)==constants::id_ch_pion)TowardYield.add_chpi(1.0); 
@@ -525,7 +525,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				int itrig=-1;
 				double max_pt=-1.0;
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
-					if(abs(EVENT.part[i].id)==constants::id_K0S) continue;
+					if(abs((int)EVENT.part[i].ID)==constants::id_K0S) continue;
 					if(max_pt<EVENT.part[i].pt) {
 						max_pt = EVENT.part[i].pt;
 						itrig=i;
@@ -541,7 +541,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 					if(itrig<0) {
 						break;
 					}
-					if(abs(EVENT.part[j].id)!=constants::id_K0S) continue;
+					if(abs((int)EVENT.part[j].ID)!=constants::id_K0S) continue;
 
 					double x_val=this->getDeltaPhi_twopc1D(EVENT.part[itrig].phi, EVENT.part[j].phi);
 					double DeltaEta=fabs(EVENT.part[itrig].eta - EVENT.part[j].eta);
@@ -677,11 +677,11 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
 						nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
 
-			 			if(EVENT.part[j].id==constants::id_phi){
+			 			if(EVENT.part[j].ID==constants::id_phi){
 							uf->checkMassOnShell(EVENT.part[j].m, EVENT.part[j].e, EVENT.part[j].px, EVENT.part[j].py, EVENT.part[j].pz);
 						}
 
-						if(!this->fix_ax(EVENT.part[j].id, nx, x_val)) continue;
+						if(!this->fix_ax(EVENT.part[j].ID, nx, x_val)) continue;
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}else{
 						//Default filling.
