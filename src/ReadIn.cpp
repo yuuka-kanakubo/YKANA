@@ -220,7 +220,6 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 	in.read(reinterpret_cast<char*>(&n_events), sizeof n_events);
 	uint64_t n_jet_total = 0;
 	int pct = 0;
-	n_events = options.get_nfile();
 	std::cout << "Trying to read " << n_events << " events from the file "
               << inputf << " ..." << std::endl;
 	for (uint64_t i=0; i<n_events; i++){
@@ -382,7 +381,7 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		//put info of one event into 'oneEventInfo'
 		//====================================================
 		oneEventInfo.part = part_1ev;
-		//oneEventInfo. = Nch 
+		oneEventInfo.order_reading((int)i); 
 		//oneEventInfo. = weight;
 		//oneEventInfo. = ....;
 		ebye_oneEvent.multiplicity=Multiplicity;

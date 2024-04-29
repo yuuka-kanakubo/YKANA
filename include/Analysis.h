@@ -151,6 +151,12 @@ class Analysis{
 						//Centrality cut.
 						//---------------
 						if(options.get_flag_CentralityCut()){
+							//if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+							//	if(eBye_CentCut[nEventInfo[EV_Count].order_reading()].get_V0M_class()!=iCent) {
+							//		EV_Count++;
+							//		continue;
+							//	}
+								//cout << "nEventInfo[EV_Count].order_reading(): " << nEventInfo[EV_Count].order_reading() << endl;
 							if(eBye_CentCut[EV_Count].get_V0M_class()!=iCent) {
 								EV_Count++;
 								continue;

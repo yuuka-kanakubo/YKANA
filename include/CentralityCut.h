@@ -134,17 +134,40 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 		    Container::EventInfo oneEventInfo;
 		    read->read(inputpath, oneEventInfo, ebye_);
 		    this->eBye.push_back(ebye_);
+		    oneEventInfo.order_reading(i); 
 		    nEventInfo.push_back(oneEventInfo);
 	    }
 	    else// EKRT binary files are input then get vector of eBye[nev] in the following.
 	    {
 		    read->readEKRTbinary(nEventInfo, eBye);
+
+		    //Shuffle!
+		    //=======
+		    cout << ":D Shuffling the reading events!  nEventInfo.size():" << (int) nEventInfo.size() 
+			    << "                                  eBye.size()      :" << (int)eBye.size() 
+			    << endl;
+		    auto rng = std::default_random_engine {};
+		    std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
+
+		    //n_events = options.get_nfile();
+		    //I want to pick up the first n events from the shuffled nEventInfo vector.
+		    //Then I want to delete corresponding elements of eBye to the deleted ones.
+		    //==================================================
+		    std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+		    vector<EbyeInfo> eBye_picked;
+		    for (int k = 0; k<(int)nEventInfo_picked.size(); k++){
+			    eBye_picked.push_back(eBye[nEventInfo_picked[k].order_reading()]);
+		    }
+		    nEventInfo=nEventInfo_picked;
+		    eBye=eBye_picked;
+		    std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+		    std::vector<EbyeInfo>().swap(eBye_picked);
+		    cout << ":D After Shuffling the reading events!  nEventInfo.size():" << (int) nEventInfo.size() 
+			    << "                                  eBye.size()      :" << (int)eBye.size() 
+			    << endl;
 	    }
 	}
 
-	//Shuffle!
-	//auto rng = std::default_random_engine {};
-	//std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
 
 return;
 }
