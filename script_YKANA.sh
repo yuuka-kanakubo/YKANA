@@ -52,9 +52,9 @@
 
  ##--CentralityCut 2 \
 ./YKANA  \
- -n 1000 \
+ -n 100000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
- -outdir CentralityCutwhs_K2.4sat2.0_1000  \
+ -outdir CentralityCutwhs_K2.4sat2.0_100000  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \

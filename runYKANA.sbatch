@@ -24,9 +24,20 @@
 ## --only_corona_associates \
 ## --vs_Multi 2 \
 
-./YKANA  -n $1 -outdir $2 -dir $3 -f $4 -ext $5  \
+##./YKANA  -n $1 -outdir $2 -dir $3 -f $4 -ext $5  \
+## --CentralityCut 2 \
+## -print_dndeta \
+## --xaxis 1 \
+## --EKRTformat  \
+## --EKRTbinary > log/$2YKANA.log 
+
+./YKANA  \
+ -n 100000 \
+ -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
+ -outdir CentralityCutwhs_K2.4sat2.0_100000  \
+ -f ev  \
+ -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \
- -print_dndeta \
- --xaxis 1 \
  --EKRTformat  \
- --EKRTbinary > log/$2YKANA.log 
+ --EKRTbinary \
+ --xaxis 1 

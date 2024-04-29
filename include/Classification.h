@@ -30,6 +30,7 @@ class Classification{
           void get_sumN(){ 
 		  int Nev=(int)eBye.size();
 		  for(int i=0; i<Nev; i++){
+			  eBye[i].orig_eventNum=i;
 			  if(eBye[i].valid){
 				  if(options.get_flag_INEL_lg_0() && !eBye[i].multiplicity_INEL_lg_0) { continue;}
 				  if(options.get_flag_2outof3_trigger() && !eBye[i].trig_2outof3) { continue;}

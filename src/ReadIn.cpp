@@ -385,7 +385,6 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		//oneEventInfo. = Nch 
 		//oneEventInfo. = weight;
 		//oneEventInfo. = ....;
-		ebye_oneEvent.orig_eventNum=(int)i;
 		ebye_oneEvent.multiplicity=Multiplicity;
 		ebye_oneEvent.Nch=N_charge;
 		ebye_oneEvent.weight=1.0;//In EKRT current version all events are equally weighted.

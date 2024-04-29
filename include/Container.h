@@ -107,10 +107,11 @@ class Container{
 			double weight_;
 			int Nt_;
 			int Nch_;
+			int order_reading_;
 			double Aj_;
 
 		public:
-			EventInfo(): weight_(1.0), Nt_(0), Nch_(0), Aj_(1.0){};
+			EventInfo(): weight_(1.0), Nt_(0), Nch_(0), order_reading_(0), Aj_(1.0){};
 			~EventInfo(){
 				vector<ParticleInfo>().swap(part);
 				vector<StepInfo>().swap(step);
@@ -122,8 +123,10 @@ class Container{
 			void Nt(int Nt_in){this->Nt_=Nt_in;}
 			void Nch(int Nch_in){this->Nch_=Nch_in;}
 			void Aj(double Aj_in){this->Aj_=Aj_in;}
+			void order_reading(int i){this->order_reading_=i;}
 			double weight()const{return this->weight_;}
 			int Nch()const{return this->Nch_;}
+			int order_reading()const{return this->order_reading_;}
 			double Aj()const{return this->Aj_;}
 
 	};

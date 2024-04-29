@@ -1,5 +1,6 @@
 #ifndef CENTRALITYCUT
 #define CENTRALITYCUT
+#include <algorithm>
 #include "EbyeInfo.h"
 #include "Classification.h"
 #include "ReadIn.h"
@@ -111,7 +112,6 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 
 	ms = make_shared<Message>();
 	read = make_shared<ReadIn>(this->ms, this->options);
-	int EV_Counter=0;
 	int nfile=options.get_nfile();
 	if(options.get_flag_EKRTbinary()) nfile=1;
 	for(int i=options.get_beginfile();i<nfile;i++) {
@@ -133,16 +133,18 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 		    EbyeInfo ebye_;
 		    Container::EventInfo oneEventInfo;
 		    read->read(inputpath, oneEventInfo, ebye_);
-		    ebye_.orig_eventNum=EV_Counter;
 		    this->eBye.push_back(ebye_);
 		    nEventInfo.push_back(oneEventInfo);
-		    EV_Counter++;
 	    }
 	    else// EKRT binary files are input then get vector of eBye[nev] in the following.
 	    {
 		    read->readEKRTbinary(nEventInfo, eBye);
 	    }
 	}
+
+	//Shuffle!
+	//auto rng = std::default_random_engine {};
+	//std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
 
 return;
 }
