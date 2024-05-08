@@ -390,6 +390,8 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		ebye_oneEvent.multiplicity_INEL_lg_0=Multiplicity_INEL_lg_0;
 		ebye_oneEvent.multiplicity_V0M=(options.get_flag_VZEROAND_trigger())? Multiplicity_V0A : Multiplicity_V0M;
 		ebye_oneEvent.valid=true;
+		//if(n_jets>0) ebye_oneEvent.valid=true;
+                //else{cout << "NO MINIEJT IN THIS EVENT " << endl;}
 		ebye_oneEvent.N_trk_offline=N_trk_offline_;
 		if(options.get_collision_type()==101)
 			ebye_oneEvent.set_V0M_class(this->get_NtrkClass(N_trk_offline_));

@@ -104,8 +104,16 @@ class Analysis{
 					//minijets info from all events.
 					//================================
 					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+
 						vector<EbyeInfo> dmmy;
 						read->readEKRTbinary(nEventInfo, dmmy);
+
+						auto rng = std::default_random_engine {};
+						std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
+						std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+						nEventInfo=nEventInfo_picked;
+						std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+
 					}
 
 				}
