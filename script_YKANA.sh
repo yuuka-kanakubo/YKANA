@@ -52,9 +52,9 @@
 
  ##--CentralityCut 2 \
 ./YKANA  \
- -n 51 \
- -dir /n/work02/yukanaku/mcaa/data/08May2024_testbugfix  \
- -outdir test_  \
+ -n 10000 \
+ -dir /n/work02/yukanaku/mcaa/data/10May2024_wohs_K1.9sat4.0_bfrbug  \
+ -outdir CentralityCuts_wsumE0_wohs_K1.9sat4.0_10K_EKRTcut_beforebugfix  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \

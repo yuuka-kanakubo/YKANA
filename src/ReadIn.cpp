@@ -222,6 +222,10 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 	int pct = 0;
 	std::cout << "Trying to read " << n_events << " events from the file "
               << inputf << " ..." << std::endl;
+	if((int)n_events<(int)options.get_nfile()){
+		cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << ") Trying to get nevent statistics but reading fewer than nevent data. " << options.get_nfile() << endl;
+		exit(EXIT_FAILURE);
+	}
 	for (uint64_t i=0; i<n_events; i++){
 		if(fabs((double)i/(double)n_events-pct*0.1)<constants::SMALL){
 			cout << ":)  Loading.... " << pct*10 << "\% " << endl;
