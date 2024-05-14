@@ -71,6 +71,7 @@ class Settings{
 				else if(!strcmp(argv[i],"-look_at_yTL")){options.set_at_yTL(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"-look_at_etaTL")){options.set_at_etaTL(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--high_pt_mode")){options.set_flag_high_pt_mode();}
+				else if(!strcmp(argv[i],"--shuffle")){options.set_flag_shuffle();}
 				else if(!strcmp(argv[i],"--pPb_cm")){options.set_flag_pPb_cm_calculation();}
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1
 				else if(!strcmp(argv[i],"--parton")){options.set_parton_level_hist();}

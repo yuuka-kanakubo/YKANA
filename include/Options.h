@@ -67,6 +67,7 @@ using std::ios;
 				bool flag_pPb_cm_calculation;
 				bool flag_multiplicity_cut;
 				bool flag_vs_Multi;
+				bool shuffle;
 				bool zerofill;
 				bool two_subevent;
 				bool three_subevent;
@@ -121,6 +122,7 @@ using std::ios;
 				void set_nfile(int n){this->nfile=n;}
 				void set_beginfile(int n){this->beginfile=n;}
 				void set_flag_specify_startingfile(){this->specify_startingfile=true;}
+				void set_flag_shuffle(){this->shuffle=true;}
 				void set_dir_name_CentCut(std::string name){this->dir_name_CentCut=name;}
 				void set_f_name_CentCut(std::string name){this->f_name_CentCut=name;}
 				void set_ext_name_CentCut(std::string name){this->ext_name_CentCut=name;}
@@ -249,6 +251,7 @@ using std::ios;
 				bool get_hist_rapidity_shift()const{return rapidity_shift;};
 				bool get_flag_high_pt_mode()const{return high_pt_mode;};
 				bool get_flag_zerofill()const{return zerofill;};
+				bool get_flag_shuffle()const{return shuffle;};
 				double get_d_longrange_pm()const{return long_range_hist_pm;};
 				double get_d_longrange()const{return long_range_hist_pm*2.0;};
 				double get_d_longrange_mid_rapidity_cut_type2()const{return std::fabs(constants::pPb_mid_rapidity__bkw-constants::pPb_mid_rapidity__fwd);};
@@ -339,6 +342,7 @@ using std::ios;
 					print_dndmt(false),
 					flag_pPb_cm_calculation(false),
 					flag_multiplicity_cut(false),
+					shuffle(false),
 					zerofill(true),
 					two_subevent(false),
 					three_subevent(false),
@@ -350,7 +354,6 @@ using std::ios;
 					_2PCout(false),
 					tagged(false),
 					set_Ncoeff(false),
-
 					mid_rapidity_cut_type(0),
 					axis_type(0),
 					collision_type(3),

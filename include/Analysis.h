@@ -108,11 +108,13 @@ class Analysis{
 						vector<EbyeInfo> dmmy;
 						read->readEKRTbinary(nEventInfo, dmmy);
 
-						auto rng = std::default_random_engine {};
-						std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
-						std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
-						nEventInfo=nEventInfo_picked;
-						std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+						if(options.get_flag_shuffle()){
+							auto rng = std::default_random_engine {};
+							std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
+							std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+							nEventInfo=nEventInfo_picked;
+							std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+						}//shuffle
 
 					}
 
