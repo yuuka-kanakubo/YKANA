@@ -58,6 +58,7 @@
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \
+ --CentralityCutsumEt \
  --EKRTformat  \
  --EKRTbinary \
  --xaxis 1 

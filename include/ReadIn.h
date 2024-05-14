@@ -32,8 +32,16 @@ private:
 			if(abs(eta)<constants::w_eta_multiplicity_INEL_lg_0) { 
 				Multiplicity_INEL_lg_0=true;
 			}
-			if(this->in_V0M_detector(eta)) { 
-				Multiplicity_V0M++;
+			if(!options.get_flag_CentralityCutsumEt()){
+				if(this->in_V0M_detector(eta)) { 
+					Multiplicity_V0M++;
+				}
+			}else{
+				//For EKRT Centrality cut
+				//summing up all et.
+				//==========================
+				double minijet_et = p.pt;
+				Multiplicity_V0M+=minijet_et;
 			}
 			if(fabs(eta)<constants::etaRangeCMSRidge && p.pt > constants::MomentumMinCMSRidge) { 
 				N_trk_offline_++;
