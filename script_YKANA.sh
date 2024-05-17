@@ -53,12 +53,12 @@
  ##--CentralityCut 2 \
 ./YKANA  \
  -n 10000 \
- -dir /n/work02/yukanaku/mcaa/data/10May2024_wohs_K1.9sat4.0_bfrbug  \
- -outdir CentralityCuts_wsumE0_wohs_K1.9sat4.0_10K_EKRTcut_beforebugfix  \
+ -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
+ -outdir CentralityCutswhs_K2.4sat2.0_10Kof100K_shuffle9  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \
- --CentralityCutsumEt \
+ --shuffle \
  --EKRTformat  \
  --EKRTbinary \
  --xaxis 1 

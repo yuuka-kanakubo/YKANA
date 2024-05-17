@@ -148,14 +148,15 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 			    cout << ":D Shuffling the reading events!  nEventInfo.size():" << (int) nEventInfo.size() 
 				    << "                                  eBye.size()      :" << (int)eBye.size() 
 				    << endl;
-			    auto rng = std::default_random_engine {};
-			    std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
+                            unsigned seed = 123;//Seed is intentionally fixed here
+			    std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), std::default_random_engine(seed));
 
 			    //n_events = options.get_nfile();
 			    //I want to pick up the first n events from the shuffled nEventInfo vector.
 			    //Then I want to delete corresponding elements of eBye to the deleted ones.
 			    //==================================================
-			    std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+			    int nn=0;//Can be changed.
+			    std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin()+options.get_nfile()*nn, nEventInfo.begin()+options.get_nfile()*(nn+1));
 			    vector<EbyeInfo> eBye_picked;
 			    for (int k = 0; k<(int)nEventInfo_picked.size(); k++){
 				    eBye_picked.push_back(eBye[nEventInfo_picked[k].order_reading()]);

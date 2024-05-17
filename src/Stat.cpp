@@ -160,7 +160,7 @@ return B00;
 					//Get standard error
 					//-------------------------------------
 					double var=meanxx-pow(meanx,2.0);
-					double error=sqrt(var/ct->SumWeight);
+					double error=sqrt(var/(ct->SumWeight-1.0));
 					ct->HistErr[i]=error;
 				}
 
