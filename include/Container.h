@@ -1,16 +1,12 @@
 #ifndef CONTAINER
 #define CONTAINER
+#include <iostream>
 #include "Constants.h"
 
-using std::string;
-using std::cout;
-using std::endl;
-using std::vector;
 
 class Container{
  
    private:
-
 
 	   bool flag_SB_CMS;
 
@@ -37,7 +33,7 @@ class Container{
 			double rap;
 			double eta;
 			double phi;
-			string TAG;
+			std::string TAG;
 			double tata;
 			uint_fast16_t ID;
 			uint_fast16_t momID1;
@@ -113,12 +109,12 @@ class Container{
 		public:
 			EventInfo(): weight_(1.0), Nt_(0), Nch_(0), order_reading_(0), Aj_(1.0){};
 			~EventInfo(){
-				vector<ParticleInfo>().swap(part);
-				vector<StepInfo>().swap(step);
+				std::vector<ParticleInfo>().swap(part);
+				std::vector<StepInfo>().swap(step);
 			};
 
-			vector<ParticleInfo> part;
-			vector<StepInfo> step;
+			std::vector<ParticleInfo> part;
+			std::vector<StepInfo> step;
 			void weight(double weight_in){this->weight_=weight_in;}
 			void Nt(int Nt_in){this->Nt_=Nt_in;}
 			void Nch(int Nch_in){this->Nch_=Nch_in;}
@@ -141,9 +137,9 @@ class Container{
 	public:
 
        Container(bool SB_CMS):flag_SB_CMS(SB_CMS),SumWeight(0.0), SumPair(0.0), SumTrig(0.0), CountEv(0), B00(0.0), meanNt(-1.0){
-cout << "Calling Container." << endl;
-	       if(constants::MODE.find("twopc")!=string::npos
-			       || constants::MODE.find("twodm")!=string::npos){
+std::cout << "Calling Container." << std::endl;
+	       if(constants::MODE.find("twopc")!=std::string::npos
+			       || constants::MODE.find("twodm")!=std::string::npos){
 		       Hist2D = new double *[constants::x_cell_capa];
 		       HistSub2D = new double *[constants::x_cell_capa];
 		       Hist2D_x= new double *[constants::x_cell_capa];
@@ -192,7 +188,7 @@ cout << "Calling Container." << endl;
 			       }
 		       }
 
-	       }else if(constants::MODE.find("Rt_yield")!=string::npos){
+	       }else if(constants::MODE.find("Rt_yield")!=std::string::npos){
 		       RtHist_RtTrans_yield = new double *[constants::num_of_Species_Rt];
 		       RtHist_RtToward_yield = new double *[constants::num_of_Species_Rt];
 		       RtHist_RtTrans_yieldyield = new double *[constants::num_of_Species_Rt];
@@ -228,10 +224,10 @@ cout << "Calling Container." << endl;
        };
 
        ~Container(){
-	       cout << "Calling Deconstructore of Container." << endl;
+	       std::cout << "Calling Deconstructore of Container." << std::endl;
 	       //Free each sub-array
-	       if(constants::MODE.find("twopc")!=string::npos
-			       || constants::MODE.find("twodm")!=string::npos){
+	       if(constants::MODE.find("twopc")!=std::string::npos
+			       || constants::MODE.find("twodm")!=std::string::npos){
 		       for(int i = 0; i < constants::x_cell_capa; i++) {
 			       delete[] Hist2D[i];
 			       delete[] HistSub2D[i];
@@ -261,7 +257,7 @@ cout << "Calling Container." << endl;
 		       delete[] Final2DHist;
 		       delete[] Final2DHistSub;
 		       delete[] Final2DHit;
-}else if(constants::MODE.find("Rt_yield")!=string::npos){
+}else if(constants::MODE.find("Rt_yield")!=std::string::npos){
 		       for(int i = 0; i < constants::num_of_Species_Rt; i++) {
 			       delete[] RtHist_RtTrans_yield[i];
 			       delete[] RtHist_RtToward_yield[i];
@@ -345,7 +341,7 @@ cout << "Calling Container." << endl;
 				else if(sp==5) return _cascade;
 				else if(sp==6) return _omega;
 				else {
-					cout << "ERROR :( out of range in get_sp" << sp << endl;
+					std::cout << "ERROR :( out of range in get_sp" << sp << std::endl;
 					exit(1);
 				}
 			}
@@ -359,7 +355,7 @@ cout << "Calling Container." << endl;
 				else if(sp==5) return "cascade";
 				else if(sp==6) return "omega";
 				else {
-					cout << "ERROR :( out of range in get_sp" << sp << endl;
+					std::cout << "ERROR :( out of range in get_sp" << sp << std::endl;
 					exit(1);
 				}
 			}
@@ -383,16 +379,16 @@ cout << "Calling Container." << endl;
 	};
 
 
-	vector<int> Nt_eBye;
-	vector<int> Ntmin_eBye;
-	vector<int> Ntmax_eBye;
-	vector<int> TagEventNum;
-	vector<double> weight_eBye;
-	vector<double> dNdeta_eBye;
-	vector<double> CoreT_eBye;
-	vector<double> CoreN_eBye;
-	vector<yield> TransYield_eBye;
-	vector<yield> TowardYield_eBye;
+	std::vector<int> Nt_eBye;
+	std::vector<int> Ntmin_eBye;
+	std::vector<int> Ntmax_eBye;
+	std::vector<int> TagEventNum;
+	std::vector<double> weight_eBye;
+	std::vector<double> dNdeta_eBye;
+	std::vector<double> CoreT_eBye;
+	std::vector<double> CoreN_eBye;
+	std::vector<yield> TransYield_eBye;
+	std::vector<yield> TowardYield_eBye;
 	double meanNt;
 	double **RtHist_RtTrans_yield;
 	double **RtHist_RtToward_yield;

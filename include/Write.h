@@ -16,6 +16,7 @@ Write(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, 
 ~Write();
 		int getMapEdgeX(const double maxval);
 		int getMapEdgeY(const double maxval);
+		bool write_BSTR(const std::string& fname, const Container& ct);
 		bool write(const std::string& fname, const shared_ptr<Container>& ct);
 		bool write_RtYield(const std::string& fname, const shared_ptr<Container>& ct);
 

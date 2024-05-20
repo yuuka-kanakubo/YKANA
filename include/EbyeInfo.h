@@ -22,7 +22,7 @@ class EbyeInfo{
         bool valid;
         bool valid_assoc;
 	Container::ParticleInfo sample_part;
-	vector<Container::ParticleInfo> sample_partSet;
+	std::vector<Container::ParticleInfo> sample_partSet;
 
 	int orig_eventNum;
 

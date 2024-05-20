@@ -9,7 +9,7 @@ class Rndom{
 private:
 
 	int EVENT_SEED;
-	vector<int> iEv_Cent;
+	std::vector<int> iEv_Cent;
 	bool flag_CentCut;
 
 	public:
@@ -42,11 +42,11 @@ private:
 
 		int get_EVENT_SEED(){return this->EVENT_SEED;}
 
-		void Archive_iEv_Cent(const int iCent, const vector<EbyeInfo> eBye_CentCut){
+		void Archive_iEv_Cent(const int iCent, const std::vector<EbyeInfo> eBye_CentCut){
 
 			//Release memory
 			//=================
-			vector<int>().swap(this->iEv_Cent);
+			std::vector<int>().swap(this->iEv_Cent);
 
 			for(int i=0; i<(int)eBye_CentCut.size(); i++){
 				if(!eBye_CentCut[i].valid) continue;
@@ -62,7 +62,7 @@ private:
 			}
 		}
 
-                vector<int> get_iEv_Cent(){return this->iEv_Cent;}
+                std::vector<int> get_iEv_Cent(){return this->iEv_Cent;}
 
 
 };

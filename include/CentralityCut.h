@@ -160,6 +160,7 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 			    vector<EbyeInfo> eBye_picked;
 			    for (int k = 0; k<(int)nEventInfo_picked.size(); k++){
 				    eBye_picked.push_back(eBye[nEventInfo_picked[k].order_reading()]);
+				    //order_reading() is only used here for shuffling.
 			    }
 			    nEventInfo=nEventInfo_picked;
 			    eBye=eBye_picked;

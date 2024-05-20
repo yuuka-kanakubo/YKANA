@@ -21,8 +21,7 @@
 #include "Stat.h"
 #include "Write.h"
 #include "InfoHist.h"
-
-using namespace std;
+#include "BSTR.h"
 
 
 class Analysis{
@@ -30,13 +29,15 @@ class Analysis{
 	private:
 
 		int PrintCounter;
-		shared_ptr<Util_func> uf;
-		shared_ptr<Message> ms;  
-		shared_ptr<ReadIn> read;
-		shared_ptr<Fill> fill;
-		shared_ptr<Stat> stat;
-		shared_ptr<Write> write;
-		shared_ptr<Rndom> rndom;
+		std::shared_ptr<Util_func> uf;
+		std::shared_ptr<Message> ms;  
+		std::shared_ptr<ReadIn> read;
+		std::shared_ptr<Fill> fill;
+		std::shared_ptr<Stat> stat;
+		std::shared_ptr<Write> write;
+		std::shared_ptr<Rndom> rndom;
+		std::shared_ptr<Container> ctBSTR;
+		std::shared_ptr<BSTR> bstr;
 
 		Options& options;
 		LogSettings& log;
@@ -44,7 +45,7 @@ class Analysis{
 
 		//Maximum value for histgram
 		//-------------------------
-		shared_ptr<InfoHist> infohist;
+		std::shared_ptr<InfoHist> infohist;
 
 	public:
 
@@ -53,12 +54,12 @@ class Analysis{
 			//Random number for thermal parton sampling.
 			//-------------------------------------------
 			srand((unsigned) time(NULL));
-			rndom = make_shared<Rndom>(111);
+			rndom = std::make_shared<Rndom>(111);
 			//rndom = make_shared<Rndom>(rand());
 
-			infohist = make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
-			ms = make_shared<Message>();
-			uf = make_shared<Util_func>(this->rndom);
+			infohist = std::make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
+			ms = std::make_shared<Message>();
+			uf = std::make_shared<Util_func>(this->rndom);
 			if(options.get_flag_HI()){
 				cout << ":) HI option is called.\n  Maximum value of xaxis is adjusted to HI data." << endl;
 				infohist->x_max=constants::x_max_HI;
@@ -69,12 +70,16 @@ class Analysis{
 			if(options.get_flag_set_Ncoeff()){
 				infohist->N_coeff = options.get_Ncoeff();
 			}
-			read = make_shared<ReadIn>(this->ms, this->options);
-			fill = make_shared<Fill>(this->ms, this->options, this->infohist, this->uf);
-			stat = make_shared<Stat>(this->ms, this->options, this->infohist, this->uf);
-			write = make_shared<Write>(this->ms, this->options, this->infohist, this->uf);
+			read = std::make_shared<ReadIn>(this->ms, this->options);
+			fill = std::make_shared<Fill>(this->ms, this->options, this->infohist, this->uf);
+			stat = std::make_shared<Stat>(this->ms, this->options, this->infohist, this->uf);
+			write = std::make_shared<Write>(this->ms, this->options, this->infohist, this->uf);
 			if(constants::MODE.find("timelapse")!=std::string::npos) this->PrintCounter=constants::PrintCounterTL;
 			else this->PrintCounter=constants::PrintCounter;
+			if(options.get_flag_BSTR()) {
+				ctBSTR = std::make_shared<Container>(this->options.get_flag_SB_CMS());
+				bstr = std::make_shared<BSTR>(this->options);
+			}
 
 			this->ana();
 		};
@@ -85,12 +90,16 @@ class Analysis{
 
 
 
-			int ana(){
+		int ana(){
+
+			//To get bootstrap error
+			//======================
+			for(int iBSTR=0; iBSTR<options.get_nBSTR(); iBSTR++){
 
 				//Start Centrality Cut.
 				//-----------------------
 				int nCent=1;
-				vector<EbyeInfo> eBye_CentCut;
+				std::vector<EbyeInfo> eBye_CentCut;
 				std::vector <Container::EventInfo> nEventInfo;//Archive all event info
 				if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
 					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
@@ -105,7 +114,7 @@ class Analysis{
 					//================================
 					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
 
-						vector<EbyeInfo> dmmy;
+						std::vector<EbyeInfo> dmmy;
 						read->readEKRTbinary(nEventInfo, dmmy);
 
 						if(options.get_flag_shuffle()){
@@ -138,7 +147,7 @@ class Analysis{
 					}
 
 
-					auto ct = make_shared<Container>(this->options.get_flag_SB_CMS());
+					auto ct = std::make_shared<Container>(this->options.get_flag_SB_CMS());
 
 
 
@@ -161,12 +170,6 @@ class Analysis{
 						//Centrality cut.
 						//---------------
 						if(options.get_flag_CentralityCut()){
-							//if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
-							//	if(eBye_CentCut[nEventInfo[EV_Count].order_reading()].get_V0M_class()!=iCent) {
-							//		EV_Count++;
-							//		continue;
-							//	}
-								//cout << "nEventInfo[EV_Count].order_reading(): " << nEventInfo[EV_Count].order_reading() << endl;
 							if(eBye_CentCut[EV_Count].get_V0M_class()!=iCent) {
 								EV_Count++;
 								continue;
@@ -323,11 +326,44 @@ class Analysis{
 						stat->stat_RtYield(ct);
 					}else{
 						stat->stat(ct);
+						//Error bar with bootstrap is available only here.
+						if(options.get_flag_BSTR()){
+							bstr->fill_iBSTR(iCent, ct);
+						}
 					}
 
 
 					//Making output directory name
 					//-----------------------------
+					if(!options.get_flag_BSTR()){
+						std::string generated_directory_name;
+						if(options.get_flag_CentralityCut()){
+							if(iCent==0){
+								generated_directory_name=uf->get_output_directory(options.get_out_directory_name());
+								uf->make_output_directory(generated_directory_name);
+							}
+							generated_directory_name=uf->get_output_directory(options.get_out_directory_name()+="/Cent"+options.name_cent[iCent]);
+						}else generated_directory_name=uf->get_output_directory(options.get_out_directory_name()); uf->make_output_directory(generated_directory_name);
+
+
+						//Output
+						//------
+						if(constants::MODE.find("Rt_yield")!=string::npos){
+							if(!write->write_RtYield(generated_directory_name, ct)) return 1;
+						}else {
+							if(!write->write(generated_directory_name, ct)) return 1;
+						}
+						if(!log.archive_settings(generated_directory_name)) return 1;
+					}
+
+				}//Centrality loop
+
+
+			}//Bootstrap loop
+
+			if(options.get_flag_BSTR()){
+				for(int iCent=0; iCent<(int)options.name_cent.size(); iCent++){
+					bstr->stat_iBSTR(iCent);
 					std::string generated_directory_name;
 					if(options.get_flag_CentralityCut()){
 						if(iCent==0){
@@ -335,21 +371,15 @@ class Analysis{
 							uf->make_output_directory(generated_directory_name);
 						}
 						generated_directory_name=uf->get_output_directory(options.get_out_directory_name()+="/Cent"+options.name_cent[iCent]);
-					}else generated_directory_name=uf->get_output_directory(options.get_out_directory_name());
-					uf->make_output_directory(generated_directory_name);
-
+					}else generated_directory_name=uf->get_output_directory(options.get_out_directory_name()); uf->make_output_directory(generated_directory_name);
 
 					//Output
 					//------
-					if(constants::MODE.find("Rt_yield")!=string::npos){
-						if(!write->write_RtYield(generated_directory_name, ct)) return 1;
-					}else {
-						if(!write->write(generated_directory_name, ct)) return 1;
-					}
+					if(!write->write_BSTR(generated_directory_name, bstr->ct_ALL[iCent])) return 1;
 					if(!log.archive_settings(generated_directory_name)) return 1;
+				}
 
-				}//Centrality loop
-
+			}
 
 				return 0;
 			}

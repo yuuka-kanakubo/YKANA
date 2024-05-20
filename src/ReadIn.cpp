@@ -226,6 +226,19 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		cout << "ERROR:( " << __FILE__ << " (" << __LINE__ << ") Trying to get nevent statistics but reading fewer than nevent data. " << options.get_nfile() << endl;
 		exit(EXIT_FAILURE);
 	}
+
+	vector<int> samp(options.get_npickupBSTR());
+	if(options.get_flag_BSTR()){
+		std::random_device rnd_device;
+		mt19937 mersenne_engine {rnd_device()};  // Generates random integers
+		uniform_int_distribution<int> dist {0, options.get_nfile()};
+		auto gen = [&dist, &mersenne_engine](){
+			return dist(mersenne_engine);
+		};
+		generate(begin(samp), end(samp), gen);
+		sort(samp.begin(), samp.end());
+	}
+
 	for (uint64_t i=0; i<n_events; i++){
 		if(fabs((double)i/(double)n_events-pct*0.1)<constants::SMALL){
 			cout << ":)  Loading.... " << pct*10 << "\% " << endl;
@@ -253,6 +266,8 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		bool ATLAS_cut=false;
 		vector<Container::ParticleInfo> part_1ev;
 		//This should be each minijet loop
+		bool BSTR_pickup=false;
+		int isamp=0;
 		for (uint64_t ii=0; ii<n_jets; ii++, n_jet_total++){
 
 
@@ -280,6 +295,20 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 			in.read(reinterpret_cast<char *>(&zb), sizeof zb);
 			in.read(reinterpret_cast<char *>(&a_is_neutron), sizeof a_is_neutron);
 			in.read(reinterpret_cast<char *>(&b_is_neutron), sizeof b_is_neutron);
+
+			if(options.get_flag_BSTR()){
+				if((int)i<samp[isamp]){ 
+					BSTR_pickup=false;
+					continue;
+				}else if((int)i==samp[isamp]){
+					std::cout << "picking up." << i << std::endl;
+					BSTR_pickup=true;
+					isamp++;
+				}else{
+					std::cout << __FILE__ << " " << __LINE__ << " Something should be wrong with picked up random numbers." << std::endl;
+                                        exit(EXIT_FAILURE);
+				}
+			}
 
 			//I will put the information into container
 			//=========================================
@@ -405,8 +434,15 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		if(ATLAS_cut) ebye_oneEvent.ATLAS_cut=true;
 		vector<Container::ParticleInfo>().swap(part_1ev);
 
-		eBye.push_back(ebye_oneEvent);
-		nEventInfo.push_back(oneEventInfo);
+		if(!options.get_flag_BSTR()){
+			eBye.push_back(ebye_oneEvent);
+			nEventInfo.push_back(oneEventInfo);
+		}else{
+			if(BSTR_pickup){
+				eBye.push_back(ebye_oneEvent);
+				nEventInfo.push_back(oneEventInfo);
+			}
+		}
 
 	}//Event loop
 

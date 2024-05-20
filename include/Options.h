@@ -9,23 +9,17 @@
 #include <fstream>
 #include <memory>
 
-using std::cout;
-using std::endl;
-using std::ifstream;
-using std::istringstream;
-using std::ios;
-
 		class Options{
 
 			public:
 				//TODO: MOve this to private
 				//-------------------------
-				vector<double> val_cent;
-				vector<string> name_cent;
-				vector<double> xMin_cstm, xMax_cstm;
+				std::vector<double> val_cent;
+				std::vector<std::string> name_cent;
+				std::vector<double> xMin_cstm, xMax_cstm;
 				double dlty;
 				double Ncoeff;
-				string axis3_inputf;
+				std::string axis3_inputf;
 
 			private:
 
@@ -68,6 +62,9 @@ using std::ios;
 				bool flag_multiplicity_cut;
 				bool flag_vs_Multi;
 				bool shuffle;
+				bool BSTR;
+				int nBSTR;
+				int npickupBSTR;
 				bool flag_CentralityCutsumEt;
 				bool zerofill;
 				bool two_subevent;
@@ -93,17 +90,17 @@ using std::ios;
 
 				void GetBinSettings(){
 
-					cout << "Getting Bin Settings..." << endl;
+					std::cout << "Getting Bin Settings..." << std::endl;
 
-					ifstream in;
-					in.open(axis3_inputf.c_str(),ios::in);
+					std::ifstream in;
+					in.open(axis3_inputf.c_str(),std::ios::in);
 					if(!in) {
-						cout << __FILE__ << " line:"<< __LINE__ << " WARNING:o unable to open file. " << endl;
+						std::cout << __FILE__ << " line:"<< __LINE__ << " WARNING:o unable to open file. " << std::endl;
 						exit(1);
 					}
-					string templine;
+					std::string templine;
 					while(getline(in,templine)) {
-						istringstream ist(templine);
+						std::istringstream ist(templine);
 						double xmin, xmax;
 						ist >> xmin >> xmax;
 						this->xMin_cstm.push_back(xmin);
@@ -124,6 +121,9 @@ using std::ios;
 				void set_beginfile(int n){this->beginfile=n;}
 				void set_flag_specify_startingfile(){this->specify_startingfile=true;}
 				void set_flag_shuffle(){this->shuffle=true;}
+				void set_flag_BSTR(){this->BSTR=true;}
+				void set_nBSTR(int n){this->nBSTR=n;}
+				void set_npickupBSTR(int n){this->npickupBSTR=n;}
 				void set_flag_CentralityCutsumEt(){this->flag_CentralityCutsumEt=true;}
 				void set_dir_name_CentCut(std::string name){this->dir_name_CentCut=name;}
 				void set_f_name_CentCut(std::string name){this->f_name_CentCut=name;}
@@ -132,9 +132,9 @@ using std::ios;
 
 				void set_parton_level_hist(){parton_level=true;};
 				void set_rapidity_shift_hist(){rapidity_shift=true;};
-				void set_flag_high_pt_mode(){high_pt_mode=true; cout << ":o HIGH PT MODE is called. Currently PP7TeV events are assumed. Please change a settings if you are analyzing different energy or system." << endl;};
+				void set_flag_high_pt_mode(){high_pt_mode=true; std::cout << ":o HIGH PT MODE is called. Currently PP7TeV events are assumed. Please change a settings if you are analyzing different energy or system." << std::endl;};
 				void set_flag_zerofill(){zerofill=true;};
-				void set_axis3_input(const string path){axis3_inputf=path;  this->GetBinSettings();}
+				void set_axis3_input(const std::string path){axis3_inputf=path;  this->GetBinSettings();}
 				void set_xaxis_type(const int i){this->axis_type=i;}
 				void set_INEL_lg_0(){cut_INEL_lg_0=true;};
 				void set_trig_3outof3(){trig_3outof3=true;};
@@ -165,7 +165,7 @@ using std::ios;
 				void set_flag_pPb_cm_calculation(){
 					flag_pPb_cm_calculation=true;
 					mid_rapidity_cut_type=2;
-					cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << endl;
+					std::cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << std::endl;
 				}
 				void set_flag_vs_Multi(const int i){this->flag_vs_Multi=true; this->collision_type=i;}
 				void set_modeTL(const int val){this->modeTL=val;}
@@ -199,29 +199,29 @@ using std::ios;
 					CentralityCut=true;
 					collision_type=collision_type_in;
 					if(collision_type==1){
-						cout << ":)Centrality cut for pPb." << endl;
+						std::cout << ":)Centrality cut for pPb." << std::endl;
 					}else if(collision_type==2){
-						cout << ":)Centrality cut for PbPb." << endl;
+						std::cout << ":)Centrality cut for PbPb." << std::endl;
 					}else if(collision_type==3){
-						cout << ":)Centrality cut for pp." << endl;
+						std::cout << ":)Centrality cut for pp." << std::endl;
 					}else if(collision_type==4){
-						cout << ":)Centrality cut for PbPb (wide)." << endl;
+						std::cout << ":)Centrality cut for PbPb (wide)." << std::endl;
 					}else if(collision_type==8){
-						cout << ":)Centrality cut original (narrow)." << endl;
+						std::cout << ":)Centrality cut original (narrow)." << std::endl;
 					}else if(collision_type==9){
-						cout << ":)Centrality cut original." << endl;
+						std::cout << ":)Centrality cut original." << std::endl;
 					}else if(collision_type==101){
-						cout << ":)Centrality cut CMS Ntrk." << endl;
+						std::cout << ":)Centrality cut CMS Ntrk." << std::endl;
 					}else if(collision_type==10){
-						cout << ":)Centrality cut pp 5TeV." << endl;
+						std::cout << ":)Centrality cut pp 5TeV." << std::endl;
 					}else if(collision_type==11){
-						cout << ":)Centrality cut pp 5TeV (Xi)." << endl;
+						std::cout << ":)Centrality cut pp 5TeV (Xi)." << std::endl;
 					}else if(collision_type==12){
-						cout << ":)Centrality cut pp 5TeV (Omega)." << endl;
+						std::cout << ":)Centrality cut pp 5TeV (Omega)." << std::endl;
 					}else{
-						cout << "ERROR:( Something wrong with --CentralityCut. Specify appropriate collision type. ex) --CentralityCut 1" << endl;
-						cout << "        1: pPb, 2:PbPb, 3:pp, 4:PbPb (wide), 8: original(narrow), 9: original " << endl;
-						cout << "        101: pp13TeV (CMS) " << endl;
+						std::cout << "ERROR:( Something wrong with --CentralityCut. Specify appropriate collision type. ex) --CentralityCut 1" << std::endl;
+						std::cout << "        1: pPb, 2:PbPb, 3:pp, 4:PbPb (wide), 8: original(narrow), 9: original " << std::endl;
+						std::cout << "        101: pp13TeV (CMS) " << std::endl;
 						exit(1);
 					}
 				}
@@ -236,7 +236,7 @@ using std::ios;
 					else if(this->modeTL==1) return constants::ext_nameTLxeta;
 					else{
 
-						cout << ":(ERROR Set proper option with -modeTL. 0: xy-plane, 1: xeta-plane." << endl;
+						std::cout << ":(ERROR Set proper option with -modeTL. 0: xy-plane, 1: xeta-plane." << std::endl;
 						exit(1); 
 					}
 				}
@@ -254,6 +254,9 @@ using std::ios;
 				bool get_flag_high_pt_mode()const{return high_pt_mode;};
 				bool get_flag_zerofill()const{return zerofill;};
 				bool get_flag_shuffle()const{return shuffle;};
+				bool get_flag_BSTR()const{return BSTR;};
+				int get_nBSTR()const{return nBSTR;};
+				int get_npickupBSTR()const{return npickupBSTR;};
 				bool get_flag_CentralityCutsumEt()const{return flag_CentralityCutsumEt;};
 				double get_d_longrange_pm()const{return long_range_hist_pm;};
 				double get_d_longrange()const{return long_range_hist_pm*2.0;};
@@ -346,6 +349,9 @@ using std::ios;
 					flag_pPb_cm_calculation(false),
 					flag_multiplicity_cut(false),
 					shuffle(false),
+					BSTR(false),
+					nBSTR(1),
+					npickupBSTR(1),
 					flag_CentralityCutsumEt(false),
 					zerofill(true),
 					two_subevent(false),
