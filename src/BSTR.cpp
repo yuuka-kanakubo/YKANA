@@ -1,7 +1,7 @@
 #include "BSTR.h"
 
 void BSTR::fill_iBSTR(const int iCent, std::shared_ptr<Container>& ct_in){
-
+std::cout << "In BSTR filling " << iCent << std::endl;
 	Container& ct = this->ct_ALL[iCent];
 	std::cout << __FILE__ << "  Filling to BSTR: " << ct.SumWeight << std::endl;
         ct.max_nx = ct_in->max_nx;

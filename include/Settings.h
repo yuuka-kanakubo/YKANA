@@ -73,7 +73,6 @@ class Settings{
 				else if(!strcmp(argv[i],"--high_pt_mode")){options.set_flag_high_pt_mode();}
 				else if(!strcmp(argv[i],"--shuffle")){options.set_flag_shuffle();}
 				else if(!strcmp(argv[i],"--BSTR")){options.set_flag_BSTR(); options.set_nBSTR(atoi(argv[i+1]));}
-				else if(!strcmp(argv[i],"--npickup_BSTR")){options.set_npickupBSTR(atoi(argv[i+1]));}
 				else if(!strcmp(argv[i],"--CentralityCutsumEt")){options.set_flag_CentralityCutsumEt();}
 				else if(!strcmp(argv[i],"--pPb_cm")){options.set_flag_pPb_cm_calculation();}
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1
@@ -117,6 +116,70 @@ class Settings{
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;
 					cout << "ERROR:( There is no such an option: " << opt_in << endl; 
+					exit(1);
+				}
+			}
+
+			if(options.get_flag_CentralityCut()){
+				if(options.get_collision_type()==1){
+					for(int i=0; i<7; ++i){ 
+						options.val_cent.push_back(constants::val_cent_pPb[i]); 
+						options.name_cent.push_back(constants::name_cent_pPb[i]);
+					}
+				}else if(options.get_collision_type()==2){
+					for(int i=0; i<11; ++i){ 
+						options.val_cent.push_back(constants::val_cent_PbPb[i]); 
+						options.name_cent.push_back(constants::name_cent_PbPb[i]);
+					}
+				}else if(options.get_collision_type()==4){
+					for(int i=0; i<7; ++i){ 
+						options.val_cent.push_back(constants::val_cent_PbPb_wide[i]); 
+						options.name_cent.push_back(constants::name_cent_PbPb_wide[i]);
+					}
+				}else if(options.get_collision_type()==3){
+					for(int i=0; i<10; ++i){ 
+						options.val_cent.push_back(constants::val_cent_pp[i]); 
+						options.name_cent.push_back(constants::name_cent_pp[i]);
+					}
+
+				}else if(options.get_collision_type()==8){
+					for(int i=0; i<10; ++i){ 
+						options.val_cent.push_back(constants::val_cent_original_narrow[i]); 
+						options.name_cent.push_back(constants::name_cent_original_narrow[i]);
+					}
+
+				}else if(options.get_collision_type()==9){
+					for(int i=0; i<4; ++i){ 
+						options.val_cent.push_back(constants::val_cent_original[i]); 
+						options.name_cent.push_back(constants::name_cent_original[i]);
+					}
+
+				}else if(options.get_collision_type()==101){
+					for(int i=0; i<13; ++i){ 
+						options.val_cent.push_back(constants::val_NtrkClass_pp[i]); 
+						options.name_cent.push_back(constants::name_NtrkClass_pp[i]);
+					}
+
+				}else if(options.get_collision_type()==10){
+					for(int i=0; i<11; ++i){ 
+						options.val_cent.push_back(constants::val_cent_pp5[i]); 
+						options.name_cent.push_back(constants::name_cent_pp5[i]);
+					}
+
+				}else if(options.get_collision_type()==11){
+					for(int i=0; i<11; ++i){ 
+						options.val_cent.push_back(constants::val_cent_pp5_Xi[i]); 
+						options.name_cent.push_back(constants::name_cent_pp5_Xi[i]);
+					}
+
+				}else if(options.get_collision_type()==12){
+					for(int i=0; i<7; ++i){ 
+						options.val_cent.push_back(constants::val_cent_pp5_Omega[i]); 
+						options.name_cent.push_back(constants::name_cent_pp5_Omega[i]);
+					}
+
+				}else{
+					cout << "ERROR:( no such a collision type " << options.get_collision_type() << endl;
 					exit(1);
 				}
 			}

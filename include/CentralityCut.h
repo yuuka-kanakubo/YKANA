@@ -13,67 +13,6 @@ public:
 	CentralityCut(vector<EbyeInfo>& eBye_in, vector<Container::EventInfo>& nEventInfo, Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
 		cout << ":)Start analysis for centrality cut." << endl;
 
-			if(options.get_collision_type()==1){
-				for(int i=0; i<7; ++i){ 
-					options.val_cent.push_back(constants::val_cent_pPb[i]); 
-					options.name_cent.push_back(constants::name_cent_pPb[i]);
-				}
-			}else if(options.get_collision_type()==2){
-				for(int i=0; i<11; ++i){ 
-					options.val_cent.push_back(constants::val_cent_PbPb[i]); 
-					options.name_cent.push_back(constants::name_cent_PbPb[i]);
-				}
-			}else if(options.get_collision_type()==4){
-				for(int i=0; i<7; ++i){ 
-					options.val_cent.push_back(constants::val_cent_PbPb_wide[i]); 
-					options.name_cent.push_back(constants::name_cent_PbPb_wide[i]);
-				}
-			}else if(options.get_collision_type()==3){
-				for(int i=0; i<10; ++i){ 
-					options.val_cent.push_back(constants::val_cent_pp[i]); 
-					options.name_cent.push_back(constants::name_cent_pp[i]);
-				}
-
-			}else if(options.get_collision_type()==8){
-				for(int i=0; i<10; ++i){ 
-					options.val_cent.push_back(constants::val_cent_original_narrow[i]); 
-					options.name_cent.push_back(constants::name_cent_original_narrow[i]);
-				}
-
-			}else if(options.get_collision_type()==9){
-				for(int i=0; i<4; ++i){ 
-					options.val_cent.push_back(constants::val_cent_original[i]); 
-					options.name_cent.push_back(constants::name_cent_original[i]);
-				}
-
-			}else if(options.get_collision_type()==101){
-				for(int i=0; i<13; ++i){ 
-					options.val_cent.push_back(constants::val_NtrkClass_pp[i]); 
-					options.name_cent.push_back(constants::name_NtrkClass_pp[i]);
-				}
-
-			}else if(options.get_collision_type()==10){
-				for(int i=0; i<11; ++i){ 
-					options.val_cent.push_back(constants::val_cent_pp5[i]); 
-					options.name_cent.push_back(constants::name_cent_pp5[i]);
-				}
-
-			}else if(options.get_collision_type()==11){
-				for(int i=0; i<11; ++i){ 
-					options.val_cent.push_back(constants::val_cent_pp5_Xi[i]); 
-					options.name_cent.push_back(constants::name_cent_pp5_Xi[i]);
-				}
-
-			}else if(options.get_collision_type()==12){
-				for(int i=0; i<7; ++i){ 
-					options.val_cent.push_back(constants::val_cent_pp5_Omega[i]); 
-					options.name_cent.push_back(constants::name_cent_pp5_Omega[i]);
-				}
-
-			}else{
-				cout << "ERROR:( no such a collision type " << options.get_collision_type() << endl;
-				exit(1);
-			}
 
 
 			this->read_events(nEventInfo);
@@ -139,7 +78,8 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 	    }
 	    else// EKRT binary files are input then get vector of eBye[nev] in the following.
 	    {
-		    read->readEKRTbinary(nEventInfo, eBye);
+		    if(!options.get_flag_BSTR() || (options.get_flag_BSTR() && options.get_current_iBSTR()==0))
+			    read->readEKRTbinary(nEventInfo, eBye);
 
 		    if(options.get_flag_shuffle()){
 
@@ -148,8 +88,9 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 			    cout << ":D Shuffling the reading events!  nEventInfo.size():" << (int) nEventInfo.size() 
 				    << "                                  eBye.size()      :" << (int)eBye.size() 
 				    << endl;
-                            unsigned seed = 123;//Seed is intentionally fixed here
-			    std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), std::default_random_engine(seed));
+                            //unsigned seed = 123;//Seed is intentionally fixed here
+                            std::random_device rnd_device;
+			    std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), mt19937(rnd_device()));
 
 			    //n_events = options.get_nfile();
 			    //I want to pick up the first n events from the shuffled nEventInfo vector.
@@ -160,7 +101,7 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 			    vector<EbyeInfo> eBye_picked;
 			    for (int k = 0; k<(int)nEventInfo_picked.size(); k++){
 				    eBye_picked.push_back(eBye[nEventInfo_picked[k].order_reading()]);
-				    //order_reading() is only used here for shuffling.
+				    //order_reading() is only used here for shuffling. This should be the nth events which is read by this event and archived as nth component of eBye.
 			    }
 			    nEventInfo=nEventInfo_picked;
 			    eBye=eBye_picked;

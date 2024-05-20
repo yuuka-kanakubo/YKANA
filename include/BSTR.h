@@ -17,6 +17,7 @@ public:
 					Container ct_iBSTR(this->options.get_flag_SB_CMS());
 					ct_ALL.push_back(ct_iBSTR);
 		}
+                std::cout << "size of ct_ALL " << (int) ct_ALL.size() << std::endl;
 	};
 	~BSTR(){};
 

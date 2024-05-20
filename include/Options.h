@@ -64,7 +64,7 @@
 				bool shuffle;
 				bool BSTR;
 				int nBSTR;
-				int npickupBSTR;
+				int current_iBSTR;
 				bool flag_CentralityCutsumEt;
 				bool zerofill;
 				bool two_subevent;
@@ -123,7 +123,7 @@
 				void set_flag_shuffle(){this->shuffle=true;}
 				void set_flag_BSTR(){this->BSTR=true;}
 				void set_nBSTR(int n){this->nBSTR=n;}
-				void set_npickupBSTR(int n){this->npickupBSTR=n;}
+				void set_current_iBSTR(int n){this->current_iBSTR=n;}
 				void set_flag_CentralityCutsumEt(){this->flag_CentralityCutsumEt=true;}
 				void set_dir_name_CentCut(std::string name){this->dir_name_CentCut=name;}
 				void set_f_name_CentCut(std::string name){this->f_name_CentCut=name;}
@@ -256,7 +256,7 @@
 				bool get_flag_shuffle()const{return shuffle;};
 				bool get_flag_BSTR()const{return BSTR;};
 				int get_nBSTR()const{return nBSTR;};
-				int get_npickupBSTR()const{return npickupBSTR;};
+				int get_current_iBSTR()const{return current_iBSTR;};
 				bool get_flag_CentralityCutsumEt()const{return flag_CentralityCutsumEt;};
 				double get_d_longrange_pm()const{return long_range_hist_pm;};
 				double get_d_longrange()const{return long_range_hist_pm*2.0;};
@@ -351,7 +351,7 @@
 					shuffle(false),
 					BSTR(false),
 					nBSTR(1),
-					npickupBSTR(1),
+					current_iBSTR(0),
 					flag_CentralityCutsumEt(false),
 					zerofill(true),
 					two_subevent(false),

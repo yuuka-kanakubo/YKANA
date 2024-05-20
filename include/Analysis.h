@@ -36,7 +36,6 @@ class Analysis{
 		std::shared_ptr<Stat> stat;
 		std::shared_ptr<Write> write;
 		std::shared_ptr<Rndom> rndom;
-		std::shared_ptr<Container> ctBSTR;
 		std::shared_ptr<BSTR> bstr;
 
 		Options& options;
@@ -77,7 +76,6 @@ class Analysis{
 			if(constants::MODE.find("timelapse")!=std::string::npos) this->PrintCounter=constants::PrintCounterTL;
 			else this->PrintCounter=constants::PrintCounter;
 			if(options.get_flag_BSTR()) {
-				ctBSTR = std::make_shared<Container>(this->options.get_flag_SB_CMS());
 				bstr = std::make_shared<BSTR>(this->options);
 			}
 
@@ -95,6 +93,8 @@ class Analysis{
 			//To get bootstrap error
 			//======================
 			for(int iBSTR=0; iBSTR<options.get_nBSTR(); iBSTR++){
+				options.set_current_iBSTR(iBSTR);
+				std::cout << ":D iBSTR -- " << iBSTR << std::endl;
 
 				//Start Centrality Cut.
 				//-----------------------
@@ -118,8 +118,8 @@ class Analysis{
 						read->readEKRTbinary(nEventInfo, dmmy);
 
 						if(options.get_flag_shuffle()){
-							auto rng = std::default_random_engine {};
-							std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), rng);
+							std::random_device rnd_device;
+							std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), mt19937(rnd_device()));
 							std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
 							nEventInfo=nEventInfo_picked;
 							std::vector<Container::EventInfo>().swap(nEventInfo_picked);
