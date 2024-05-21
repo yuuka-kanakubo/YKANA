@@ -37,6 +37,7 @@ class Analysis{
 		std::shared_ptr<Write> write;
 		std::shared_ptr<Rndom> rndom;
 		std::shared_ptr<BSTR> bstr;
+		std::vector<Container> ct_ALL;
 
 		Options& options;
 		LogSettings& log;
@@ -77,9 +78,13 @@ class Analysis{
 			else this->PrintCounter=constants::PrintCounter;
 			if(options.get_flag_BSTR()) {
 				bstr = std::make_shared<BSTR>(this->options);
+				for(int iCent=0; iCent<(int)options.name_cent.size(); iCent++){
+							ct_ALL.emplace_back(this->options.get_flag_SB_CMS());
+				}
 			}
 
 			this->ana();
+
 		};
 		~Analysis(){};
 
@@ -90,45 +95,51 @@ class Analysis{
 
 		int ana(){
 
+
+			//Start Centrality Cut.
+			//-----------------------
+			int nCent=1;
+			std::vector<EbyeInfo> eBye_CentCut;
+			std::vector <Container::EventInfo> nEventInfo;//Archive all event info
+			if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
+				CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
+				CentCut.ClassifyCentrality();
+				if(!options.get_flag_vs_Multi()) nCent=(int)options.name_cent.size();
+			}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
+				CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
+			}else{
+
+				//Read binary filne and archive all
+				//minijets info from all events.
+				//================================
+				if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+
+					std::vector<EbyeInfo> dmmy;
+					read->readEKRTbinary(nEventInfo, dmmy);
+
+					if(options.get_flag_shuffle()){
+						std::random_device rnd_device;
+						std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), mt19937(rnd_device()));
+						std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+						nEventInfo=nEventInfo_picked;
+						std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+					}else if((int)nEventInfo.size()>(int)options.get_nfile()){
+						cout << "Input has " << (int)nEventInfo.size() << " events but I am going to analyse " 
+							<< (int)options.get_nfile() << " events." << endl;
+						std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+						nEventInfo=nEventInfo_picked;
+						std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+					}
+
+				}
+
+			}
+
 			//To get bootstrap error
 			//======================
 			for(int iBSTR=0; iBSTR<options.get_nBSTR(); iBSTR++){
 				options.set_current_iBSTR(iBSTR);
 				std::cout << ":D iBSTR -- " << iBSTR << std::endl;
-
-				//Start Centrality Cut.
-				//-----------------------
-				int nCent=1;
-				std::vector<EbyeInfo> eBye_CentCut;
-				std::vector <Container::EventInfo> nEventInfo;//Archive all event info
-				if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
-					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
-					CentCut.ClassifyCentrality();
-					if(!options.get_flag_vs_Multi()) nCent=(int)options.name_cent.size();
-				}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
-					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
-				}else{
-
-					//Read binary filne and archive all
-					//minijets info from all events.
-					//================================
-					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
-
-						std::vector<EbyeInfo> dmmy;
-						read->readEKRTbinary(nEventInfo, dmmy);
-
-						if(options.get_flag_shuffle()){
-							std::random_device rnd_device;
-							std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), mt19937(rnd_device()));
-							std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
-							nEventInfo=nEventInfo_picked;
-							std::vector<Container::EventInfo>().swap(nEventInfo_picked);
-						}//shuffle
-
-					}
-
-				}
-
 
 				//Centrality Loop
 				for(int iCent=0; iCent<nCent; iCent++){
@@ -310,6 +321,7 @@ class Analysis{
 
 					}//Event loop
 
+
 					if(constants::MODE.find("cumulant_eta")!=string::npos || constants::MODE.find("cumulant_multi")!=string::npos || constants::MODE.find("cumulant_pt")!=string::npos){ 
 						stat->stat_flow(ct);
 					}else if(constants::MODE.find("JET_PRAC")!=string::npos){
@@ -328,7 +340,7 @@ class Analysis{
 						stat->stat(ct);
 						//Error bar with bootstrap is available only here.
 						if(options.get_flag_BSTR()){
-							bstr->fill_iBSTR(iCent, ct);
+							bstr->fill_iBSTR(iCent, ct, ct_ALL[iCent]);
 						}
 					}
 
@@ -356,14 +368,15 @@ class Analysis{
 						if(!log.archive_settings(generated_directory_name)) return 1;
 					}
 
+				std::cout << std::endl;
 				}//Centrality loop
 
-
+				std::cout << std::endl;
 			}//Bootstrap loop
 
 			if(options.get_flag_BSTR()){
 				for(int iCent=0; iCent<(int)options.name_cent.size(); iCent++){
-					bstr->stat_iBSTR(iCent);
+					bstr->stat_iBSTR(this->ct_ALL[iCent]);
 					std::string generated_directory_name;
 					if(options.get_flag_CentralityCut()){
 						if(iCent==0){
@@ -375,7 +388,7 @@ class Analysis{
 
 					//Output
 					//------
-					if(!write->write_BSTR(generated_directory_name, bstr->ct_ALL[iCent])) return 1;
+					if(!write->write_BSTR(generated_directory_name, this->ct_ALL[iCent])) return 1;
 					if(!log.archive_settings(generated_directory_name)) return 1;
 				}
 

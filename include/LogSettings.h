@@ -39,7 +39,6 @@ void save_BinSettings(const vector<double> xMin, const vector<double> xMax){
 		    BinSettings_str.push_back("");
 	    }
 
-cout << "Saved bin settings " << (int)BinSettings_str.size() << endl;
 
 }
 
@@ -79,7 +78,6 @@ bool archive_settings(const string output_directory_name){
     ofs.open(output_directory_name+"/"+constants::settings_outputfname,ios::in|ios::app);
     for(int i=0; i<(int)templine_set.size(); ++i)
 	    ofs << templine_set[i] << endl;
-    cout << __FILE__ << "log " << get_BinSettings_size() << endl;
     for(int i=0; i<(int)BinSettings_str.size(); ++i){
 	    ofs << BinSettings_str[i] << endl;
     }

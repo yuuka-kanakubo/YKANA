@@ -1,25 +1,20 @@
 #include "BSTR.h"
 
-void BSTR::fill_iBSTR(const int iCent, std::shared_ptr<Container>& ct_in){
-std::cout << "In BSTR filling " << iCent << std::endl;
-	Container& ct = this->ct_ALL[iCent];
-	std::cout << __FILE__ << "  Filling to BSTR: " << ct.SumWeight << std::endl;
-        ct.max_nx = ct_in->max_nx;
-	for(int i=0; i<ct.max_nx+1; ++i){
+void BSTR::fill_iBSTR(const int iCent, std::shared_ptr<Container>& ct_in, Container& ct_ALL_BSTRarchive){
+	ct_ALL_BSTRarchive.max_nx = ct_in->max_nx;
+	for(int i=0; i<ct_ALL_BSTRarchive.max_nx+1; ++i){
 		//Summing up iBSTR
 		//================
-		ct.FinalHist[i] += ct_in->FinalHist[i];
-		ct.Hist_x[i] += ct_in->Hist_x[i];
-		ct.HistHist[i] += pow(ct_in->FinalHist[i], 2);
+		ct_ALL_BSTRarchive.FinalHist[i] += ct_in->FinalHist[i];
+		ct_ALL_BSTRarchive.Hist_x[i] += ct_in->Hist_x[i];
+		ct_ALL_BSTRarchive.HistHist[i] += pow(ct_in->FinalHist[i], 2);
 	}
 
 	return;
 }
 
-void BSTR::stat_iBSTR(const int iCent){
+void BSTR::stat_iBSTR(Container& ct){
 
-	Container& ct = this->ct_ALL[iCent];
-	std::cout << __FILE__ << "  Stat with nBSTR: " << this->nBSTR << std::endl;
 	for(int i=0; i<ct.max_nx+1; ++i){
 		//Summing up iBSTR
 		//================

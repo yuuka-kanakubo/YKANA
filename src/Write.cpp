@@ -36,7 +36,6 @@ Write::~Write(){};
 bool Write::write_BSTR(const std::string& fname, const Container& ct){
 	std::ofstream ofs;
 	ofs.open((fname+"/"+constants::default_out_fname).c_str());
-	std::cout <<"write" << std::endl;
 	if(!ofs){ms->open(fname+"/"+constants::default_out_fname); return false;}
 
 	for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
@@ -57,7 +56,6 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 			bool Write::write(const std::string& fname, const shared_ptr<Container>& ct){
 				std::ofstream ofs;
 				ofs.open((fname+"/"+constants::default_out_fname).c_str());
-				std::cout <<"write" << std::endl;
 				if(!ofs){ms->open(fname+"/"+constants::default_out_fname); return false;}
 
 				ct->max_nx+=constants::margin;
@@ -141,7 +139,6 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 
 
 			bool Write::write_RtYield(const std::string& fname, const shared_ptr<Container>& ct){
-				std::cout <<"writeRt" << std::endl;
 				Container::yield spname;
 				for(int sp=0; sp<constants::num_of_Species_Rt; sp++){
 					//Make output file

@@ -137,7 +137,7 @@ class Container{
 	public:
 
        Container(bool SB_CMS):flag_SB_CMS(SB_CMS),SumWeight(0.0), SumPair(0.0), SumTrig(0.0), CountEv(0), B00(0.0), meanNt(-1.0){
-std::cout << "Calling Container." << std::endl;
+	       //std::cout << "Calling Container." << std::endl;
 	       if(constants::MODE.find("twopc")!=std::string::npos
 			       || constants::MODE.find("twodm")!=std::string::npos){
 		       Hist2D = new double *[constants::x_cell_capa];
@@ -224,7 +224,7 @@ std::cout << "Calling Container." << std::endl;
        };
 
        ~Container(){
-	       std::cout << "Calling Deconstructore of Container." << std::endl;
+	       //std::cout << "Calling Deconstructore of Container." << std::endl;
 	       //Free each sub-array
 	       if(constants::MODE.find("twopc")!=std::string::npos
 			       || constants::MODE.find("twodm")!=std::string::npos){

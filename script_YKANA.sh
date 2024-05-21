@@ -53,14 +53,15 @@
  ## --CentralityCut 2 \
  ## -n 10000 \
  ## --shuffle \
+ ## --BSTR 5 \
 ./YKANA  \
- -n 10 \
+ -n 10000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
  -outdir CentralityCutswhs_K2.4sat2.0_10Kof100K_10BSTR  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \
- --BSTR 5 \
+ --BSTR 10 \
  --EKRTformat  \
  --EKRTbinary \
  --xaxis 1 

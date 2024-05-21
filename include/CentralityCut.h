@@ -13,15 +13,11 @@ public:
 	CentralityCut(vector<EbyeInfo>& eBye_in, vector<Container::EventInfo>& nEventInfo, Options& options_in, shared_ptr<Rndom>& rndom_in):eBye(eBye_in), options(options_in), rndom(rndom_in){
 		cout << ":)Start analysis for centrality cut." << endl;
 
-
-
 			this->read_events(nEventInfo);
-
 
 	}
 
          void ClassifyCentrality(){
-
 
 
 			Classification* ev_cl=new Classification(eBye, options);
@@ -81,7 +77,7 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 		    if(!options.get_flag_BSTR() || (options.get_flag_BSTR() && options.get_current_iBSTR()==0))
 			    read->readEKRTbinary(nEventInfo, eBye);
 
-		    if(options.get_flag_shuffle()){
+		    if(options.get_flag_shuffle() || options.get_flag_BSTR()){
 
 			    //Shuffle!
 			    //=======
@@ -111,7 +107,21 @@ void read_events(vector<Container::EventInfo>& nEventInfo){
 				    << "                                  eBye.size()      :" << (int)eBye.size() 
 				    << endl;
 
-		    }//shuffle
+		    }else if((int)nEventInfo.size()>(int)options.get_nfile()){
+			    cout << "Input has " << (int)nEventInfo.size() << " events but I am going to analyse " << (int)options.get_nfile() << " events." << endl;
+			    std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+			    vector<EbyeInfo> eBye_picked;
+			    for (int k = 0; k<(int)nEventInfo_picked.size(); k++){
+				    eBye_picked.push_back(eBye[nEventInfo_picked[k].order_reading()]);
+				    //order_reading() is only used here for shuffling. This should be the nth events which is read by this event and archived as nth component of eBye.
+			    }
+			    nEventInfo=nEventInfo_picked;
+			    eBye=eBye_picked;
+			    std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+			    std::vector<EbyeInfo>().swap(eBye_picked);
+		    }
+
+
 	    }
 	}
 
