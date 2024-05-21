@@ -32,12 +32,13 @@
 ## --EKRTbinary > log/$2YKANA.log 
 
 ./YKANA  \
- -n 100000 \
+ -n 10000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
- -outdir CentralityCutwhs_K2.4sat2.0_100000  \
+ -outdir CentralityCutswhs_K2.4sat2.0_10Kof100K_10BSTR  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \
+ --BSTR 10 \
  --EKRTformat  \
  --EKRTbinary \
  --xaxis 1 

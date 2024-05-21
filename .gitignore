@@ -4,5 +4,6 @@ error*
 data/
 build/
 *.o
+*.out
 log/
 YKANA
