@@ -38,10 +38,8 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 	ofs.open((fname+"/"+constants::default_out_fname).c_str());
 	if(!ofs){ms->open(fname+"/"+constants::default_out_fname); return false;}
 
-	for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
-		if(ct.HistHit[i]==0) continue;
-		double x_axis =ct.Hist_x[i];
-		ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
+	for(int i=0; i<ct.max_nx; ++i){
+		ofs << setw(16) << fixed << setprecision(8) << ct.Hist_x[i] << "  "
 			<< setw(16) << ct.FinalHist[i] << "  "
 			<< setw(16) << ct.HistErr[i] << "  "
 			<< setw(16) << ct.HistHit[i] << std::endl;

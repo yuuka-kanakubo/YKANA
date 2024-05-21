@@ -38,6 +38,8 @@ class Analysis{
 		std::shared_ptr<Rndom> rndom;
 		std::shared_ptr<BSTR> bstr;
 		std::vector<Container> ct_ALL;
+		std::vector<Container::EventInfo> nEventInfo_for_BSTR;
+		std::vector<EbyeInfo> eBye_CentCut_for_BSTR;
 
 		Options& options;
 		LogSettings& log;
@@ -46,6 +48,57 @@ class Analysis{
 		//Maximum value for histgram
 		//-------------------------
 		std::shared_ptr<InfoHist> infohist;
+
+		void shuffling_or_takeout_nevents(vector<Container::EventInfo>& nEventInfo, vector<EbyeInfo>& eBye){
+
+			if(options.get_flag_shuffle() || options.get_flag_BSTR()){
+
+				//Shuffle!
+				//=======
+				cout << ":D Shuffling the reading events!  nEventInfo.size():" << (int) nEventInfo.size() 
+					<< ",  eBye.size():" << (int)eBye.size() 
+					<< endl;
+				std::random_device rnd_device;
+				std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), mt19937(rnd_device()));
+
+				//I want to pick up the first n events from the shuffled nEventInfo vector.
+				//Then I want to delete corresponding elements of eBye to the deleted ones.
+				//==================================================
+				int Ndiscard = (int)nEventInfo.size() - options.get_nfile();
+				nEventInfo.erase(nEventInfo.begin(), nEventInfo.begin()+Ndiscard);
+				if(options.get_flag_CentralityCut()){
+					vector<EbyeInfo> eBye_picked;
+					for (int k = 0; k<(int)nEventInfo.size(); k++){
+						eBye_picked.push_back(eBye[nEventInfo[k].order_reading()]);
+						//order_reading() is only used here for shuffling. This should be the nth events which is read by this event and archived as nth component of eBye.
+				    }
+				    eBye=eBye_picked;
+				    std::vector<EbyeInfo>().swap(eBye_picked);
+				}
+				cout << ":D After Shuffling the reading events!  nEventInfo.size():" << (int) nEventInfo.size() 
+				    << ", eBye.size():" << (int)eBye.size() 
+				    << endl;
+
+		    }else if((int)nEventInfo.size()>(int)options.get_nfile()){
+			    cout << "Input has " << (int)nEventInfo.size() << " events but I am going to analyse " << (int)options.get_nfile() << " events." << endl;
+			    std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
+			    if(options.get_flag_CentralityCut()){
+				    vector<EbyeInfo> eBye_picked;
+				    for (int k = 0; k<(int)nEventInfo_picked.size(); k++){
+					    eBye_picked.push_back(eBye[nEventInfo_picked[k].order_reading()]);
+					    //order_reading() is only used here for shuffling. This should be the nth events which is read by this event and archived as nth component of eBye.
+				    }
+				    eBye=eBye_picked;
+				    std::vector<EbyeInfo>().swap(eBye_picked);
+			    }
+			    nEventInfo=nEventInfo_picked;
+			    std::vector<Container::EventInfo>().swap(nEventInfo_picked);
+		    }
+
+			return;
+		}
+
+
 
 	public:
 
@@ -96,57 +149,76 @@ class Analysis{
 		int ana(){
 
 
-			//Start Centrality Cut.
-			//-----------------------
-			int nCent=1;
-			std::vector<EbyeInfo> eBye_CentCut;
-			std::vector <Container::EventInfo> nEventInfo;//Archive all event info
-			if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
-				CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
-				CentCut.ClassifyCentrality();
-				if(!options.get_flag_vs_Multi()) nCent=(int)options.name_cent.size();
-			}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
-				CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
-			}else{
-
-				//Read binary filne and archive all
-				//minijets info from all events.
-				//================================
-				if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
-
-					std::vector<EbyeInfo> dmmy;
-					read->readEKRTbinary(nEventInfo, dmmy);
-
-					if(options.get_flag_shuffle()){
-						std::random_device rnd_device;
-						std::shuffle(std::begin(nEventInfo), std::end(nEventInfo), mt19937(rnd_device()));
-						std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
-						nEventInfo=nEventInfo_picked;
-						std::vector<Container::EventInfo>().swap(nEventInfo_picked);
-					}else if((int)nEventInfo.size()>(int)options.get_nfile()){
-						cout << "Input has " << (int)nEventInfo.size() << " events but I am going to analyse " 
-							<< (int)options.get_nfile() << " events." << endl;
-						std::vector<Container::EventInfo> nEventInfo_picked(nEventInfo.begin(), nEventInfo.begin()+options.get_nfile());
-						nEventInfo=nEventInfo_picked;
-						std::vector<Container::EventInfo>().swap(nEventInfo_picked);
-					}
-
-				}
-
-			}
-
 			//To get bootstrap error
 			//======================
 			for(int iBSTR=0; iBSTR<options.get_nBSTR(); iBSTR++){
 				options.set_current_iBSTR(iBSTR);
-				std::cout << ":D iBSTR -- " << iBSTR << std::endl;
+				if(options.get_flag_BSTR()){
+					std::cout << "BSTRBSTRBSTRBSTRBSTRBSTRBSTRBSTRBSTR" << iBSTR << std::endl;
+					std::cout << ":D iBSTR -- " << iBSTR << std::endl;
+				}
+
+				//Start Centrality Cut.
+				//-----------------------
+				int nCent=1;
+				std::vector<EbyeInfo> eBye_CentCut;
+				std::vector <Container::EventInfo> nEventInfo;//Archive all event info
+				if(options.get_flag_CentralityCut() || options.get_flag_vs_Multi()){
+					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
+					if(options.get_flag_BSTR()){
+						if(options.get_current_iBSTR()==0){
+							//Archiving data that I initially read.
+							//For BSTR, I pick up nevents from (int)nEventInfo_for_BSTR.size().
+							//I need to archieve the information because nEventInfo size will be reduced to nevents
+							//for analysis.
+							//===============================================================
+							this->nEventInfo_for_BSTR=CentCut.get_nEventInfo();
+							this->eBye_CentCut_for_BSTR=CentCut.get_eBye_CentCut();
+						}else{
+							nEventInfo = this->nEventInfo_for_BSTR;
+							eBye_CentCut = this->eBye_CentCut_for_BSTR;
+						}
+					}
+
+					this->shuffling_or_takeout_nevents(nEventInfo, eBye_CentCut);
+					CentCut.ClassifyCentrality(eBye_CentCut);
+
+					if(!options.get_flag_vs_Multi()) nCent=(int)options.name_cent.size();
+				}else if(!options.get_flag_CentralityCut() && this->options.get_flag_SB_CMS()){
+					CentralityCut CentCut(eBye_CentCut, nEventInfo, options, this->rndom);
+				}else{
+
+					//Read binary filne and archive all
+					//minijets info from all events.
+					//No centrality cut but since it is one file input, 
+					//I need to read all events before event loop.
+					//================================
+					if(options.get_flag_EKRTformat() && options.get_flag_EKRTbinary()){
+						std::vector<EbyeInfo> dmmy;
+						if(!options.get_flag_BSTR() || (options.get_flag_BSTR() && options.get_current_iBSTR()==0)){
+							read->readEKRTbinary(nEventInfo, dmmy);
+							//copy nEVentInfo for BSTR
+							if(options.get_flag_BSTR()){
+								if(options.get_current_iBSTR()==0){
+									this->nEventInfo_for_BSTR = nEventInfo;
+								}else{
+									nEventInfo = this->nEventInfo_for_BSTR;
+								}
+							}
+						}
+
+						this->shuffling_or_takeout_nevents(nEventInfo, dmmy);
+
+					}//TODO: implement shuffling for nonEKRTbinary format as well.
+
+				}
+
 
 				//Centrality Loop
 				for(int iCent=0; iCent<nCent; iCent++){
 
 					if(options.get_flag_CentralityCut()){
 						cout << ":)Start analyzing centrality " << options.name_cent[iCent] << "." << endl;
-						cout << "                               --> " << iCent << " in " << nCent << endl;
 					}
 
 					//Archive event numbering.
@@ -340,7 +412,7 @@ class Analysis{
 						stat->stat(ct);
 						//Error bar with bootstrap is available only here.
 						if(options.get_flag_BSTR()){
-							bstr->fill_iBSTR(iCent, ct, ct_ALL[iCent]);
+							bstr->fill_iBSTR(iCent, ct, this->ct_ALL[iCent]);
 						}
 					}
 

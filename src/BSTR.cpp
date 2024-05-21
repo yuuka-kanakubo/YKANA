@@ -21,9 +21,9 @@ void BSTR::stat_iBSTR(Container& ct){
 		ct.FinalHist[i]=ct.FinalHist[i]/this->nBSTR;
 		ct.Hist_x[i]=ct.Hist_x[i]/this->nBSTR;
 
-
 		double meanxx  = ct.HistHist[i]/this->nBSTR;
 		double meanx = ct.FinalHist[i];
+
 
 		double var=meanxx-pow(meanx,2.0);
 		double error=sqrt(var/(this->nBSTR-1.0));
