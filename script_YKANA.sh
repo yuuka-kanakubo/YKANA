@@ -55,9 +55,9 @@
  ## --shuffle \
  ## --BSTR 5 \
 ./YKANA  \
- -n 10000 \
+ -n 1000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
- -outdir CentralityCutswhs_K2.4sat2.0_10Kof100K_10BSTR  \
+ -outdir CentralityCutswhs_K2.4sat2.0_1Kof100K_10BSTR  \
  -f ev  \
  -ext jets_0_100_pbpb5020.dat  \
  --CentralityCut 2 \
