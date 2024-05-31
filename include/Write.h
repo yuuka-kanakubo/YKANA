@@ -1,3 +1,20 @@
+// -*- mode:c++ -*-
+#include <math.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <complex>
+#include <math.h>
+#include "Constants.h"
+#include "Util_func.h"
+#include "Container.h"
+#include "Message.h"
+#include "LogSettings.h"
+#include "Settings.h"
+#include "CentralityCut.h"
 #ifndef WRITE
 #define WRITE
 
@@ -7,12 +24,11 @@ private:
 
 		shared_ptr<Message> ms;  
 		Options options;
-		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 
 public:
 
-Write(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Write(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf);
 ~Write();
 		int getMapEdgeX(const double maxval);
 		int getMapEdgeY(const double maxval);

@@ -7,7 +7,6 @@
 #include "LogSettings.h"
 #include "Settings.h"
 #include "CentralityCut.h"
-#include "InfoHist.h"
 #include "Rndom.h"
 
 class Fill{
@@ -15,9 +14,13 @@ class Fill{
 private:
 
 	int N_iCentEv;
+	double x_edge_min;
+	double x_edge_max;
+	double y_edge_min;
+	double y_edge_max;
+
 	shared_ptr<Message> ms;  
 		Options options;
-		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 		shared_ptr<Rndom> rndom;
 		vector<double> xMin_cstm, xMax_cstm;
@@ -39,7 +42,7 @@ private:
 
 public:
 
-Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf);
 ~Fill();
 
 

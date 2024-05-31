@@ -11,6 +11,32 @@
 
 		class Options{
 
+			private:
+
+				class InfoHist{
+
+					public:
+
+						InfoHist(){};
+						~InfoHist(){};
+
+						//Maximum value for histgram
+						//-------------------------
+						double x_max;
+						double y_max;
+						double x_min;
+						double y_min;
+						double d_x;
+						double d_y;
+						double N_coeff;
+						double x_edge_min;
+						double x_edge_max;
+						double y_edge_min;
+						double y_edge_max;
+
+
+				};
+
 			public:
 				//TODO: MOve this to private
 				//-------------------------
@@ -20,6 +46,8 @@
 				double dlty;
 				double Ncoeff;
 				std::string axis3_inputf;
+
+                                InfoHist ih;
 
 			private:
 
@@ -376,7 +404,17 @@
 					at_yTL(0.0),
 					at_etaTL(0.0),
 					ID(-10000)
-					{};
+					{
+						this->ih.x_max = constants::x_max;
+						this->ih.x_min = constants::x_min;
+						this->ih.y_max = constants::y_max;
+						this->ih.y_min = constants::y_min;
+						this->ih.d_x = constants::d_x;
+						this->ih.d_y = constants::d_y;
+					};
+
+
+
 
 		};
 #endif

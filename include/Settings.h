@@ -116,7 +116,7 @@ class Settings{
 					string opt_in(argv[i]);
 					if(opt_in.find('-')==string::npos)continue;
 					cout << "ERROR:( There is no such an option: " << opt_in << endl; 
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 			}
 
@@ -180,7 +180,7 @@ class Settings{
 
 				}else{
 					cout << "ERROR:( no such a collision type " << options.get_collision_type() << endl;
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 			}
 		}
@@ -190,11 +190,11 @@ void consistency_check(){
 	if(constants::MODE.find("twopcInteg")!=string::npos || constants::MODE.find("twopc1D")!=std::string::npos){
 		if(!options.get_flag__2PCfull() && !options.get_flag__2PCnearside() && !options.get_flag__2PCout()) {
 			cout << ":( ERROR. Option --2PCfull, --2PCnearside, or --2PCout is needed. " << endl;
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		if((options.get_flag__2PCfull() && options.get_flag__2PCnearside()) || (options.get_flag__2PCfull() && options.get_flag__2PCout()) || (options.get_flag__2PCnearside() && options.get_flag__2PCout())) {
 			cout << ":( ERROR. Use only one option from --2PCfull, --2PCnearside, or --2PCout. " << endl;
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 	}else{
 		if(options.get_flag_tagged()) cout << ":o WARNING. --tagged option works when TWOPC1D is activated." << endl;
@@ -207,7 +207,7 @@ void consistency_check(){
 
         if(options.get_flag_specify_startingfile() && (options.get_nfile()<options.get_beginfile())){
 		cout << ":( ERROR. Specify reading file number with -from and -to. -from " << options.get_beginfile() << " -to " << options.get_nfile() << endl;
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	if(constants::MODE.find("twopc2D")!=string::npos){
@@ -220,9 +220,23 @@ void consistency_check(){
 		}
 	}
 
+	cout << ":D xaxis_type(): " << options.get_xaxis_type() << endl; 
+	if(options.get_xaxis_type()==0){
+	}else if(options.get_xaxis_type()==1){
+	}else if(options.get_xaxis_type()==2){
+		cout << ":( ERROR. Not defined axis type  xaxis_type():" 
+			<< options.get_xaxis_type() << ". Choose from --xaxis 0(default. fixed mid point calculated from dx and xmin, xmax), 1(Obtained by averaging x values), 3 (log x)" << endl;
+		exit(EXIT_FAILURE);
+	}else if(options.get_xaxis_type()==3){
+	}else{
+		cout << ":( ERROR. Not defined axis type  xaxis_type():" 
+			<< options.get_xaxis_type() << ". Choose from --xaxis 0(default. fixed mid point calculated from dx and xmin, xmax), 1(Obtained by averaging x values), 3 (log x)" << endl;
+		exit(EXIT_FAILURE);
+	}
+
 	if (constants::MODE.find("MeanptPID")!=string::npos && options.get_specify_ID() == -10000){
 		cout << "ERROR:( Specify ID for meanpt PID calculation." << endl;
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 }

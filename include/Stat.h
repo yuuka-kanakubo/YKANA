@@ -1,3 +1,21 @@
+// -*- mode:c++ -*-
+#include <math.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <complex>
+#include <math.h>
+#include "Constants.h"
+#include "Util_func.h"
+#include "Container.h"
+#include "Message.h"
+#include "LogSettings.h"
+#include "Settings.h"
+#include "CentralityCut.h"
+
 #ifndef STAT
 #define STAT
 
@@ -7,14 +25,13 @@ private:
 
 		shared_ptr<Message> ms;  
 		Options options;
-		shared_ptr<InfoHist> infohist;
 		shared_ptr<Util_func> uf;
 		int get_xaxis_RtClass(double xval);
 		double get_B00(const vector<double>& X, const vector<double>& Y, const vector<double>& Z);
 
 public:
 
-Stat(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> info, shared_ptr<Util_func> uf);
+Stat(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf);
 ~Stat();
 
 			void stat_twopc(shared_ptr<Container>& ct);

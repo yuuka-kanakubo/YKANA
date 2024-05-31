@@ -55,11 +55,10 @@
  ## --shuffle \
  ## --BSTR 5 \
 ./YKANA  \
- -n 1000 \
+ -n 10000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K2.0sat2.0 \
- -outdir dedy_0_5_wohs_K2.0sat2.0_1000ev  \
+ -outdir dedy_60_70_wohs_K2.0sat2.0_5000ev_fixedxaxis_dbg  \
  -f ev  \
- -ext jets_0_5_pbpb5020.dat  \
+ -ext jets_60_70_pbpb5020.dat  \
  --EKRTformat  \
  --EKRTbinary \
- --xaxis 1 

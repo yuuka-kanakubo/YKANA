@@ -20,7 +20,6 @@
 #include "Fill.h"
 #include "Stat.h"
 #include "Write.h"
-#include "InfoHist.h"
 #include "BSTR.h"
 
 
@@ -45,9 +44,6 @@ class Analysis{
 		LogSettings& log;
 
 
-		//Maximum value for histgram
-		//-------------------------
-		std::shared_ptr<InfoHist> infohist;
 
 		void shuffling_or_takeout_nevents(vector<Container::EventInfo>& nEventInfo, vector<EbyeInfo>& eBye){
 
@@ -110,23 +106,22 @@ class Analysis{
 			rndom = std::make_shared<Rndom>(111);
 			//rndom = make_shared<Rndom>(rand());
 
-			infohist = std::make_shared<InfoHist>(constants::x_max, constants::y_max, constants::d_x, constants::d_y, 2.0);
 			ms = std::make_shared<Message>();
 			uf = std::make_shared<Util_func>(this->rndom);
 			if(options.get_flag_HI()){
 				cout << ":) HI option is called.\n  Maximum value of xaxis is adjusted to HI data." << endl;
-				infohist->x_max=constants::x_max_HI;
-				infohist->d_x=constants::d_x_HI;
-				infohist->y_max=constants::y_max_HI;
-				infohist->d_y=constants::d_y_HI;
+				options.ih.x_max=constants::x_max_HI;
+				options.ih.d_x=constants::d_x_HI;
+				options.ih.y_max=constants::y_max_HI;
+				options.ih.d_y=constants::d_y_HI;
 			}
 			if(options.get_flag_set_Ncoeff()){
-				infohist->N_coeff = options.get_Ncoeff();
+				options.ih.N_coeff = options.get_Ncoeff();
 			}
 			read = std::make_shared<ReadIn>(this->ms, this->options);
-			fill = std::make_shared<Fill>(this->ms, this->options, this->infohist, this->uf);
-			stat = std::make_shared<Stat>(this->ms, this->options, this->infohist, this->uf);
-			write = std::make_shared<Write>(this->ms, this->options, this->infohist, this->uf);
+			fill = std::make_shared<Fill>(this->ms, this->options,  this->uf);
+			stat = std::make_shared<Stat>(this->ms, this->options,  this->uf);
+			write = std::make_shared<Write>(this->ms, this->options, this->uf);
 			if(constants::MODE.find("timelapse")!=std::string::npos) this->PrintCounter=constants::PrintCounterTL;
 			else this->PrintCounter=constants::PrintCounter;
 			if(options.get_flag_BSTR()) {

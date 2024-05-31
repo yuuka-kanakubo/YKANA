@@ -1,27 +1,8 @@
-// -*- mode:c++ -*-
-#include <math.h>
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <complex>
-#include <math.h>
-#include "Constants.h"
-#include "Util_func.h"
-#include "Container.h"
-#include "Message.h"
-#include "LogSettings.h"
-#include "Settings.h"
-#include "CentralityCut.h"
-#include "InfoHist.h"
 #include "Stat.h"
 
-using namespace std;
 
 
-Stat::Stat(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in):ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in){};
+Stat::Stat(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf_in):ms(ms_in), options(options_in), uf(uf_in){};
 Stat::~Stat(){};
 
 			void Stat::stat_twopc(shared_ptr<Container>& ct){
@@ -45,11 +26,11 @@ Stat::~Stat(){};
 						//Devide by bin width
 						//---------------------------
 						if(!options.get_flag_SB_CMS()){
-							ct->Final2DHit[i][j]/=this->infohist->d_x;
-							ct->Final2DHit[i][j]/=this->infohist->d_y;
+							ct->Final2DHit[i][j]/=options.ih.d_x;
+							ct->Final2DHit[i][j]/=options.ih.d_y;
 						}else{
-							ct->Hist2D[i][j]/=this->infohist->d_x;
-							ct->Hist2D[i][j]/=this->infohist->d_y;
+							ct->Hist2D[i][j]/=options.ih.d_x;
+							ct->Hist2D[i][j]/=options.ih.d_y;
 						}
 					}
 				}
@@ -66,8 +47,8 @@ Stat::~Stat(){};
 
 							//Devide by bin width
 							//---------------------------
-							ct->HistSub2D[i][j]/=this->infohist->d_x;
-							ct->HistSub2D[i][j]/=this->infohist->d_y;
+							ct->HistSub2D[i][j]/=options.ih.d_x;
+							ct->HistSub2D[i][j]/=options.ih.d_y;
 
 							X.push_back(ct->HistSub2D_x[i][j]);
 							Y.push_back(ct->HistSub2D_y[i][j]);
@@ -137,7 +118,7 @@ return B00;
 					}else{
 						//ct->FinalHist[i]=ct->Hist[i]/ct->SumPair;
 						ct->FinalHist[i]=ct->Hist[i]/ct->SumTrig;
-						ct->FinalHist[i]/=this->infohist->d_x;
+						ct->FinalHist[i]/=options.ih.d_x;
 					}
 					ct->Hist_x[i]/=ct->Hist_weight[i];
 
@@ -183,8 +164,8 @@ return B00;
 					//Rt
 					//----
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
-					int nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
+					int nx=(int)((x_val/options.ih.d_x)+(std::fabs(constants::x_min)/options.ih.d_x));
 
 					//cout << ct->dNdeta_eBye[i]  << "   " << x_val << endl;
 
@@ -205,7 +186,7 @@ return B00;
 
 					// devide by cell width 
 					//-------------------------------------
-					//ct->Hist[i]/=this->infohist->d_x;
+					//ct->Hist[i]/=options.ih.d_x;
 
 					ct->HistErr[i]=0.0;
 				}
@@ -259,8 +240,8 @@ return B00;
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
 					//double Rtmin=((double)ct->Ntmin_eBye[i])/meanNtmin;
 					//double Rtmax=((double)ct->Ntmax_eBye[i])/meanNtmax;
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
-					//int nx=(int)((x_val/this->infohist->d_x)+(std::fabs(constants::x_min)/this->infohist->d_x));
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
+					//int nx=(int)((x_val/options.ih.d_x)+(std::fabs(constants::x_min)/options.ih.d_x));
 					int nx=this->get_xaxis_RtClass(x_val);
 
 					//dndeta, RcoreT, RcoreN, Rt, Rtmin, Rtmax 
@@ -315,7 +296,7 @@ return B00;
 
 					// devide by cell width 
 					//-------------------------------------
-					//ct->Hist[i]/=this->infohist->d_x;
+					//ct->Hist[i]/=options.ih.d_x;
 
 
 				}
@@ -334,7 +315,7 @@ return B00;
 
 					// devide by cell width 
 					//-------------------------------------
-					ct->FinalHist[i]/=this->infohist->d_x;
+					ct->FinalHist[i]/=options.ih.d_x;
 
 
 					//Get standard error
@@ -405,7 +386,7 @@ return B00;
 
 					// devide by cell width 
 					//-------------------------------------
-					//ct->Hist[i]/=this->infohist->d_x;
+					//ct->Hist[i]/=options.ih.d_x;
 
 					if(fabs(ct->Hist_img_Qvec[i])>constants::WARNING_IMAGINARY_MAX){
 						ms->WARNING_LARGE_IMAGINARYPART(ct->Hist_img_Qvec[i]);

@@ -13,11 +13,15 @@
 using namespace std;
 
 
-Fill::Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in):N_iCentEv(0), ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in), rndom(nullptr){
+Fill::Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf_in):N_iCentEv(0), ms(ms_in), options(options_in), uf(uf_in), rndom(nullptr){
 
 	if(options.get_xaxis_type()==3){
 		this->SetCustomBin();
 	}
+       // this->x_edge_min = this->ih_in->x_edge_min;
+       // this->x_edge_max = this->ih_in->x_edge_max;
+       // this->y_edge_min = this->ih_in->y_edge_min;
+       // this->y_edge_max = this->ih_in->y_edge_max;
 
 };
 Fill::~Fill(){};
@@ -40,7 +44,7 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 				//---------------
 				double x_val=EVENT.Aj();
 				double y_val=1.0;
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=this->get_cell_index(x_val);
 
 				ct->Hist[nx]+=y_val;
@@ -83,10 +87,10 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					double x_val=EVENT.part[j].x;
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 					int nx=this->get_cell_index(x_val);
 					double y_val=EVENT.part[j].y;
-					if(y_val<constants::y_min || y_val>this->infohist->y_max) continue;
+					if(y_val<constants::y_min || y_val>options.ih.y_max) continue;
 					int ny=this->get_cell_index_y(y_val);
 
 					if(max_nx<nx) max_nx = nx;
@@ -165,11 +169,11 @@ void Fill::fill_jets(shared_ptr<Container>& ct){
 						if(options.get_flag_only_corona_associates() && EVENT.part[j].TAG==constants::core_tag) continue;
 
 						double x_val=EVENT.part[i].eta - EVENT.part[j].eta;
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 						int nx=this->get_cell_index(x_val);
 
 						double y_val=this->getDeltaPhi(EVENT.part[i].phi, EVENT.part[j].phi);
-						if(y_val<constants::y_min || y_val>this->infohist->y_max) continue;
+						if(y_val<constants::y_min || y_val>options.ih.y_max) continue;
 						int ny=this->get_cell_index_y(y_val);
 
 						if(max_nx<nx) max_nx = nx;
@@ -241,11 +245,11 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						if(!(Mixedpart[j].pt>constants::assoc_ptmin && Mixedpart[j].pt<constants::assoc_ptmax)) continue;
 
 						double x_val=EVENT.part[i].eta - Mixedpart[j].eta;
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 						int nx=this->get_cell_index(x_val);
 
 						double y_val=this->getDeltaPhi(EVENT.part[i].phi, Mixedpart[j].phi);
-						if(y_val<constants::y_min || y_val>this->infohist->y_max) continue;
+						if(y_val<constants::y_min || y_val>options.ih.y_max) continue;
 						int ny=this->get_cell_index_y(y_val);
 
 						if(max_nx<nx) max_nx = nx;
@@ -435,7 +439,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				int NumPair=0;
 				int NumTrig=0;
 				double x_val=EVENT.Nch();
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=this->get_cell_index(x_val);
 				for(int i=0; i<(int)EVENT.part.size(); ++i){
 					if(EVENT.part[i].pt<constants::trig_ptmin) continue;
@@ -496,7 +500,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						else if(options.get_flag__2PCnearside() && DeltaEta>constants::DeltaEtaNS) continue;
 						else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL)) continue;
 
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 						int nx=this->get_cell_index(x_val);
 
 						ct->Hist[nx]+=1.0*EVENT.weight();
@@ -549,7 +553,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 					else if(options.get_flag__2PCnearside() && DeltaEta>constants::DeltaEtaNS) continue;
 					else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL)) continue;
 
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 					int nx=this->get_cell_index(x_val);
 
 					ct->Hist[nx]+=1.0*EVENT.weight();
@@ -586,7 +590,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						else if(options.get_flag__2PCnearside() && DeltaEta>constants::DeltaEtaNS) continue;
 						else if(options.get_flag__2PCout() && (DeltaEta<constants::DeltaEtaNS || DeltaEta>constants::DeltaEtaFULL)) continue;
 
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 						int nx=this->get_cell_index(x_val);
 
 						ct->Hist[nx]+=1.0*EVENT.weight();
@@ -610,11 +614,11 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				double deltaPhi = phi1 - phi2;
 				if(deltaPhi<0.0) deltaPhi += 2.0*M_PI;
 
-				if(deltaPhi>=constants::y_min && deltaPhi<=this->infohist->y_max){
+				if(deltaPhi>=constants::y_min && deltaPhi<=options.ih.y_max){
 					return deltaPhi;
 				}else if(deltaPhi<constants::y_min){
 					return deltaPhi + 2.0*M_PI;
-				}else if(deltaPhi>this->infohist->y_max){
+				}else if(deltaPhi>options.ih.y_max){
 					return deltaPhi-2.0*M_PI;
 				}else{
 					cout << ":( Error. Something wrong in double getDeltaPhi." << deltaPhi << endl;
@@ -629,11 +633,11 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				double deltaPhi = phi1-phi2;
 				if(deltaPhi<0.0) deltaPhi += 2.0*M_PI;
 
-				if(deltaPhi>=constants::x_min && deltaPhi<=this->infohist->x_max){
+				if(deltaPhi>=constants::x_min && deltaPhi<=options.ih.x_max){
 					return deltaPhi;
 				}else if(deltaPhi<constants::x_min){
 					return deltaPhi + 2.0*M_PI;
-				}else if(deltaPhi>this->infohist->x_max){
+				}else if(deltaPhi>options.ih.x_max){
 					return deltaPhi-2.0*M_PI;
 				}else{
 					cout << ":( Error. Something wrong in double getDeltaPhi." << deltaPhi << endl;
@@ -655,7 +659,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				if(constants::MODE.find("meanpt")!=string::npos || constants::MODE.find("meanmt")!=string::npos || constants::MODE.find("MeanptPID")!=string::npos){
 					x_val=EVENT.Nch();
 					nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+					if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				}
 
 				//For mean pt PID vs. dNdeta
@@ -677,7 +681,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}else if(constants::MODE.find("mtscaling")!=string::npos){
 						x_val=EVENT.part[j].m;
-						if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 						nx=this->get_cell_index(x_val);
 
 			 			if(EVENT.part[j].ID==constants::id_phi){
@@ -691,9 +695,9 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						//You can put whatever you want in x and y.
 						//==========================================
 						x_val=EVENT.part[j].rap;
-						//if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+						//if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 						nx=this->get_cell_index(x_val);
-						y_val = EVENT.part[j].e/(this->infohist->d_x);
+						y_val = EVENT.part[j].e/(options.ih.d_x);
 					}
 
 					ct->Hist[nx]+=y_val*EVENT.weight();
@@ -768,9 +772,9 @@ int Fill::get_cell_index_cstm(const double val){
 
 
 			int Fill::get_cell_index(const double x_val){
-				double half_dx = this->infohist->d_x / 2.0;
+				double half_dx = options.ih.d_x / 2.0;
 				double binZeroCenter = 0;
-				int ncell = std::round((x_val - binZeroCenter + std::fabs(constants::x_min) - half_dx) / this->infohist->d_x);
+				int ncell = std::round((x_val - binZeroCenter + std::fabs(constants::x_min) - half_dx) / options.ih.d_x);
 				if(options.get_xaxis_type()==3){
 					return this->get_cell_index_cstm(x_val);
 				}
@@ -782,9 +786,9 @@ int Fill::get_cell_index_cstm(const double val){
 				return  ncell;
 			}
 			int Fill::get_cell_index_y(const double y_val){
-				double half_dy = this->infohist->d_y / 2.0;
+				double half_dy = options.ih.d_y / 2.0;
 				double binZeroCenter = 0;
-				int ncell = std::round((y_val - binZeroCenter + std::fabs(constants::y_min) - half_dy) / this->infohist->d_y);
+				int ncell = std::round((y_val - binZeroCenter + std::fabs(constants::y_min) - half_dy) / options.ih.d_y);
 				if(ncell<0 || ncell>constants::y_cell_capa){
 					std::cout << "ERROR:( ncell is beyond the capacity.  ncell:" << ncell << " out of constants::y_cell_capa " << constants::y_cell_capa << std::endl;
 					std::cout << "                                       y_val:" << y_val << " constants::y_min " << constants::y_min << std::endl;
@@ -846,7 +850,7 @@ int Fill::get_cell_index_cstm(const double val){
 				//Determine xbin
 				//---------------
 				double x_val=EVENT.Nch();
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 				//If xval is calculated from different particle list.
 				//======================================================
@@ -860,8 +864,8 @@ int Fill::get_cell_index_cstm(const double val){
 				//----------------------------
 				std::complex<double> Qvec_tot=constants::initialval_comp;
 				std::complex<double> Qvec2_tot=constants::initialval_comp;
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
-				std::complex<double> n2_coeff (this->infohist->N_coeff*2.0, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
+				std::complex<double> n2_coeff (options.ih.N_coeff*2.0, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
@@ -915,13 +919,13 @@ int Fill::get_cell_index_cstm(const double val){
 				//Determine xbin
 				//---------------
 				double x_val=EVENT.Nch();
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------
 				std::complex<double> Qvec_tot=constants::initialval_comp;
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
 					std::complex<double> Qvec=exp(constants::i_img*n_coeff*phi_);
@@ -964,13 +968,13 @@ int Fill::get_cell_index_cstm(const double val){
 					Qvec_tot[i]=constants::initialval_comp;
 					hit[i]=0.0;
 				}
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					//Determine xbin
 					//---------------
 					double x_val=EVENT.part[j].eta;
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 					int nx=this->get_cell_index(x_val);
 
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -1023,13 +1027,13 @@ int Fill::get_cell_index_cstm(const double val){
 					Qvec_tot[i]=constants::initialval_comp;
 					hit[i]=0.0;
 				}
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					//Determine xbin
 					//---------------
 					double x_val=EVENT.part[j].pt;
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 					int nx= this->get_cell_index(x_val);
 
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -1091,13 +1095,13 @@ int Fill::get_cell_index_cstm(const double val){
 					hit_A[i]=0.0;
 					hit_B[i]=0.0;
 				}
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 
 					//Determine xbin
 					//---------------
 					double x_val=EVENT.part[j].pt;
-					if(x_val<constants::x_min || x_val>this->infohist->x_max) continue;
+					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
 					int nx= this->get_cell_index(x_val);
 
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -1150,14 +1154,14 @@ int Fill::get_cell_index_cstm(const double val){
 				//Determine xbin
 				//---------------
 				double x_val=EVENT.Nch();
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
 				//----------------------------
 				std::complex<double> Qvec_tot_A=constants::initialval_comp;
 				std::complex<double> Qvec_tot_B=constants::initialval_comp;
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
 				double hit_A=0.0, hit_B=0.0;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -1202,7 +1206,7 @@ int Fill::get_cell_index_cstm(const double val){
 				//Determine xbin
 				//---------------
 				double x_val=EVENT.Nch();
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
@@ -1211,8 +1215,8 @@ int Fill::get_cell_index_cstm(const double val){
 				std::complex<double> Qvec_tot_B=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_A=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_B=constants::initialval_comp;
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
-				std::complex<double> n2_coeff (this->infohist->N_coeff*2.0, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
+				std::complex<double> n2_coeff (options.ih.N_coeff*2.0, 0.0);
 				double hit_A=0.0, hit_B=0.0;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);
@@ -1274,7 +1278,7 @@ int Fill::get_cell_index_cstm(const double val){
 				//Determine xbin
 				//---------------
 				double x_val=EVENT.Nch();
-				if(x_val<constants::x_min || x_val>this->infohist->x_max) return;
+				if(x_val<constants::x_min || x_val>options.ih.x_max) return;
 				int nx=(!options.get_flag_HI())? this->get_cell_index(x_val):this->get_cell_index_logplot(x_val);
 
 				//Count particle by particle.
@@ -1285,8 +1289,8 @@ int Fill::get_cell_index_cstm(const double val){
 				std::complex<double> Qvec2_tot_A=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_B=constants::initialval_comp;
 				std::complex<double> Qvec2_tot_C=constants::initialval_comp;
-				std::complex<double> n_coeff (this->infohist->N_coeff, 0.0);
-				std::complex<double> n2_coeff (this->infohist->N_coeff*2.0, 0.0);
+				std::complex<double> n_coeff (options.ih.N_coeff, 0.0);
+				std::complex<double> n2_coeff (options.ih.N_coeff*2.0, 0.0);
 				double hit_A=0.0, hit_B=0.0, hit_C=0.0;
 				for(int j=0; j<(int)EVENT.part.size(); ++j){
 					std::complex<double> phi_ (EVENT.part[j].phi,0.0);

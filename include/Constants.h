@@ -362,8 +362,8 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 #elif defined JUSTSIMPLE1D
 	const std::string MODE = "default";
 	const std::string default_out_directory_name="output";
-	const double x_max = 9.5;
-	const double x_min = -9.5;
+	const double x_max = 9.075;
+	const double x_min = -9.075;
 	const double x_max_HI = 0.0;
 	const double d_x = 0.15;
 	const double d_x_HI = 0.1;

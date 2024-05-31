@@ -1,31 +1,13 @@
-// -*- mode:c++ -*-
-#include <math.h>
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <complex>
-#include <math.h>
-#include "Constants.h"
-#include "Util_func.h"
-#include "Container.h"
-#include "Message.h"
-#include "LogSettings.h"
-#include "Settings.h"
-#include "CentralityCut.h"
-#include "InfoHist.h"
 #include "Write.h"
 
 
-Write::Write(shared_ptr<Message> ms_in, Options options_in, shared_ptr<InfoHist> infohist_in, shared_ptr<Util_func> uf_in):ms(ms_in), options(options_in), infohist(infohist_in), uf(uf_in){};
+Write::Write(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf_in):ms(ms_in), options(options_in), uf(uf_in){};
 Write::~Write(){};
 
 
 int Write::getMapEdgeX(const double maxval){
-	double half_dx = this->infohist->d_x / 2.0;
-	double binZeroCenter = 0; int n = std::round((maxval - binZeroCenter + std::fabs(constants::x_min) - half_dx) / this->infohist->d_x);
+	double half_dx = options.ih.d_x / 2.0;
+	double binZeroCenter = 0; int n = std::round((maxval - binZeroCenter + std::fabs(constants::x_min) - half_dx) / options.ih.d_x);
 	if(n<0 || n>constants::x_cell_capa){
 		std::cout << "ERROR:( n is beyond the capacity.  n:" << n << " out of constants::x_cell_capa " << constants::x_cell_capa << std::endl;
 		exit(EXIT_FAILURE);
@@ -34,8 +16,8 @@ int Write::getMapEdgeX(const double maxval){
 }
 
 int Write::getMapEdgeY(const double maxval){
-	double half_dy = this->infohist->d_y / 2.0;
-	double binZeroCenter = 0; int n = std::round((maxval - binZeroCenter + std::fabs(constants::y_min) - half_dy) / this->infohist->d_y);
+	double half_dy = options.ih.d_y / 2.0;
+	double binZeroCenter = 0; int n = std::round((maxval - binZeroCenter + std::fabs(constants::y_min) - half_dy) / options.ih.d_y);
 	if(n<0 || n>constants::y_cell_capa){
 		std::cout << "ERROR:( n is beyond the capacity.  n:" << n << " out of constants::y_cell_capa " << constants::y_cell_capa << std::endl;
 		exit(EXIT_FAILURE);
@@ -74,8 +56,10 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 					for(int i=0; i<ct->max_nx+1; ++i){
 
 						if(ct->HistHit[i]==0) continue;
-
-						double x_axis =ct->Hist_x[i];
+						double x_axis= constants::x_min + (i + 0.5) * options.ih.d_x;
+						if(options.get_xaxis_type()==1){
+							x_axis =ct->Hist_x[i];
+						}
 						ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
 							<< setw(16) << ct->FinalHist[i] << "  "
 							<< setw(16) << ct->HistErr[i] << "  "
@@ -88,11 +72,11 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 						|| constants::MODE.find("twodm")!=std::string::npos) {
 
 					if(!options.get_flag_SB_CMS()){
-						for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
-							for(int j=0; j<this->getMapEdgeY(this->infohist->y_max); ++j){
+						for(int i=0; i<this->getMapEdgeX(options.ih.x_max); ++i){
+							for(int j=0; j<this->getMapEdgeY(options.ih.y_max); ++j){
 
-								double xaxis= constants::x_min + (i + 0.5) * this->infohist->d_x;
-								double yaxis= constants::y_min + (j + 0.5) * this->infohist->d_y;
+								double xaxis= constants::x_min + (i + 0.5) * options.ih.d_x;
+								double yaxis= constants::y_min + (j + 0.5) * options.ih.d_y;
 								//ct->Hist2D_x[i][j];
 								//ct->Hist2D_y[i][j];
 								ofs << fixed << setprecision(8) 
@@ -107,11 +91,11 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 							ofs << std::endl;
 						}
 					}else{
-						for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
-							for(int j=0; j<this->getMapEdgeY(this->infohist->y_max); ++j){
+						for(int i=0; i<this->getMapEdgeX(options.ih.x_max); ++i){
+							for(int j=0; j<this->getMapEdgeY(options.ih.y_max); ++j){
 
-								double xaxis= constants::x_min + (i + 0.5) * this->infohist->d_x;
-								double yaxis= constants::y_min + (j + 0.5) * this->infohist->d_y;
+								double xaxis= constants::x_min + (i + 0.5) * options.ih.d_x;
+								double yaxis= constants::y_min + (j + 0.5) * options.ih.d_y;
 								//ct->Hist2D_x[i][j];
 								//ct->Hist2D_y[i][j];
 								ofs << setw(16) << fixed << setprecision(8) << xaxis << "  "
@@ -126,10 +110,13 @@ bool Write::write_BSTR(const std::string& fname, const Container& ct){
 					}
 
 				}else{
-					for(int i=0; i<this->getMapEdgeX(this->infohist->x_max); ++i){
+					for(int i=0; i<this->getMapEdgeX(options.ih.x_max); ++i){
 
 						if(ct->HistHit[i]==0) continue;
-						double x_axis =ct->Hist_x[i];
+						double x_axis= constants::x_min + (i + 0.5) * options.ih.d_x;
+						if(options.get_xaxis_type()==1){
+							x_axis =ct->Hist_x[i];
+						}
 						ofs << setw(16) << fixed << setprecision(8) << x_axis << "  "
 							<< setw(16) << ct->FinalHist[i] << "  "
 							<< setw(16) << ct->HistErr[i] << "  "
