@@ -25,6 +25,7 @@ private:
 
 			bool fix_ax(const int id, int &nx, double m);
 			int get_cell_index(const double x_val_);
+			int get_cell_index_y(const double y_val_);
 			int get_cell_index_logplot(const double x_val_);
 			double getDeltaPhi(const double phi1, const double phi2);
 			double getDeltaPhi_twopc1D(const double phi1, const double phi2);

@@ -56,12 +56,10 @@
  ## --BSTR 5 \
 ./YKANA  \
  -n 1000 \
- -dir /n/work02/yukanaku/mcaa/data/18Apr2024_whs_K2.4sat2.0_allev  \
- -outdir CentralityCutswhs_K2.4sat2.0_1Kof100K_10BSTR  \
+ -dir /n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K2.0sat2.0 \
+ -outdir dedy_0_5_wohs_K2.0sat2.0_1000ev  \
  -f ev  \
- -ext jets_0_100_pbpb5020.dat  \
- --CentralityCut 2 \
- --BSTR 10 \
+ -ext jets_0_5_pbpb5020.dat  \
  --EKRTformat  \
  --EKRTbinary \
  --xaxis 1 

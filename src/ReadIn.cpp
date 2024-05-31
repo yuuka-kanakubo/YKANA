@@ -227,6 +227,7 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		exit(EXIT_FAILURE);
 	}
 
+
 	for (uint64_t i=0; i<n_events; i++){
 		if(fabs((double)i/(double)n_events-pct*0.1)<constants::SMALL){
 			cout << ":)  Loading.... " << pct*10 << "\% " << endl;
@@ -234,7 +235,6 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		}
 
 		in.read(reinterpret_cast<char*>(&n_jets), sizeof n_jets);
-		//cout << " n_jets " << n_jets << endl;
 		//if(i>=1) break;
 		//cout << i << "  in  " << n_events << " : " << n_jets<< endl;
 
