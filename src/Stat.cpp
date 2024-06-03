@@ -164,8 +164,8 @@ return B00;
 					//Rt
 					//----
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
-					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
-					int nx=(int)((x_val/options.ih.d_x)+(std::fabs(constants::x_min)/options.ih.d_x));
+					if(x_val<options.ih.x_edge_min || x_val>options.ih.x_edge_max) continue;
+					int nx=(int)((x_val/options.ih.d_x)+(std::fabs(options.ih.x_edge_min)/options.ih.d_x));
 
 					//cout << ct->dNdeta_eBye[i]  << "   " << x_val << endl;
 
@@ -240,8 +240,7 @@ return B00;
 					double x_val=((double)ct->Nt_eBye[i])/meanNt;
 					//double Rtmin=((double)ct->Ntmin_eBye[i])/meanNtmin;
 					//double Rtmax=((double)ct->Ntmax_eBye[i])/meanNtmax;
-					if(x_val<constants::x_min || x_val>options.ih.x_max) continue;
-					//int nx=(int)((x_val/options.ih.d_x)+(std::fabs(constants::x_min)/options.ih.d_x));
+					if(x_val<options.ih.x_edge_min || x_val>options.ih.x_edge_max) continue;
 					int nx=this->get_xaxis_RtClass(x_val);
 
 					//dndeta, RcoreT, RcoreN, Rt, Rtmin, Rtmax 

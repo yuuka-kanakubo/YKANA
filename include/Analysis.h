@@ -108,13 +108,6 @@ class Analysis{
 
 			ms = std::make_shared<Message>();
 			uf = std::make_shared<Util_func>(this->rndom);
-			if(options.get_flag_HI()){
-				cout << ":) HI option is called.\n  Maximum value of xaxis is adjusted to HI data." << endl;
-				options.ih.x_max=constants::x_max_HI;
-				options.ih.d_x=constants::d_x_HI;
-				options.ih.y_max=constants::y_max_HI;
-				options.ih.d_y=constants::d_y_HI;
-			}
 			if(options.get_flag_set_Ncoeff()){
 				options.ih.N_coeff = options.get_Ncoeff();
 			}

@@ -15,17 +15,99 @@
 
 				class InfoHist{
 
-					public:
-
-						InfoHist(){};
-						~InfoHist(){};
-
-						//Maximum value for histgram
-						//-------------------------
 						double x_max;
 						double y_max;
 						double x_min;
 						double y_min;
+
+						bool isthisOddInt(const double val){
+
+							int val_floored = std::floor(val);
+							double decimal = val - (double) val_floored;
+							if(fabs(decimal)<constants::TINY){
+								if (std::fabs(val_floored%2)<constants::TINY){
+									//Then even
+									return false;
+								}else{
+									return true;
+								}
+							}else{ 
+								return false;
+							}
+						}
+
+
+					public:
+
+						InfoHist():N_coeff(2.0){
+							this->x_max = constants::x_max;
+							this->x_min = constants::x_min;
+							this->y_max = constants::y_max;
+							this->y_min = constants::y_min;
+							this->d_x = constants::d_x;
+							this->d_y = constants::d_y;
+
+						};
+						~InfoHist(){};
+
+
+
+						void tailor_hist(Options& options__){
+
+							if((x_max > x_min) && (y_max > y_min) && (d_x<fabs(x_max - x_min))&& (d_y<fabs(y_max - y_min))) {
+								std::cout << "Setting up InfoHist. Everything is sane." << std::endl;
+							}else{
+								std::cout << "ERROR:( in InfoHist. Check the followings: " 
+									<< "   x_max:" << x_max
+									<< "   x_min:" << x_min
+									<< "   y_max:" << y_max
+									<< "   y_min:" << y_min
+									<< "   d_x:" << d_x 
+									<< "   d_y:" << d_y 
+									<< std::endl;
+								exit(EXIT_FAILURE);
+							}
+							//Getting edge.
+							this->x_edge_max = this->x_max + this->d_x/2.0;
+							this->x_edge_min = -1.0 * this->x_edge_max;
+							this->y_edge_max = this->y_max + this->d_y/2.0;
+							this->y_edge_min = -1.0 * this->y_edge_max;
+
+							if(options__.get_flag_hist_ZeroCentered()){
+								//Check if fabs(x_edge_max)/d_x returns int.
+								//if((fabs(x_edge_max - x_edge_min)%d_x)<constants::TINY)
+								if(this->isthisOddInt(fabs(x_edge_max - x_edge_min)/d_x)){
+									std::cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") this->isthisOddInt : true." << fabs(x_edge_max - x_edge_min)/d_x << std::endl;
+									return;//passed the criteria.
+								}else{
+									//Original cell n 
+									//Original x_edge_min, max
+									//Find closest odd int.
+									double orig_n = fabs(x_edge_max - x_edge_min)/d_x;
+									int orig_n_floored = std::floor(orig_n);
+									std::cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") orig_n_floored " << orig_n_floored << ",   orig_n " << orig_n << std::endl;
+									if (std::fabs(orig_n_floored%2)<constants::TINY){
+										orig_n_floored++;
+										this->x_edge_max = orig_n_floored * this->d_x/2.0;
+										this->x_edge_min = -1.0 * this->x_edge_max;
+										std::cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") x_edge_max " << x_edge_max << std::endl;
+										std::cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") x_edge_min " << x_edge_min << std::endl;
+									}else{
+										this->x_edge_max = orig_n_floored * this->d_x/2.0;
+										this->x_edge_min = -1.0 * this->x_edge_max;
+										std::cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") x_edge_max " << x_edge_max << std::endl;
+										std::cout << "(:3 = )3 ? " << __FILE__ << " (" << __LINE__ << ") x_edge_min " << x_edge_min << std::endl;
+									}
+									return;
+								}
+							}
+
+
+							return;
+						}
+
+						//Maximum value for histgram
+						//-------------------------
 						double d_x;
 						double d_y;
 						double N_coeff;
@@ -78,6 +160,7 @@
 				bool ATLAS_cut;
 				bool EKRTformat;
 				bool EKRTbinary;
+				bool hist_ZeroCentered;
 				bool only_core;
 				bool only_corona;
 				bool only_core_triggers;
@@ -179,6 +262,10 @@
 				void set_EKRTbinary(){ 
 					EKRTbinary=true;
 					std::cout << "Reading EKRT binary files..." << std::endl; 
+				};
+				void set_hist_ZeroCentered(){ 
+					hist_ZeroCentered=true;
+					std::cout << "Histgram is going to span [-x, x] with 0 centered. ..." << std::endl; 
 				};
 				void set_flag_multiplicity_cut_more_than(const double multip_cut_more_than_in){
 					flag_multiplicity_cut=true;
@@ -310,6 +397,7 @@
 				bool get_flag_ATLAS_cut()const{return ATLAS_cut;};
 				bool get_flag_EKRTformat()const{return EKRTformat;};
 				bool get_flag_EKRTbinary()const{return EKRTbinary;};
+				bool get_flag_hist_ZeroCentered()const{return hist_ZeroCentered;};
 				bool get_flag_only_core()const{return only_core;} 
 				bool get_flag_only_corona()const{return only_corona;}
 				bool get_flag_only_core_triggers()const{return only_core_triggers;} 
@@ -366,6 +454,7 @@
 					ATLAS_cut(false),
 					EKRTformat(false),
 					EKRTbinary(false),
+					hist_ZeroCentered(false),
 					only_core(false),
 					only_corona(false),
 					only_core_triggers(false),
@@ -405,12 +494,6 @@
 					at_etaTL(0.0),
 					ID(-10000)
 					{
-						this->ih.x_max = constants::x_max;
-						this->ih.x_min = constants::x_min;
-						this->ih.y_max = constants::y_max;
-						this->ih.y_min = constants::y_min;
-						this->ih.d_x = constants::d_x;
-						this->ih.d_y = constants::d_y;
 					};
 
 

@@ -90,6 +90,7 @@ class Settings{
 				else if(!strcmp(argv[i],"--ATLAS_cut")){options.set_ATLAS_cut();}
 				else if(!strcmp(argv[i],"--EKRTformat")){options.set_EKRTformat();}
 				else if(!strcmp(argv[i],"--EKRTbinary")){options.set_EKRTbinary();}
+				else if(!strcmp(argv[i],"--hist_ZeroCentered")){options.set_hist_ZeroCentered();}
 				else if(!strcmp(argv[i],"--only_core")){options.set_flag_only_core();}
 				else if(!strcmp(argv[i],"--only_corona")){options.set_flag_only_corona();}
 				else if(!strcmp(argv[i],"--only_core_triggers")){options.set_flag_only_core_triggers();}
@@ -239,6 +240,9 @@ void consistency_check(){
 		exit(EXIT_FAILURE);
 	}
 
+	options.ih.tailor_hist(options);
+
+return;
 }
 
 
