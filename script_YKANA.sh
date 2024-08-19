@@ -58,10 +58,10 @@
 ./YKANA  \
  -n 10000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K2.0sat2.0 \
- -outdir dndpt60_70_18Apr2024_wohs_K2.0sat2.0  \
+ -outdir dndcoordy60_70_18Apr2024_wohs_K2.0sat2.0  \
  -f ev  \
  -ext jets_60_70_pbpb5020.dat  \
- -obs dndpt  \
+ -obs dndcoordy  \
  --EKRTformat  \
  --EKRTbinary \
  --hist_ZeroCentered

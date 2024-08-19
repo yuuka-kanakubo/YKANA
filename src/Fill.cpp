@@ -700,6 +700,20 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 							x_val = EVENT.part[j].pt;
 							y_val = 1.0/(options.ih.d_x);
 						}
+						//DNDCOORDX
+						//=====
+						if(options.get_obs_type().find("dndcoordx")!=string::npos){
+							if(fabs(EVENT.part[j].y)>0.5) continue;
+							x_val = EVENT.part[j].x;
+							y_val = 1.0/(options.ih.d_x);
+						}
+						//DNDCOORDY
+						//=====
+						if(options.get_obs_type().find("dndcoordy")!=string::npos){
+							if(fabs(EVENT.part[j].x)>0.5) continue;
+							x_val = EVENT.part[j].y;
+							y_val = 1.0/(options.ih.d_x);
+						}
 
 						//Find bin
 						//========
