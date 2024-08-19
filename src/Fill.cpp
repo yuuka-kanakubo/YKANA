@@ -691,9 +691,19 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						//You can put whatever you want in x and y.
 						//==========================================
 						x_val=EVENT.part[j].rap;
-						//if(x_val<options.ih.x_edge_min || x_val>options.ih.x_edge_max) continue;
-						nx=this->get_cell_index(x_val);
 						y_val = EVENT.part[j].e/(options.ih.d_x);
+
+						//DNDPT
+						//=====
+						if(options.get_obs_type().find("dndpt")!=string::npos){
+							//if(fabs(EVENT.part[j].rap)>0.5) continue;
+							x_val = EVENT.part[j].pt;
+							y_val = 1.0/(options.ih.d_x);
+						}
+
+						//Find bin
+						//========
+						nx=this->get_cell_index(x_val);
 					}
 
 					ct->Hist[nx]+=y_val*EVENT.weight();
@@ -774,10 +784,15 @@ int Fill::get_cell_index_cstm(const double val){
 				if(options.get_xaxis_type()==3){
 					return this->get_cell_index_cstm(x_val);
 				}
-				if(ncell<0 || ncell>constants::x_cell_capa){
-					std::cout << "ERROR:( ncell is beyond the capacity.  ncell:" << ncell << " out of constants::x_cell_capa " << constants::x_cell_capa << std::endl;
+				if(ncell<0){
+					std::cout << "ERROR:( something is wrong.  ncell:" << ncell << " out of constants::x_cell_capa " << constants::x_cell_capa << std::endl;
 					std::cout << "                                       x_val:" << x_val << " options.ih.x_edge_min " << options.ih.x_edge_min << std::endl;
 					exit(EXIT_FAILURE);
+				}
+				if(ncell>constants::x_cell_capa){
+					std::cout << "WARNING:O ncell is over the capacity.  ncell:" << ncell << " out of constants::x_cell_capa " << constants::x_cell_capa << std::endl;
+					std::cout << "                                       x_val:" << x_val << " options.ih.x_edge_min " << options.ih.x_edge_min << std::endl;
+                                        ncell=constants::x_cell_capa-1;//Put everything into the last cell.
 				}
 				return  ncell;
 			}

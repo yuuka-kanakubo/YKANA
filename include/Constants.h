@@ -313,20 +313,6 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 	const double d_y = 0.0;
 	const double d_y_HI = 0.0;
 	const int y_cell_capa=0;
-#elif defined DNDPT
-	const std::string MODE = "dndpt";
-	const std::string default_out_directory_name="dndpt";
-	const double x_max = 2000.0;
-	const double x_min = 0.0;
-	const double d_x = 1.0;
-	const int x_cell_capa=1000;
-	const std::string default_ext="/hadronised.txt";
-	const double y_max = 0.0;
-	const double y_max_HI = 0.0;
-	const double y_min = 0.0;
-	const double d_y = 0.0;
-	const double d_y_HI = 0.0;
-	const int y_cell_capa=0;
 #elif defined JET_PRAC
 	const std::string MODE = "JET_PRAC";
 	const std::string default_out_directory_name="JET_PRAC";
@@ -362,10 +348,10 @@ inline const std::string ext_nameTLxeta="hydro_profiles_y_at0__tau_";
 #elif defined JUSTSIMPLE1D
 	const std::string MODE = "default";
 	const std::string default_out_directory_name="output";
-	const double x_max = 10.0;
-	const double x_min = -10.0;
+	const double x_max = 25.0;
+	const double x_min = 0.0;
 	const double x_max_HI = 0.0;
-	const double d_x = 0.15;
+	const double d_x = 0.2;
 	const double d_x_HI = 0.1;
 	const int x_cell_capa=1000;
 	const std::string default_ext="/hadronised.txt";

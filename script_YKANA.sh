@@ -51,15 +51,17 @@
 
 
  ## --CentralityCut 2 \
+ ## --CentralityCutsumEt \
  ## -n 10000 \
  ## --shuffle \
  ## --BSTR 5 \
 ./YKANA  \
  -n 10000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K2.0sat2.0 \
- -outdir dedy_60_70_wohs_K2.0sat2.0_5000ev_fixedxaxis_dbg  \
+ -outdir dndpt60_70_18Apr2024_wohs_K2.0sat2.0  \
  -f ev  \
  -ext jets_60_70_pbpb5020.dat  \
+ -obs dndpt  \
  --EKRTformat  \
  --EKRTbinary \
  --hist_ZeroCentered

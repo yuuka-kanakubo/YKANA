@@ -62,6 +62,7 @@ class Settings{
 				else if(!strcmp(argv[i],"-from")){options.set_beginfile (atoi(argv[i+1])); options.set_flag_specify_startingfile();}
 				else if(!strcmp(argv[i],"-to")){options.set_nfile (atoi(argv[i+1])); options.set_flag_specify_startingfile();}
 				else if(!strcmp(argv[i],"-outdir")){options.set_out_directory_name(argv[i+1]);}
+				else if(!strcmp(argv[i],"-obs")){options.set_obs_type(argv[i+1]);}
 				else if(!strcmp(argv[i],"--multip_cut_more_than")){options.set_flag_multiplicity_cut_more_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"--multip_cut_less_than")){options.set_flag_multiplicity_cut_less_than(atof(argv[i+1]));}
 				else if(!strcmp(argv[i],"-modeTL")){options.set_modeTL(atoi(argv[i+1]));}

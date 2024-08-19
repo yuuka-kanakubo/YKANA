@@ -176,6 +176,7 @@
 				bool BSTR;
 				int nBSTR;
 				int current_iBSTR;
+				std::string obs_type;
 				bool flag_CentralityCutsumEt;
 				bool zerofill;
 				bool two_subevent;
@@ -236,6 +237,7 @@
 				void set_nBSTR(int n){this->nBSTR=n;}
 				void set_current_iBSTR(int n){this->current_iBSTR=n;}
 				void set_flag_CentralityCutsumEt(){this->flag_CentralityCutsumEt=true;}
+				void set_obs_type(std::string str_type){this->obs_type=str_type;}
 				void set_dir_name_CentCut(std::string name){this->dir_name_CentCut=name;}
 				void set_f_name_CentCut(std::string name){this->f_name_CentCut=name;}
 				void set_ext_name_CentCut(std::string name){this->ext_name_CentCut=name;}
@@ -373,6 +375,7 @@
 				int get_nBSTR()const{return nBSTR;};
 				int get_current_iBSTR()const{return current_iBSTR;};
 				bool get_flag_CentralityCutsumEt()const{return flag_CentralityCutsumEt;};
+				std::string get_obs_type()const{return obs_type;};
 				double get_d_longrange_pm()const{return long_range_hist_pm;};
 				double get_d_longrange()const{return long_range_hist_pm*2.0;};
 				double get_d_longrange_mid_rapidity_cut_type2()const{return std::fabs(constants::pPb_mid_rapidity__bkw-constants::pPb_mid_rapidity__fwd);};
@@ -469,6 +472,7 @@
 					BSTR(false),
 					nBSTR(1),
 					current_iBSTR(0),
+					obs_type("dedy"),
 					flag_CentralityCutsumEt(false),
 					zerofill(true),
 					two_subevent(false),
