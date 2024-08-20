@@ -715,6 +715,14 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 							y_val = 1.0/(options.ih.d_x);
 						}
 
+						//DNDPHI
+						//=====
+						if(options.get_obs_type().find("dndphi")!=string::npos){
+							if(fabs(EVENT.part[j].rap)>0.5) continue;
+							x_val = EVENT.part[j].phi;
+							y_val = 1.0/(options.ih.d_x);
+						}
+
 						//Find bin
 						//========
 						nx=this->get_cell_index(x_val);

@@ -337,6 +337,7 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 			parton_in2.y=y;//[fm]
 			parton_in2.t=t02*constants::hbarc;//[fm]
 			parton_in2.phi=phi+M_PI;
+                        if(parton_in2.phi>2.0*M_PI) parton_in2.phi -= 2.0*M_PI;
 			parton_in2.rap=y2;
 			parton_in2.pt=pt;//[GeV]
 			parton_in2.tata=tata;

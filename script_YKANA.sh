@@ -55,12 +55,13 @@
  ## -n 10000 \
  ## --shuffle \
  ## --BSTR 5 \
+ ## --hist_ZeroCentered
 ./YKANA  \
  -n 10000 \
  -dir /n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K2.0sat2.0 \
- -outdir dndcoordy60_70_18Apr2024_wohs_K2.0sat2.0  \
+ -outdir dndcoordy20_30_18Apr2024_wohs_K2.0sat2.0  \
  -f ev  \
- -ext jets_60_70_pbpb5020.dat  \
+ -ext jets_20_30_pbpb5020.dat  \
  -obs dndcoordy  \
  --EKRTformat  \
  --EKRTbinary \
