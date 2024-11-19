@@ -181,7 +181,7 @@ oss <<
 "constants::delta_eta  = " << constants::delta_eta  << endl <<
 "constants::pPb_mid_rapidity__fwd = " << constants::pPb_mid_rapidity__fwd << endl <<
 "constants::pPb_mid_rapidity__bkw = " << constants::pPb_mid_rapidity__bkw << endl <<
-"constants::pPb_rap_shift_from_lab_to_cm = " << constants::pPb_rap_shift_from_lab_to_cm << endl <<
+"constants::pPb_rap_shift = " << constants::pPb_rap_shift << endl <<
 "constants::default_midy_pm  = " << constants::default_midy_pm  << endl <<
 "constants::LARGE = " << constants::LARGE << endl <<
 "constants::LARGEint = " << constants::LARGEint << endl <<

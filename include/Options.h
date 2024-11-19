@@ -169,7 +169,8 @@
 				bool only_corona_associates;
 				bool print_eBye;
 				bool print_dndmt;
-				bool flag_pPb_cm_calculation;
+				bool flag_pPb_cm2lab;
+				bool flag_pPb_lab2cm;
 				bool flag_multiplicity_cut;
 				bool flag_vs_Multi;
 				bool shuffle;
@@ -177,7 +178,8 @@
 				int nBSTR;
 				int current_iBSTR;
 				std::string obs_type;
-				bool flag_CentralityCutsumEt;
+				bool flag_sortsumEt;
+				bool flag_sortV0A;
 				bool zerofill;
 				bool two_subevent;
 				bool three_subevent;
@@ -236,8 +238,34 @@
 				void set_flag_BSTR(){this->BSTR=true;}
 				void set_nBSTR(int n){this->nBSTR=n;}
 				void set_current_iBSTR(int n){this->current_iBSTR=n;}
-				void set_flag_CentralityCutsumEt(){this->flag_CentralityCutsumEt=true;}
-				void set_obs_type(std::string str_type){this->obs_type=str_type;}
+				void set_flag_sortsumEt(){this->flag_sortsumEt=true;}
+				void set_flag_sortV0A(){this->flag_sortV0A=true;}
+				void set_obs_type(std::string str_type){
+
+					if(str_type.find("detdy")!=std::string::npos){
+						this->obs_type="detdy";
+					}else if(str_type.find("dedy")!=std::string::npos){
+						this->obs_type="dedy";
+					}else if(str_type.find("dndy")!=std::string::npos){
+						this->obs_type="dndy";
+					}else if(str_type.find("dndeta")!=std::string::npos){
+						this->obs_type="dndeta";
+					}else if(str_type.find("dndpt")!=std::string::npos){
+						this->obs_type="dndpt";
+					}else if(str_type.find("dndcoordx")!=std::string::npos){
+						this->obs_type="dndcoordx";
+					}else if(str_type.find("dndcoordy")!=std::string::npos){
+						this->obs_type="dndcoordy";
+					}else if(str_type.find("dndphi")!=std::string::npos){
+						this->obs_type="dndphi";
+					}else{
+						std::cout << __FILE__ << "(" << __LINE__ << ")" << "ERROR :( Unknown option " << str_type << std::endl; 
+						exit(EXIT_FAILURE);
+					}
+
+
+				}
+
 				void set_dir_name_CentCut(std::string name){this->dir_name_CentCut=name;}
 				void set_f_name_CentCut(std::string name){this->f_name_CentCut=name;}
 				void set_ext_name_CentCut(std::string name){this->ext_name_CentCut=name;}
@@ -279,8 +307,13 @@
 				};
 				void set_longrange_of_hist__plus_minus(const double dy){long_range_hist_pm=dy;};
 				void set_mid_rapidity_cut_type(const int cut_type){mid_rapidity_cut_type=cut_type;};
-				void set_flag_pPb_cm_calculation(){
-					flag_pPb_cm_calculation=true;
+				void set_flag_pPb_lab2cm(){
+					flag_pPb_lab2cm=true;
+					mid_rapidity_cut_type=2;
+					std::cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << std::endl;
+				}
+				void set_flag_pPb_cm2lab(){
+					flag_pPb_cm2lab=true;
 					mid_rapidity_cut_type=2;
 					std::cout << ":O mid-rapidity cut is automatically set to be -0.5<y_{cm}<0." << std::endl;
 				}
@@ -374,7 +407,8 @@
 				bool get_flag_BSTR()const{return BSTR;};
 				int get_nBSTR()const{return nBSTR;};
 				int get_current_iBSTR()const{return current_iBSTR;};
-				bool get_flag_CentralityCutsumEt()const{return flag_CentralityCutsumEt;};
+				bool get_flag_sortsumEt()const{return flag_sortsumEt;};
+				bool get_flag_sortV0A()const{return flag_sortV0A;};
 				std::string get_obs_type()const{return obs_type;};
 				double get_d_longrange_pm()const{return long_range_hist_pm;};
 				double get_d_longrange()const{return long_range_hist_pm*2.0;};
@@ -383,7 +417,8 @@
 				int get_collision_type()const{return collision_type;}
 				double get_pPb_mid_rapidity__bkw()const{return constants::pPb_mid_rapidity__bkw;}
 				double get_pPb_mid_rapidity__fwd()const{return constants::pPb_mid_rapidity__fwd;}
-				bool get_flag_pPb_cm_calculation()const{return flag_pPb_cm_calculation;}
+				bool get_flag_pPb_cm2lab()const{return flag_pPb_cm2lab;}
+				bool get_flag_pPb_lab2cm()const{return flag_pPb_lab2cm;}
 				double get_multiplicity_cut_more_than()const{return multip_cut_more_than;};
 				double get_multiplicity_cut_less_than()const{return multip_cut_less_than;};
 				double get_Ncoeff()const{return Ncoeff;}
@@ -466,14 +501,16 @@
 					only_corona_associates(false),
 					print_eBye(false),
 					print_dndmt(false),
-					flag_pPb_cm_calculation(false),
+					flag_pPb_cm2lab(false),
+					flag_pPb_lab2cm(false),
 					flag_multiplicity_cut(false),
 					shuffle(false),
 					BSTR(false),
 					nBSTR(1),
 					current_iBSTR(0),
 					obs_type("dedy"),
-					flag_CentralityCutsumEt(false),
+					flag_sortsumEt(false),
+					flag_sortV0A(false),
 					zerofill(true),
 					two_subevent(false),
 					three_subevent(false),

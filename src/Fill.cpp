@@ -13,14 +13,18 @@
 using namespace std;
 
 
-Fill::Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf_in):N_iCentEv(0), ms(ms_in), options(options_in), uf(uf_in), rndom(nullptr){
+Fill::Fill(shared_ptr<Message> ms_in, Options options_in, shared_ptr<Util_func> uf_in):N_iCentEv(0), NsuspiciousParticle(0), ms(ms_in), options(options_in), uf(uf_in), rndom(nullptr){
 
 	if(options.get_xaxis_type()==3){
 		this->SetCustomBin();
 	}
 
 };
-Fill::~Fill(){};
+Fill::~Fill(){
+        int thre=100;
+        if(NsuspiciousParticle>thre)
+	std::cout << "WARNING :( " << "Some particles are suspicious. " << NsuspiciousParticle << "suspicious particles found in input." << endl; 
+};
 
 void Fill::nextCent(shared_ptr<Rndom> rndom_in){
         this->rndom=rndom_in;
@@ -687,11 +691,31 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 						if(!this->fix_ax(EVENT.part[j].ID, nx, x_val)) continue;
 						y_val = EVENT.part[j].mt - EVENT.part[j].m;
 					}else{
-						//Default filling.
-						//You can put whatever you want in x and y.
+						//DETDY
 						//==========================================
+						if(options.get_obs_type().find("detdy")!=string::npos){
+						x_val=EVENT.part[j].rap;
+						y_val = EVENT.part[j].mt/(options.ih.d_x);
+						}else
+
+						//DEDY
+						//==========================================
+						if(options.get_obs_type().find("dedy")!=string::npos){
 						x_val=EVENT.part[j].rap;
 						y_val = EVENT.part[j].e/(options.ih.d_x);
+						}else
+
+						//DNDY
+						//==========================================
+						if(options.get_obs_type().find("dndy")!=string::npos){
+						x_val=EVENT.part[j].rap;
+						y_val = 1.0/(options.ih.d_x);
+						}else
+
+						if(options.get_obs_type().find("dndeta")!=string::npos){
+						x_val=EVENT.part[j].eta;
+						y_val = 1.0/(options.ih.d_x);
+						}else
 
 						//DNDPT
 						//=====
@@ -699,21 +723,21 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 							//if(fabs(EVENT.part[j].rap)>0.5) continue;
 							x_val = EVENT.part[j].pt;
 							y_val = 1.0/(options.ih.d_x);
-						}
+						}else
 						//DNDCOORDX
 						//=====
 						if(options.get_obs_type().find("dndcoordx")!=string::npos){
 							if(fabs(EVENT.part[j].y)>0.5) continue;
 							x_val = EVENT.part[j].x;
 							y_val = 1.0/(options.ih.d_x);
-						}
+						}else
 						//DNDCOORDY
 						//=====
 						if(options.get_obs_type().find("dndcoordy")!=string::npos){
 							if(fabs(EVENT.part[j].x)>0.5) continue;
 							x_val = EVENT.part[j].y;
 							y_val = 1.0/(options.ih.d_x);
-						}
+						}else
 
 						//DNDPHI
 						//=====
@@ -721,6 +745,11 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 							if(fabs(EVENT.part[j].rap)>0.5) continue;
 							x_val = EVENT.part[j].phi;
 							y_val = 1.0/(options.ih.d_x);
+						}else{
+
+							std::cout << __FILE__ << "(" << __LINE__ << ")" << "ERROR :( Unknown option " << options.get_obs_type() << std::endl; 
+							exit(EXIT_FAILURE);
+
 						}
 
 						//Find bin
@@ -729,7 +758,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 					}
 
 					ct->Hist[nx]+=y_val*EVENT.weight();
-					ct->Hist_x[nx]+=x_val*EVENT.weight();
+					ct->Hist_x[nx]+=x_val;
 					ct->HistHit[nx]++;
 
 					//Temporal archive of Njet in one event for each bin
@@ -743,6 +772,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 				}//particle loop
 
 				ct->SumWeight+=EVENT.weight();
+				ct->SumNev++;
 
 				//loop over bins. This should be done after particle loop
 				//======================================================
@@ -751,7 +781,7 @@ void Fill::fill_twopc_B_CMS(shared_ptr<Container>& ct, const vector<EbyeInfo>& e
 					//I want to get sum_ev Nminijet*Nminijet 
 					//in [nx]
 					//===================================
-					ct->HistHist[i]+=pow(ct->Hist_1ev[i], 2);
+					ct->HistHist[i]+=pow(ct->Hist_1ev[i], 2)*EVENT.weight();
 					ct->Hist_1ev[i]=0.0;
 				}
 
@@ -809,12 +839,14 @@ int Fill::get_cell_index_cstm(const double val){
 				if(ncell<0){
 					std::cout << "ERROR:( something is wrong.  ncell:" << ncell << " out of constants::x_cell_capa " << constants::x_cell_capa << std::endl;
 					std::cout << "                                       x_val:" << x_val << " options.ih.x_edge_min " << options.ih.x_edge_min << std::endl;
-					exit(EXIT_FAILURE);
+                                        ncell=constants::x_cell_capa-1;//Put everything into the last cell.
+					NsuspiciousParticle++;
 				}
 				if(ncell>constants::x_cell_capa){
 					std::cout << "WARNING:O ncell is over the capacity.  ncell:" << ncell << " out of constants::x_cell_capa " << constants::x_cell_capa << std::endl;
-					std::cout << "                                       x_val:" << x_val << " options.ih.x_edge_min " << options.ih.x_edge_min << std::endl;
+					std::cout << "                                       x_val:" << x_val << " options.ih.x_edge_max " << options.ih.x_edge_max << std::endl;
                                         ncell=constants::x_cell_capa-1;//Put everything into the last cell.
+					NsuspiciousParticle++;
 				}
 				return  ncell;
 			}
@@ -825,7 +857,8 @@ int Fill::get_cell_index_cstm(const double val){
 				if(ncell<0 || ncell>constants::y_cell_capa){
 					std::cout << "ERROR:( ncell is beyond the capacity.  ncell:" << ncell << " out of constants::y_cell_capa " << constants::y_cell_capa << std::endl;
 					std::cout << "                                       y_val:" << y_val << " options.ih.y_edge_min " << options.ih.y_edge_min << std::endl;
-					exit(EXIT_FAILURE);
+                                        ncell=constants::y_cell_capa-1;//Put everything into the last cell.
+					NsuspiciousParticle++;
 				}
 				return  ncell;
 			}

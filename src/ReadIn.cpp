@@ -19,7 +19,7 @@
 
 using namespace std;
 
-ReadIn::ReadIn(shared_ptr<Message> ms_in, Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0), nline(-1){};
+ReadIn::ReadIn(shared_ptr<Message> ms_in, Options options_in):ms(ms_in), options(options_in), ncall_readTimeLapse(0), nline(-1), Nsuspiciousevent(0){};
 ReadIn::~ReadIn(){};
 
 
@@ -247,6 +247,7 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		double Multiplicity_V0M=0.0;
 		double Multiplicity_V0A=0.0;
 		double N_trk_offline_=0.0;
+                int pikp_partonLevel=0;
 		bool Multiplicity_INEL_lg_0=false;
 		bool V0M_FWD=false;
 		bool V0M_BKW=false;
@@ -328,8 +329,9 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 			}
 			parton_in1.m=m;
 
+			this->tailerFourMomentum(parton_in1);
 			part_1ev.push_back(parton_in1);
-			this->stockInfo(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, part_1ev.back());
+			this->stockInfo(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, pikp_partonLevel, parton_in1);
 
 			//Minijet 2.
 			Container::ParticleInfo parton_in2;
@@ -375,8 +377,9 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 			}
 			parton_in2.m=m;
 
+			this->tailerFourMomentum(parton_in2);
 			part_1ev.push_back(parton_in2);
-			this->stockInfo(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, part_1ev.back());
+			this->stockInfo(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, pikp_partonLevel, parton_in2);
 
 
 		}//minijet loop
@@ -395,7 +398,7 @@ bool ReadIn::readEKRTbinary(std::vector <Container::EventInfo>& nEventInfo, std:
 		ebye_oneEvent.Nch=N_charge;
 		ebye_oneEvent.weight=1.0;//In EKRT current version all events are equally weighted.
 		ebye_oneEvent.multiplicity_INEL_lg_0=Multiplicity_INEL_lg_0;
-		ebye_oneEvent.multiplicity_V0M=(options.get_flag_VZEROAND_trigger())? Multiplicity_V0A : Multiplicity_V0M;
+		ebye_oneEvent.multiplicity_V0M=(options.get_flag_sortV0A())? Multiplicity_V0A : Multiplicity_V0M;
 		ebye_oneEvent.valid=true;
 		//if(n_jets>0) ebye_oneEvent.valid=true;
                 //else{cout << "NO MINIEJT IN THIS EVENT " << endl;}
@@ -434,6 +437,7 @@ bool ReadIn::read(const std::string& fname, Container::EventInfo& oneEventInfo, 
 			double Multiplicity_V0M=0.0;
 			double Multiplicity_V0A=0.0;
 			double N_trk_offline_=0.0;
+			int pikp_partonLevel=0;
 			bool Multiplicity_INEL_lg_0=false;
 			bool V0M_FWD=false;
 			bool V0M_BKW=false;
@@ -463,6 +467,9 @@ bool ReadIn::read(const std::string& fname, Container::EventInfo& oneEventInfo, 
 						std::string TAG;
 						is >> data1 >> data2 >> col >> acol >> ID >> m >> e >> px >> py >> pz >> rap >> x >> y >> z >> t >> ft >> TAG;
 
+						//PythiaAngantyr
+						//===============
+						if(isRemnantNucleus(ID)) continue;
 
 						double P_squared=px*px+py*py+pz*pz;
 						double P=(P_squared)>0.0 ? sqrt(P_squared):0.0;
@@ -485,6 +492,7 @@ bool ReadIn::read(const std::string& fname, Container::EventInfo& oneEventInfo, 
 
 						Container::ParticleInfo part_in;
 						part_in.eta=eta;
+						part_in.rap=rap; 
 						part_in.pt=pt;
 						part_in.r=r;
 						part_in.ID=(int)ID;
@@ -496,8 +504,10 @@ bool ReadIn::read(const std::string& fname, Container::EventInfo& oneEventInfo, 
 						part_in.m=m;
 						part_in.phi=phi;
 						part_in.TAG=TAG;
-						part_1ev.push_back(part_in);
-						this->stockInfo(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, part_1ev.back());
+						if(this->IsPoI(part_in))
+							part_1ev.push_back(part_in);
+
+						this->stockInfo(Multiplicity, N_charge, Multiplicity_V0M, Multiplicity_V0A, N_trk_offline_, Multiplicity_INEL_lg_0, V0M_FWD, V0M_BKW, OUTER_SPD, ATLAS_cut, pikp_partonLevel, part_in);
 
 						if(this->is_pikp(abs(ID)) && std::fabs(eta)<0.3 && pt<10.0 ) Nch++;
 
@@ -521,7 +531,7 @@ bool ReadIn::read(const std::string& fname, Container::EventInfo& oneEventInfo, 
 			ebye_oneEvent.Nch=N_charge;
 			ebye_oneEvent.weight=1.0;//In EKRT current version all events are equally weighted.
 			ebye_oneEvent.multiplicity_INEL_lg_0=Multiplicity_INEL_lg_0;
-			ebye_oneEvent.multiplicity_V0M=(options.get_flag_VZEROAND_trigger())? Multiplicity_V0A : Multiplicity_V0M;
+			ebye_oneEvent.multiplicity_V0M=(options.get_flag_sortV0A())? Multiplicity_V0A : Multiplicity_V0M;
 			ebye_oneEvent.valid=true;
 			ebye_oneEvent.N_trk_offline=N_trk_offline_;
 			if(options.get_collision_type()==101)
@@ -530,6 +540,16 @@ bool ReadIn::read(const std::string& fname, Container::EventInfo& oneEventInfo, 
 			if(V0M_FWD && V0M_BKW) {ebye_oneEvent.trig_VZEROAND=true;}
 			if((V0M_FWD && V0M_BKW) || (V0M_BKW && OUTER_SPD) || (OUTER_SPD && V0M_FWD) ) {ebye_oneEvent.trig_2outof3=true;}
 			if(ATLAS_cut) ebye_oneEvent.ATLAS_cut=true;
+                        if(options.get_hist_parton_level() && toomany_hadrons_inPartonLevInput(pikp_partonLevel, (int)part_1ev.size())){
+				std::cout << __FILE__ << "(" << __LINE__ << ")" << " WARNING:( toomany_hadrons_inPartonLevInput while --parton flag is set. " << pikp_partonLevel << " pi,K,p-s in " << (int)part_1ev.size() <<  ". See " << fname << std::endl;
+				double thre=0.7;
+				Nsuspiciousevent++;
+				if(Nsuspiciousevent/options.get_nfile()>thre){
+					std::cout << __FILE__ << "(" << __LINE__ << ")" << " ERROR:( toomany_hadrons_inPartonLevInput. Exceeded threshold. Aborting." << std::endl;
+					exit(EXIT_FAILURE);
+				}
+			}
+
 			vector<Container::ParticleInfo>().swap(part_1ev);
 
 			return true;

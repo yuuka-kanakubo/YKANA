@@ -131,9 +131,10 @@ return B00;
 				//take average    
 				//-------------------------------------
 				cout << __FILE__ << "  nEvent-average: " << ct->SumWeight << endl;
+				cout << __FILE__ << "  nEvents used : " << ct->SumNev << endl;
 				for(int i=0; i<ct->max_nx+1; ++i){
 					ct->FinalHist[i]=ct->Hist[i]/ct->SumWeight;
-					ct->Hist_x[i]/=ct->Hist_weight[i];
+					ct->Hist_x[i]/=ct->HistHit[i];
 
 					double meanxx  = ct->HistHist[i]/ct->SumWeight;
 					double meanx = ct->FinalHist[i];

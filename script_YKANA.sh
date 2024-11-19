@@ -1,5 +1,43 @@
 #!/bin/sh
 
+log_dname="log/"
+data_dir="data/"
+
+today=$(date "+%Y%m%d")
+log_fname=${today}${outputdir}
+if [ ! -d $log_dname ]
+then
+    echo "Directory "$log_dname" DOES NOT exists." 
+    echo "mkdir "$log_dname
+    mkdir $log_dname
+fi
+if [ ! -d $data_dir ]
+then
+    echo "Directory "$data_dir" DOES NOT exists." 
+    mkdir $data_dir
+fi
+
+ ## --CentralityCut 2 \
+ ## --sortsumEt \
+ ## -n 10000 \
+ ## --shuffle \
+ ## --BSTR 5 \
+ ## --hist_ZeroCentered
+ ##--EKRTformat  \
+ ##--EKRTbinary \
+./YKANA  \
+ -n 10000 \
+ -dir /home/yukanaku/MC-EKRT/data/20241030_wohsK2.0kappa2.0_pPb/ \
+ -outdir MCEKRTpPb5020_60_70_detdy_cm \
+ --EKRTformat  \
+ --EKRTbinary \
+ -f ev  \
+ --parton \
+ -ext jets_60_70_ppb5020.dat  \
+ -obs detdy  \
+ --hist_ZeroCentered
+
+
 ##CENT=(0_5 20_30 60_70)
 ##K=(2.0 3.0)
 ##Kapsat=(1.0 2.0)
@@ -49,20 +87,3 @@
 ##done
 ##
 
-
- ## --CentralityCut 2 \
- ## --CentralityCutsumEt \
- ## -n 10000 \
- ## --shuffle \
- ## --BSTR 5 \
- ## --hist_ZeroCentered
-./YKANA  \
- -n 10000 \
- -dir /n/work02/yukanaku/mcaa/data/18Apr2024_wohs_K2.0sat2.0 \
- -outdir dndcoordy20_30_18Apr2024_wohs_K2.0sat2.0  \
- -f ev  \
- -ext jets_20_30_pbpb5020.dat  \
- -obs dndcoordy  \
- --EKRTformat  \
- --EKRTbinary \
- --hist_ZeroCentered

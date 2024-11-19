@@ -14,8 +14,6 @@ class Classification{
 
 	public:
 		Classification(vector<EbyeInfo>& eBye_in, const Options options_in):sumN(0.0), eBye(eBye_in), options(options_in){
-
-
 		};
 		~Classification(){};
 

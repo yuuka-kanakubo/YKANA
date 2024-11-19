@@ -74,8 +74,10 @@ class Settings{
 				else if(!strcmp(argv[i],"--high_pt_mode")){options.set_flag_high_pt_mode();}
 				else if(!strcmp(argv[i],"--shuffle")){options.set_flag_shuffle();}
 				else if(!strcmp(argv[i],"--BSTR")){options.set_flag_BSTR(); options.set_nBSTR(atoi(argv[i+1]));}
-				else if(!strcmp(argv[i],"--CentralityCutsumEt")){options.set_flag_CentralityCutsumEt();}
-				else if(!strcmp(argv[i],"--pPb_cm")){options.set_flag_pPb_cm_calculation();}
+				else if(!strcmp(argv[i],"--sortsumEt")){options.set_flag_sortsumEt();}
+				else if(!strcmp(argv[i],"--sortV0A")){options.set_flag_sortV0A();}
+				else if(!strcmp(argv[i],"--pPb_cm2lab")){options.set_flag_pPb_cm2lab();}
+				else if(!strcmp(argv[i],"--pPb_lab2cm")){options.set_flag_pPb_lab2cm();}
 				else if(!strcmp(argv[i],"--long_range_cut_type")){options.set_mid_rapidity_cut_type(atoi(argv[i+1]));}//0 or 1
 				else if(!strcmp(argv[i],"--parton")){options.set_parton_level_hist();}
 				else if(!strcmp(argv[i],"--nozeros")){options.set_flag_zerofill();}
@@ -89,8 +91,8 @@ class Settings{
 				else if(!strcmp(argv[i],"--trig_2outof3")){options.set_trig_2outof3();}
 				else if(!strcmp(argv[i],"--trig_VZEROAND")){options.set_trig_VZEROAND();}
 				else if(!strcmp(argv[i],"--ATLAS_cut")){options.set_ATLAS_cut();}
-				else if(!strcmp(argv[i],"--EKRTformat")){options.set_EKRTformat();}
-				else if(!strcmp(argv[i],"--EKRTbinary")){options.set_EKRTbinary();}
+				else if(!strcmp(argv[i],"--EKRTformat")){options.set_EKRTformat(); options.set_parton_level_hist();}
+				else if(!strcmp(argv[i],"--EKRTbinary")){options.set_EKRTbinary(); options.set_parton_level_hist();}
 				else if(!strcmp(argv[i],"--hist_ZeroCentered")){options.set_hist_ZeroCentered();}
 				else if(!strcmp(argv[i],"--only_core")){options.set_flag_only_core();}
 				else if(!strcmp(argv[i],"--only_corona")){options.set_flag_only_corona();}

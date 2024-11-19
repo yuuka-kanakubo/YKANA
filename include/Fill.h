@@ -14,6 +14,7 @@ class Fill{
 private:
 
 	int N_iCentEv;
+	int NsuspiciousParticle;
 	double x_edge_min;
 	double x_edge_max;
 	double y_edge_min;
