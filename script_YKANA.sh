@@ -26,14 +26,15 @@ fi
  ##--EKRTformat  \
  ##--EKRTbinary \
 ./YKANA  \
- -n 10000 \
- -dir /home/yukanaku/MC-EKRT/data/20241030_wohsK2.0kappa2.0_pPb/ \
- -outdir MCEKRTpPb5020_60_70_detdy_cm \
- --EKRTformat  \
- --EKRTbinary \
+ -n 5000 \
+ -dir /home/yukanaku/MC-EKRT/data/20241119_wohsK2.0kappa2.0_pPb/ \
+ -outdir MCEKRTpPb5020_0_5_K2.0kappa2.0_detdy_cm_5K \
  -f ev  \
+ --EKRTformat \
+ --EKRTbinary \
+ --pPb_cm2lab \
  --parton \
- -ext jets_60_70_ppb5020.dat  \
+ -ext jets_0_5_ppb5020.dat  \
  -obs detdy  \
  --hist_ZeroCentered
 
